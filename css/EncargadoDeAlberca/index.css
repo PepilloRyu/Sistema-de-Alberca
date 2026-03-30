@@ -1,6 +1,6 @@
 /* ====================================
    DASHBOARD ENCARGADO - NUESTRAS ALBERCAS
-   Sistema de navegación por secciones
+   Sistema de navegación por secciones con menú hamburguesa
 ======================================= */
 
 :root {
@@ -27,6 +27,11 @@
     --radius-sm:     12px;
     --shadow-card:   0 8px 32px rgba(0,0,0,0.4);
     --border-gold:   1px solid rgba(255,170,0,0.25);
+    
+    /* Variables para el grid */
+    --nav-width: 260px;
+    --nav-collapsed: 70px;
+    --grid-cols: 20;
 }
 
 *, *::before, *::after {
@@ -95,13 +100,46 @@ body {
     color: var(--primary-blue-dark);
 }
 
+/* BOTÓN HAMBURGUESA */
+.hamburger-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    margin-right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 101;
+}
+
+.hamburger-line {
+    width: 25px;
+    height: 2px;
+    background-color: var(--primary-gold);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
 /* NAVEGACIÓN */
 .nav {
     position: fixed;
     left: 0;
     top: 70px;
     bottom: 0;
-    width: 240px;
+    width: var(--nav-width);
     background: rgba(10, 26, 42, 0.95);
     backdrop-filter: blur(20px);
     border-right: 1px solid var(--border-gold);
@@ -110,6 +148,22 @@ body {
     padding: 24px 0;
     gap: 4px;
     z-index: 90;
+    transition: width 0.3s ease;
+    overflow-x: hidden;
+}
+
+/* Estado colapsado */
+.nav.collapsed {
+    width: var(--nav-collapsed);
+}
+
+.nav.collapsed a span {
+    display: none;
+}
+
+.nav.collapsed a::before {
+    margin-right: 0;
+    font-size: 1.3rem;
 }
 
 .nav a {
@@ -122,11 +176,15 @@ body {
     font-weight: 500;
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.nav a span {
+    margin-left: 12px;
 }
 
 .nav a::before {
     content: '';
-    margin-right: 12px;
     font-size: 1.2rem;
 }
 
@@ -136,12 +194,26 @@ body {
     background: rgba(255,170,0,0.08);
 }
 
+/* Iconos del menú */
+.nav a[data-section="inicio"]::before { content: '🏠'; }
+.nav a[data-section="horarios"]::before { content: '⏰'; }
+.nav a[data-section="calidad-agua"]::before { content: '💧'; }
+.nav a[data-section="personal"]::before { content: '👥'; }
+.nav a[data-section="reportes"]::before { content: '📋'; }
+.nav a[data-section="mantenimiento"]::before { content: '🔧'; }
+.nav a[data-section="acceso"]::before { content: '🚪'; }
+
 /* CONTENIDO */
 .content {
     margin-top: 70px;
-    margin-left: 240px;
+    margin-left: var(--nav-width);
     padding: 24px;
     min-height: calc(100vh - 70px);
+    transition: margin-left 0.3s ease;
+}
+
+.content.expanded {
+    margin-left: var(--nav-collapsed);
 }
 
 /* SECCIONES - Ocultar/Mostrar */
@@ -160,31 +232,41 @@ body {
 }
 
 /* ====================================
-   DASHBOARD SIN SCROLL (INICIO)
+   DASHBOARD CON GRID 20x20
 ======================================= */
 #inicio.active {
-    height: calc(100vh - 70px - 60px); /* Resta header y footer */
+    height: calc(100vh - 70px - 60px);
     overflow-y: hidden;
     padding: 0;
 }
 
 #inicio .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(var(--grid-cols), 1fr);
+    grid-auto-rows: minmax(auto, auto);
     gap: 12px;
     height: 100%;
     overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
 #inicio .dashboard-grid::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
 }
 
-/* Fila superior combinada */
+/* Clase para cuando el navbar está colapsado - grid de 21 columnas */
+#inicio .dashboard-grid.grid-expanded {
+    grid-template-columns: repeat(21, 1fr);
+}
+
+/* ====================================
+   TARJETAS DEL DASHBOARD (POSICIONADAS EN EL GRID)
+======================================= */
+
+/* Tarjeta de bienvenida y estadísticas - ocupa primeras filas */
 .welcome-stats {
-    grid-column: span 2;
+    grid-column: 1 / 21;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -195,61 +277,70 @@ body {
     margin-bottom: 0;
 }
 
-.welcome h2 {
-    font-size: 1.3rem;
-    margin-bottom: 4px;
+/* Cuando el grid tiene 21 columnas */
+.grid-expanded .welcome-stats {
+    grid-column: 1 / 22;
 }
 
-.welcome p {
-    font-size: 0.75rem;
-    color: var(--text-muted);
+/* Tarjeta Estado de Albercas */
+.card-estado-albercas {
+    grid-column: 1 / 11;
+    grid-row: 2 / 8;
 }
 
-.date-time {
-    font-size: 0.7rem;
-    margin-top: 6px;
+.grid-expanded .card-estado-albercas {
+    grid-column: 1 / 12;
 }
 
-.time {
-    font-size: 1rem;
-    margin-left: 8px;
-    color: var(--primary-gold);
+/* Tarjeta Calidad del Agua */
+.card-calidad-agua {
+    grid-column: 11 / 21;
+    grid-row: 2 / 6;
 }
 
-.stats-mini {
-    display: flex;
-    gap: 16px;
+.grid-expanded .card-calidad-agua {
+    grid-column: 12 / 22;
 }
 
-.stat-mini {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: rgba(255,255,255,0.03);
-    padding: 6px 12px;
-    border-radius: 30px;
+/* Tarjeta Mantenimientos Programados */
+.card-mantenimientos {
+    grid-column: 11 / 21;
+    grid-row: 6 / 12;
 }
 
-.stat-mini-icon {
-    font-size: 1.4rem;
+.grid-expanded .card-mantenimientos {
+    grid-column: 12 / 22;
 }
 
-.stat-mini-number {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--primary-gold);
-    display: block;
-    line-height: 1;
+/* Tarjeta Alertas */
+.card-alertas {
+    grid-column: 1 / 11;
+    grid-row: 8 / 14;
 }
 
-.stat-mini-label {
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    display: block;
+.grid-expanded .card-alertas {
+    grid-column: 1 / 12;
 }
 
-/* Tarjetas compactas */
-.card.compact {
+/* Tarjeta Estadísticas Rápidas Extra */
+.card-estadisticas-extra {
+    grid-column: 1 / 21;
+    grid-row: 14 / 16;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
+    padding: 0;
+}
+
+.grid-expanded .card-estadisticas-extra {
+    grid-column: 1 / 22;
+}
+
+/* Estilos generales de tarjetas */
+.dashboard-card {
     background: rgba(255,255,255,0.05);
     border: var(--border-gold);
     border-radius: var(--radius-card);
@@ -257,7 +348,7 @@ body {
     backdrop-filter: blur(10px);
 }
 
-.card.compact h3 {
+.dashboard-card h3 {
     font-size: 0.8rem;
     margin-bottom: 10px;
     color: var(--text-muted);
@@ -266,13 +357,13 @@ body {
 }
 
 /* Estado de albercas compacto */
-.pool-status-list.compact {
+.pool-status-list {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.pool-status-list.compact .pool-status-item {
+.pool-status-item {
     display: grid;
     grid-template-columns: 80px 80px 1fr 50px;
     align-items: center;
@@ -325,14 +416,14 @@ body {
     text-align: right;
 }
 
-/* Calidad del agua compacto */
-.water-quality-summary.compact {
+/* Calidad del agua */
+.water-quality-summary {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.water-quality-summary.compact .quality-item {
+.quality-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -368,15 +459,15 @@ body {
     color: var(--info);
 }
 
-/* Mantenimientos compacto */
-.maintenance-list.compact {
+/* Mantenimientos */
+.maintenance-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.maintenance-list.compact li {
+.maintenance-list li {
     display: grid;
     grid-template-columns: 45px 1fr 55px;
     gap: 6px;
@@ -386,23 +477,23 @@ body {
     font-size: 0.7rem;
 }
 
-.maintenance-list.compact .date {
+.maintenance-list .date {
     font-family: var(--font-mono);
     color: var(--primary-gold);
 }
 
-.maintenance-list.compact .task {
+.maintenance-list .task {
     font-weight: 500;
 }
 
-.maintenance-list.compact .pool {
+.maintenance-list .pool {
     font-size: 0.65rem;
     color: var(--text-muted);
     text-align: right;
 }
 
-/* Alertas compactas */
-.alert-card.compact .alert-item {
+/* Alertas */
+.alert-item {
     display: flex;
     gap: 8px;
     padding: 8px 10px;
@@ -411,7 +502,7 @@ body {
     margin-bottom: 6px;
 }
 
-.alert-card.compact .alert-item.success {
+.alert-item.success {
     background: rgba(46,204,113,0.03);
     border-left: 2px solid var(--success);
 }
@@ -428,6 +519,27 @@ body {
 
 .alert-content p {
     font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+/* Estadísticas extra */
+.stat-extra-card {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-extra-number {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--primary-gold);
+    font-family: var(--font-display);
+}
+
+.stat-extra-label {
+    font-size: 0.7rem;
     color: var(--text-muted);
 }
 
@@ -537,33 +649,30 @@ li {
 /* RESPONSIVE */
 @media (max-width: 900px) {
     .nav {
-        width: 70px;
+        width: var(--nav-collapsed);
     }
     
-    .nav a {
-        justify-content: center;
-        font-size: 0;
-        padding: 14px;
+    .nav a span {
+        display: none;
     }
     
     .nav a::before {
-        font-size: 1.2rem;
         margin-right: 0;
+        font-size: 1.3rem;
     }
     
     .content {
-        margin-left: 70px;
-    }
-    
-    #inicio .dashboard-grid {
-        grid-template-columns: 1fr;
+        margin-left: var(--nav-collapsed);
     }
     
     .welcome-stats {
-        grid-column: span 1;
         flex-direction: column;
         align-items: flex-start;
         gap: 12px;
+    }
+    
+    .stats-mini {
+        flex-wrap: wrap;
     }
 }
 
@@ -578,6 +687,14 @@ li {
         padding: 0;
         border-right: none;
         border-top: 1px solid var(--border-gold);
+    }
+    
+    .nav.collapsed {
+        width: 100%;
+    }
+    
+    .nav a span {
+        display: none;
     }
     
     .content {
@@ -595,6 +712,10 @@ li {
     }
     
     #inicio.active {
-        height: calc(100vh - 70px - 60px - 60px); /* Ajuste extra por navbar inferior */
+        height: calc(100vh - 70px - 60px - 60px);
+    }
+    
+    .hamburger-btn {
+        display: none;
     }
 }

@@ -24,29 +24,34 @@
     </div>
 
     <!-- Mensajes de notificación -->
-    <?php if ($mensaje): ?>
-    <div class="notification <?php echo $tipo_mensaje; ?>">
+    <?php if (isset($mensaje) && $mensaje): ?>
+    <div class="notification <?php echo $tipo_mensaje ?? ''; ?>">
         <?php echo htmlspecialchars($mensaje); ?>
     </div>
     <?php endif; ?>
 
-    <!-- Navegación principal -->
+    <!-- Navegación principal con botón hamburguesa -->
     <div class="nav">
-        <a href="#" data-section="inicio" class="active">🏠 INICIO</a>
-        <a href="#" data-section="horarios">⏰ Horarios</a>
-        <a href="#" data-section="calidad-agua">💧 Calidad del Agua</a>
-        <a href="#" data-section="personal">👥 Personal</a>
-        <a href="#" data-section="reportes">📋 Reportes</a>
-        <a href="#" data-section="mantenimiento">🔧 Mantenimiento</a>
-        <a href="#" data-section="acceso">🚪 Control de Acceso</a>
+        <button class="hamburger-btn" id="hamburgerBtn">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+        </button>
+        <a href="#" data-section="inicio" class="active"><span>INICIO</span></a>
+        <a href="#" data-section="horarios"><span>Horarios</span></a>
+        <a href="#" data-section="calidad-agua"><span>Calidad del Agua</span></a>
+        <a href="#" data-section="personal"><span>Personal</span></a>
+        <a href="#" data-section="reportes"><span>Reportes</span></a>
+        <a href="#" data-section="mantenimiento"><span>Mantenimiento</span></a>
+        <a href="#" data-section="acceso"><span>Control de Acceso</span></a>
     </div>
 
     <!-- Contenido principal -->
-    <div class="content">
+    <div class="content" id="mainContent">
         
-        <!-- SECCIÓN INICIO - DASHBOARD PRINCIPAL (SIN SCROLL) -->
+        <!-- SECCIÓN INICIO - DASHBOARD PRINCIPAL (GRID 20x20) -->
         <div id="inicio" class="section-container active">
-            <div class="dashboard-grid">
+            <div class="dashboard-grid" id="dashboardGrid">
 
                 <!-- Fila superior: bienvenida + estadísticas rápidas -->
                 <div class="welcome-stats">
@@ -62,39 +67,39 @@
                         <div class="stat-mini">
                             <span class="stat-mini-icon">👥</span>
                             <div>
-                                <span class="stat-mini-number"><?php echo $visitantes_hoy; ?></span>
+                                <span class="stat-mini-number"><?php echo $visitantes_hoy ?? 0; ?></span>
                                 <span class="stat-mini-label">Visitantes hoy</span>
                             </div>
                         </div>
                         <div class="stat-mini">
                             <span class="stat-mini-icon">🏊</span>
                             <div>
-                                <span class="stat-mini-number"><?php echo $porcentaje_ocupacion; ?>%</span>
+                                <span class="stat-mini-number"><?php echo $porcentaje_ocupacion ?? 0; ?>%</span>
                                 <span class="stat-mini-label">Ocupación</span>
                             </div>
                         </div>
                         <div class="stat-mini">
                             <span class="stat-mini-icon">⚠️</span>
                             <div>
-                                <span class="stat-mini-number"><?php echo $incidencias_activas; ?></span>
+                                <span class="stat-mini-number"><?php echo $incidencias_activas ?? 0; ?></span>
                                 <span class="stat-mini-label">Incidencias</span>
                             </div>
                         </div>
                         <div class="stat-mini">
                             <span class="stat-mini-icon">✅</span>
                             <div>
-                                <span class="stat-mini-number"><?php echo $albercas_operativas_texto; ?></span>
+                                <span class="stat-mini-number"><?php echo $albercas_operativas_texto ?? '4/5'; ?></span>
                                 <span class="stat-mini-label">Albercas</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Estado de albercas (columna izquierda) -->
-                <div class="card compact">
+                <!-- Tarjeta Estado de Albercas -->
+                <div class="dashboard-card card-estado-albercas">
                     <h3>📊 Estado de Albercas</h3>
-                    <div class="pool-status-list compact">
-                        <?php foreach ($albercas as $alberca): 
+                    <div class="pool-status-list">
+                        <?php foreach (($albercas ?? []) as $alberca): 
                             $porcentaje = $alberca['capacidad_maxima'] > 0 ? round(($alberca['aforo_actual'] / $alberca['capacidad_maxima']) * 100) : 0;
                             $clase_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'operational' : 'warning';
                             $texto_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'Operativa' : 'Completa';
@@ -109,14 +114,14 @@
                     </div>
                 </div>
 
-                <!-- Calidad del agua (columna derecha) -->
-                <div class="card compact">
+                <!-- Tarjeta Calidad del Agua -->
+                <div class="dashboard-card card-calidad-agua">
                     <h3>💧 Calidad del Agua</h3>
-                    <div class="water-quality-summary compact">
+                    <div class="water-quality-summary">
                         <?php 
                         $promedios = ['cloro' => 0, 'ph' => 0, 'temp' => 0];
-                        $count = count($ultima_calidad);
-                        foreach ($ultima_calidad as $c) {
+                        $count = count($ultima_calidad ?? []);
+                        foreach (($ultima_calidad ?? []) as $c) {
                             $promedios['cloro'] += $c['cloro_ppm'];
                             $promedios['ph'] += $c['ph'];
                             $promedios['temp'] += $c['temperatura'];
@@ -145,28 +150,28 @@
                     </div>
                 </div>
 
-                <!-- Mantenimientos programados -->
-                <div class="card compact">
+                <!-- Tarjeta Mantenimientos Programados -->
+                <div class="dashboard-card card-mantenimientos">
                     <h3>🔧 Próximos Mantenimientos</h3>
-                    <ul class="maintenance-list compact">
-                        <?php foreach ($proximos_mantenimientos as $m): ?>
+                    <ul class="maintenance-list">
+                        <?php foreach (($proximos_mantenimientos ?? []) as $m): ?>
                         <li>
                             <span class="date"><?php echo date('d/m', strtotime($m['fecha_programada'])); ?></span>
                             <span class="task"><?php echo htmlspecialchars($m['descripcion']); ?></span>
                             <span class="pool"><?php echo htmlspecialchars($m['alberca']); ?></span>
                         </li>
                         <?php endforeach; ?>
-                        <?php if (empty($proximos_mantenimientos)): ?>
+                        <?php if (empty($proximos_mantenimientos ?? [])): ?>
                         <li>No hay mantenimientos programados próximamente.</li>
                         <?php endif; ?>
                     </ul>
                 </div>
 
-                <!-- Alertas importantes -->
-                <div class="card compact alert-card">
+                <!-- Tarjeta Alertas -->
+                <div class="dashboard-card card-alertas">
                     <h3>⚠️ Alertas</h3>
-                    <?php if (!empty($alertas_albercas)): ?>
-                        <?php foreach ($alertas_albercas as $alerta): ?>
+                    <?php if (!empty($alertas_albercas ?? [])): ?>
+                        <?php foreach (($alertas_albercas ?? []) as $alerta): ?>
                         <div class="alert-item">
                             <span class="alert-icon">🔴</span>
                             <div class="alert-content">
@@ -186,6 +191,26 @@
                     <?php endif; ?>
                 </div>
 
+                <!-- Tarjeta Estadísticas Extra -->
+                <div class="card-estadisticas-extra">
+                    <div class="stat-extra-card">
+                        <div class="stat-extra-number"><?php echo $total_entradas_hoy ?? 0; ?></div>
+                        <div class="stat-extra-label">Entradas hoy</div>
+                    </div>
+                    <div class="stat-extra-card">
+                        <div class="stat-extra-number"><?php echo $total_salidas_hoy ?? 0; ?></div>
+                        <div class="stat-extra-label">Salidas hoy</div>
+                    </div>
+                    <div class="stat-extra-card">
+                        <div class="stat-extra-number"><?php echo $personas_actuales ?? 0; ?></div>
+                        <div class="stat-extra-label">Personas en el parque</div>
+                    </div>
+                    <div class="stat-extra-card">
+                        <div class="stat-extra-number"><?php echo $mantenimientos_completados ?? 0; ?></div>
+                        <div class="stat-extra-label">Mant. completados</div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -195,8 +220,8 @@
                 <h2>Control de Horarios</h2>
                 <div>
                     <h3>Horario Actual</h3>
-                    <p>Apertura: <?php echo date('g:i A', strtotime($horario_actual['apertura'])); ?></p>
-                    <p>Cierre: <?php echo date('g:i A', strtotime($horario_actual['cierre'])); ?></p>
+                    <p>Apertura: <?php echo date('g:i A', strtotime($horario_actual['apertura'] ?? '09:00:00')); ?></p>
+                    <p>Cierre: <?php echo date('g:i A', strtotime($horario_actual['cierre'] ?? '18:00:00')); ?></p>
                 </div>
                 <div>
                     <h3>Modificar Horario</h3>
@@ -204,11 +229,11 @@
                         <input type="hidden" name="action" value="actualizar_horario">
                         <div>
                             <label>Hora de apertura:</label>
-                            <input type="time" name="apertura" value="<?php echo substr($horario_actual['apertura'], 0, 5); ?>" required>
+                            <input type="time" name="apertura" value="<?php echo substr($horario_actual['apertura'] ?? '09:00:00', 0, 5); ?>" required>
                         </div>
                         <div>
                             <label>Hora de cierre:</label>
-                            <input type="time" name="cierre" value="<?php echo substr($horario_actual['cierre'], 0, 5); ?>" required>
+                            <input type="time" name="cierre" value="<?php echo substr($horario_actual['cierre'] ?? '18:00:00', 0, 5); ?>" required>
                         </div>
                         <div>
                             <label>Fecha especial (opcional):</label>
@@ -227,7 +252,7 @@
                 <div>
                     <h3>Parámetros Actuales</h3>
                     <ul>
-                        <?php foreach ($ultima_calidad as $c): ?>
+                        <?php foreach (($ultima_calidad ?? []) as $c): ?>
                         <li><?php echo htmlspecialchars($c['alberca']); ?>: Cloro <?php echo $c['cloro_ppm']; ?> ppm | pH <?php echo $c['ph']; ?> | Temperatura <?php echo $c['temperatura']; ?>°C</li>
                         <?php endforeach; ?>
                     </ul>
@@ -239,7 +264,7 @@
                         <div>
                             <label>Seleccionar alberca:</label>
                             <select name="alberca_id" required>
-                                <?php while($a = $catalogo_albercas->fetch_assoc()): ?>
+                                <?php while($a = ($catalogo_albercas ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -269,10 +294,10 @@
                 <div>
                     <h3>Personal Asignado Hoy</h3>
                     <ul>
-                        <?php foreach ($personal_asignado as $p): ?>
+                        <?php foreach (($personal_asignado ?? []) as $p): ?>
                         <li><?php echo htmlspecialchars($p['nombre']); ?> - <?php echo htmlspecialchars($p['turno']); ?> (<?php echo date('g:i A', strtotime($p['hora_inicio'])); ?> - <?php echo date('g:i A', strtotime($p['hora_fin'])); ?>) - Área: <?php echo htmlspecialchars($p['area']); ?></li>
                         <?php endforeach; ?>
-                        <?php if (empty($personal_asignado)): ?>
+                        <?php if (empty($personal_asignado ?? [])): ?>
                         <li>No hay personal asignado hoy.</li>
                         <?php endif; ?>
                     </ul>
@@ -284,7 +309,7 @@
                         <div>
                             <label>Personal de limpieza:</label>
                             <select name="id_personal" required>
-                                <?php while($p = $catalogo_personal_limpieza->fetch_assoc()): ?>
+                                <?php while($p = ($catalogo_personal_limpieza ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -292,7 +317,7 @@
                         <div>
                             <label>Turno:</label>
                             <select name="id_turno" required>
-                                <?php while($t = $catalogo_turnos->fetch_assoc()): ?>
+                                <?php while($t = ($catalogo_turnos ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $t['id_turno']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -300,7 +325,7 @@
                         <div>
                             <label>Área asignada:</label>
                             <select name="id_area" required>
-                                <?php while($a = $catalogo_areas->fetch_assoc()): ?>
+                                <?php while($a = ($catalogo_areas ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $a['id_area']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -318,7 +343,7 @@
                 <div>
                     <h3>Reportes Recientes</h3>
                     <ul>
-                        <?php foreach ($reportes_recientes as $r): ?>
+                        <?php foreach (($reportes_recientes ?? []) as $r): ?>
                         <li><?php echo date('Y-m-d', strtotime($r['fecha_reporte'])); ?>: <?php echo htmlspecialchars($r['descripcion']); ?> - <?php echo htmlspecialchars($r['estado']); ?></li>
                         <?php endforeach; ?>
                     </ul>
@@ -330,7 +355,7 @@
                         <div>
                             <label>Tipo de incidencia:</label>
                             <select name="id_tipo_incidencia" required>
-                                <?php while($ti = $catalogo_tipos_incidencia->fetch_assoc()): ?>
+                                <?php while($ti = ($catalogo_tipos_incidencia ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $ti['id_tipo_incidencia']; ?>"><?php echo htmlspecialchars($ti['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -339,11 +364,6 @@
                             <label>Alberca/Área:</label>
                             <select name="id_alberca">
                                 <option value="">Seleccione una alberca (opcional)</option>
-                                <?php 
-                                $albercas_select = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
-                                while($a = $albercas_select->fetch_assoc()): ?>
-                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
-                                <?php endwhile; ?>
                             </select>
                         </div>
                         <div>
@@ -353,7 +373,7 @@
                         <div>
                             <label>Prioridad:</label>
                             <select name="id_prioridad" required>
-                                <?php while($p = $catalogo_prioridades->fetch_assoc()): ?>
+                                <?php while($p = ($catalogo_prioridades ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $p['id_prioridad']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -371,7 +391,7 @@
                 <div>
                     <h3>Mantenimientos Programados</h3>
                     <ul>
-                        <?php foreach ($proximos_mantenimientos as $m): ?>
+                        <?php foreach (($proximos_mantenimientos ?? []) as $m): ?>
                         <li><?php echo $m['fecha_programada']; ?>: <?php echo htmlspecialchars($m['descripcion']); ?> - <?php echo htmlspecialchars($m['alberca']); ?></li>
                         <?php endforeach; ?>
                     </ul>
@@ -384,26 +404,18 @@
                             <label>Alberca:</label>
                             <select name="id_alberca">
                                 <option value="">Seleccione (opcional)</option>
-                                <?php 
-                                $albercas_mant = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
-                                while($a = $albercas_mant->fetch_assoc()): ?>
-                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
-                                <?php endwhile; ?>
                             </select>
                         </div>
                         <div>
                             <label>Equipo (opcional):</label>
                             <select name="id_equipo">
                                 <option value="">Seleccione un equipo</option>
-                                <?php while($e = $catalogo_equipos->fetch_assoc()): ?>
-                                <option value="<?php echo $e['id_equipo']; ?>"><?php echo htmlspecialchars($e['nombre']); ?></option>
-                                <?php endwhile; ?>
                             </select>
                         </div>
                         <div>
                             <label>Tipo de mantenimiento:</label>
                             <select name="id_tipo_mantenimiento" required>
-                                <?php while($tm = $catalogo_tipos_mantenimiento->fetch_assoc()): ?>
+                                <?php while($tm = ($catalogo_tipos_mantenimiento ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $tm['id_tipo_mantenimiento']; ?>"><?php echo htmlspecialchars($tm['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -419,7 +431,7 @@
                         <div>
                             <label>Técnico responsable:</label>
                             <select name="id_tecnico" required>
-                                <?php while($t = $catalogo_tecnicos->fetch_assoc()): ?>
+                                <?php while($t = ($catalogo_tecnicos ?? [])->fetch_assoc()): ?>
                                 <option value="<?php echo $t['id']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
                                 <?php endwhile; ?>
                             </select>
@@ -437,7 +449,7 @@
                 <div>
                     <h3>Aforo Actual</h3>
                     <ul>
-                        <?php foreach ($albercas as $a): 
+                        <?php foreach (($albercas ?? []) as $a): 
                             $porcentaje = $a['capacidad_maxima'] > 0 ? round(($a['aforo_actual'] / $a['capacidad_maxima']) * 100) : 0;
                         ?>
                         <li><?php echo htmlspecialchars($a['nombre']); ?>: <?php echo $a['aforo_actual']; ?>/<?php echo $a['capacidad_maxima']; ?> personas (<?php echo $porcentaje; ?>%)</li>
@@ -445,9 +457,9 @@
                     </ul>
                 </div>
                 <div>
-                    <h3>Total de visitantes hoy: <?php echo $visitantes_hoy; ?> personas</h3>
-                    <h3>Capacidad máxima total: <?php echo $capacidad_total; ?> personas</h3>
-                    <h3>Porcentaje de ocupación: <?php echo $porcentaje_ocupacion; ?>%</h3>
+                    <h3>Total de visitantes hoy: <?php echo $visitantes_hoy ?? 0; ?> personas</h3>
+                    <h3>Capacidad máxima total: <?php echo $capacidad_total ?? 570; ?> personas</h3>
+                    <h3>Porcentaje de ocupación: <?php echo $porcentaje_ocupacion ?? 0; ?>%</h3>
                 </div>
                 <div>
                     <h3>Registrar Acceso</h3>
@@ -467,11 +479,9 @@
                         <div>
                             <label>Alberca destino:</label>
                             <select name="id_alberca" required>
-                                <?php 
-                                $albercas_acceso = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
-                                while($a = $albercas_acceso->fetch_assoc()): ?>
+                                <?php foreach (($albercas ?? []) as $a): ?>
                                 <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <button type="submit">Registrar</button>
@@ -512,6 +522,53 @@
                 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
+        });
+
+        // ====================================
+        // MENÚ HAMBURGUESA - EXPANDIR/CONTRAER NAVBAR
+        // ====================================
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const nav = document.querySelector('.nav');
+        const content = document.getElementById('mainContent');
+        const dashboardGrid = document.getElementById('dashboardGrid');
+
+        let isExpanded = true; // Estado inicial: expandido (grid 20 columnas)
+
+        function toggleNavbar() {
+            if (isExpanded) {
+                // Contraer navbar
+                nav.classList.add('collapsed');
+                content.classList.add('expanded');
+                if (dashboardGrid) {
+                    dashboardGrid.classList.add('grid-expanded');
+                    // Actualizar variable CSS para grid de 21 columnas
+                    document.documentElement.style.setProperty('--grid-cols', '21');
+                }
+                hamburgerBtn.classList.add('active');
+                isExpanded = false;
+            } else {
+                // Expandir navbar
+                nav.classList.remove('collapsed');
+                content.classList.remove('expanded');
+                if (dashboardGrid) {
+                    dashboardGrid.classList.remove('grid-expanded');
+                    // Volver a grid de 20 columnas
+                    document.documentElement.style.setProperty('--grid-cols', '20');
+                }
+                hamburgerBtn.classList.remove('active');
+                isExpanded = true;
+            }
+        }
+
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', toggleNavbar);
+        }
+
+        // Asegurar que el grid tenga las columnas correctas al cargar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (dashboardGrid && !dashboardGrid.classList.contains('grid-expanded')) {
+                document.documentElement.style.setProperty('--grid-cols', '20');
+            }
         });
     </script>
 
