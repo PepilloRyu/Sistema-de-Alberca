@@ -1,11 +1,10 @@
 <?php
-// config.php - Configuración de la base de datos
+// includes/config.php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root'); // Cambia según tu usuario de MySQL
-define('DB_PASS', ''); // Cambia según tu contraseña de MySQL
-define('DB_NAME', 'albercas'); // Cambia por el nombre de tu base de datos
+define('DB_USER', 'root');
+define('DB_PASS', '');
+define('DB_NAME', 'albercas');
 
-// Configuración adicional
-define('DB_PORT', 3306); // Puerto por defecto de MySQL
-define('DB_CHARSET', 'utf8mb4');
+// Base URL para el proyecto
+define('BASE_URL', '/ADS');
 ?>

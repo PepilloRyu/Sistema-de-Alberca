@@ -1,33 +1,110 @@
 <?php
-require_once 'includes/config.php';
-require_once 'includes/database.php'; // Asegúrate de incluir database.php
-require_once 'includes/auth.php';
+// login.php
+// Corregir las rutas - usar __DIR__ para asegurar la ruta correcta
+require_once __DIR__ . '/includes/config.php';
+require_once __DIR__ . '/includes/database.php';
+require_once __DIR__ . '/includes/auth.php';
 
-// Si ya está logueado, redirigir
-if (isLoggedIn()) {
-    header("Location: index.php");
+// Iniciar sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Si ya está logueado, redirigir según su rol
+if (isset($_SESSION['usuario_id'])) {
+    $rol_id = $_SESSION['rol_id'] ?? 0;
+    switch ($rol_id) {
+        case 1:
+            header("Location: usuarios/EncargadoDeAlberca/index.php");
+            break;
+        case 2:
+            header("Location: usuarios/PersonalDeLimpieza/index.php");
+            break;
+        case 3:
+            header("Location: usuarios/TecnicoDeMantenimiento/index.php");
+            break;
+        default:
+            header("Location: index.php");
+            break;
+    }
     exit();
 }
 
 $error = '';
-$errorMessage = ''; // Para la variable que usas en el HTML
+$errorMessage = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['Email'] ?? ''; // Cambiado a 'Email' como está en tu formulario
-    $password = $_POST['Password'] ?? ''; // Cambiado a 'Password' como está en tu formulario
+    $email = trim($_POST['Email'] ?? '');
+    $password = $_POST['Password'] ?? '';
+    $rememberMe = isset($_POST['RememberMe']);
     
     if (empty($email) || empty($password)) {
         $error = 'Todos los campos son obligatorios';
         $errorMessage = 'Todos los campos son obligatorios';
     } else {
-        // Usar la función login de la clase Auth
-        if (Auth::login($email, $password)) {
-            header('Location: index.php');
-            exit;
+        // Conectar a la base de datos
+        $conn = Database::getInstance()->getConnection();
+        
+        // Buscar usuario por email
+        $stmt = $conn->prepare("SELECT id, nombre, email, password, id_rol, activo FROM usuarios WHERE email = ? AND activo = 1");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            // Verificar contraseña
+            if (password_verify($password, $row['password'])) {
+                // Iniciar sesión
+                $_SESSION['usuario_id'] = $row['id'];
+                $_SESSION['usuario_nombre'] = $row['nombre'];
+                $_SESSION['usuario_email'] = $row['email'];
+                $_SESSION['rol_id'] = $row['id_rol'];
+                
+                // Obtener nombre del rol
+                $stmtRol = $conn->prepare("SELECT nombre_rol FROM cat_roles WHERE id_rol = ?");
+                $stmtRol->bind_param("i", $row['id_rol']);
+                $stmtRol->execute();
+                $rolResult = $stmtRol->get_result();
+                if ($rol = $rolResult->fetch_assoc()) {
+                    $_SESSION['rol_nombre'] = $rol['nombre_rol'];
+                }
+                $stmtRol->close();
+                
+                // Actualizar último acceso
+                $stmtUpdate = $conn->prepare("UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?");
+                $stmtUpdate->bind_param("i", $row['id']);
+                $stmtUpdate->execute();
+                $stmtUpdate->close();
+                
+                $stmt->close();
+                $conn->close();
+                
+                // Redirigir según el rol
+                switch ($row['id_rol']) {
+                    case 1:
+                        header("Location: usuarios/EncargadoDeAlberca/index.php");
+                        break;
+                    case 2:
+                        header("Location: usuarios/PersonalDeLimpieza/index.php");
+                        break;
+                    case 3:
+                        header("Location: usuarios/TecnicoDeMantenimiento/index.php");
+                        break;
+                    default:
+                        header("Location: index.php");
+                        break;
+                }
+                exit();
+            } else {
+                $error = 'Email o contraseña incorrectos';
+                $errorMessage = 'Email o contraseña incorrectos';
+            }
         } else {
             $error = 'Email o contraseña incorrectos';
             $errorMessage = 'Email o contraseña incorrectos';
         }
+        $stmt->close();
+        $conn->close();
     }
 }
 ?>
@@ -43,10 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="../css/Login.css">
     
     <!-- CSS específico para login -->
-    <link rel="stylesheet" href="css/Login.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body>
     <div class="auth-container">
@@ -103,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <span class="text-danger" id="passwordError"></span>
                 </div>
 
-                <!-- CHECKBOX DE RECORDAR (con estilo personalizado) -->
+                <!-- CHECKBOX DE RECORDAR -->
                 <div class="checkbox-group">
                     <input type="checkbox" name="RememberMe" id="rememberMe" <?php echo isset($_POST['RememberMe']) ? 'checked' : ''; ?>>
                     <label for="rememberMe">Recordar mi sesión</label>
@@ -142,6 +218,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             toggleIcon.classList.add('fa-eye');
         }
     }
+
+    // Validación del formulario en el lado del cliente
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('passwordField').value;
+        let isValid = true;
+        
+        if (!email) {
+            document.getElementById('emailError').textContent = 'El correo electrónico es obligatorio';
+            isValid = false;
+        } else {
+            document.getElementById('emailError').textContent = '';
+        }
+        
+        if (!password) {
+            document.getElementById('passwordError').textContent = 'La contraseña es obligatoria';
+            isValid = false;
+        } else {
+            document.getElementById('passwordError').textContent = '';
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
     </script>
     <script src="js/login.js"></script>
 </body>

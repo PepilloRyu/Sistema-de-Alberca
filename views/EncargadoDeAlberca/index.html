@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel del Encargado - Nuestras Albercas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../css/EncargadoDeAlberca/index.css">
+</head>
+<body>
+
+    <!-- Header con información del usuario -->
+    <div class="header">
+        <div class="user-info">
+            <h1>Panel del Encargado de Alberca</h1>
+            <p>Bienvenido, <?php echo htmlspecialchars($_SESSION['usuario_nombre'] ?? 'Encargado'); ?></p>
+        </div>
+        <div class="logout">
+            <a href="../../logout.php">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <!-- Mensajes de notificación -->
+    <?php if ($mensaje): ?>
+    <div class="notification <?php echo $tipo_mensaje; ?>">
+        <?php echo htmlspecialchars($mensaje); ?>
+    </div>
+    <?php endif; ?>
+
+    <!-- Navegación principal -->
+    <div class="nav">
+        <a href="#" data-section="inicio" class="active">🏠 INICIO</a>
+        <a href="#" data-section="horarios">⏰ Horarios</a>
+        <a href="#" data-section="calidad-agua">💧 Calidad del Agua</a>
+        <a href="#" data-section="personal">👥 Personal</a>
+        <a href="#" data-section="reportes">📋 Reportes</a>
+        <a href="#" data-section="mantenimiento">🔧 Mantenimiento</a>
+        <a href="#" data-section="acceso">🚪 Control de Acceso</a>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="content">
+        
+        <!-- SECCIÓN INICIO - DASHBOARD PRINCIPAL (SIN SCROLL) -->
+        <div id="inicio" class="section-container active">
+            <div class="dashboard-grid">
+
+                <!-- Fila superior: bienvenida + estadísticas rápidas -->
+                <div class="welcome-stats">
+                    <div class="welcome">
+                        <h2>Bienvenido, Encargado</h2>
+                        <p>Panel de control general</p>
+                        <div class="date-time">
+                            <?php echo date('l, d \d\e F \d\e Y'); ?>
+                            <span class="time"><?php echo date('h:i A'); ?></span>
+                        </div>
+                    </div>
+                    <div class="stats-mini">
+                        <div class="stat-mini">
+                            <span class="stat-mini-icon">👥</span>
+                            <div>
+                                <span class="stat-mini-number"><?php echo $visitantes_hoy; ?></span>
+                                <span class="stat-mini-label">Visitantes hoy</span>
+                            </div>
+                        </div>
+                        <div class="stat-mini">
+                            <span class="stat-mini-icon">🏊</span>
+                            <div>
+                                <span class="stat-mini-number"><?php echo $porcentaje_ocupacion; ?>%</span>
+                                <span class="stat-mini-label">Ocupación</span>
+                            </div>
+                        </div>
+                        <div class="stat-mini">
+                            <span class="stat-mini-icon">⚠️</span>
+                            <div>
+                                <span class="stat-mini-number"><?php echo $incidencias_activas; ?></span>
+                                <span class="stat-mini-label">Incidencias</span>
+                            </div>
+                        </div>
+                        <div class="stat-mini">
+                            <span class="stat-mini-icon">✅</span>
+                            <div>
+                                <span class="stat-mini-number"><?php echo $albercas_operativas_texto; ?></span>
+                                <span class="stat-mini-label">Albercas</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estado de albercas (columna izquierda) -->
+                <div class="card compact">
+                    <h3>📊 Estado de Albercas</h3>
+                    <div class="pool-status-list compact">
+                        <?php foreach ($albercas as $alberca): 
+                            $porcentaje = $alberca['capacidad_maxima'] > 0 ? round(($alberca['aforo_actual'] / $alberca['capacidad_maxima']) * 100) : 0;
+                            $clase_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'operational' : 'warning';
+                            $texto_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'Operativa' : 'Completa';
+                        ?>
+                        <div class="pool-status-item">
+                            <span class="pool-name"><?php echo htmlspecialchars($alberca['nombre']); ?></span>
+                            <span class="pool-status-badge <?php echo $clase_estado; ?>"><?php echo $texto_estado; ?></span>
+                            <div class="pool-progress"><div class="progress-bar" style="width: <?php echo $porcentaje; ?>%"></div></div>
+                            <span class="pool-stats"><?php echo $alberca['aforo_actual']; ?>/<?php echo $alberca['capacidad_maxima']; ?></span>
+                        </div>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <!-- Calidad del agua (columna derecha) -->
+                <div class="card compact">
+                    <h3>💧 Calidad del Agua</h3>
+                    <div class="water-quality-summary compact">
+                        <?php 
+                        $promedios = ['cloro' => 0, 'ph' => 0, 'temp' => 0];
+                        $count = count($ultima_calidad);
+                        foreach ($ultima_calidad as $c) {
+                            $promedios['cloro'] += $c['cloro_ppm'];
+                            $promedios['ph'] += $c['ph'];
+                            $promedios['temp'] += $c['temperatura'];
+                        }
+                        if ($count > 0) {
+                            $promedios['cloro'] /= $count;
+                            $promedios['ph'] /= $count;
+                            $promedios['temp'] /= $count;
+                        }
+                        ?>
+                        <div class="quality-item">
+                            <span class="quality-label">Cloro</span>
+                            <span class="quality-value"><?php echo number_format($promedios['cloro'], 1); ?> ppm</span>
+                            <span class="quality-status good">Óptimo</span>
+                        </div>
+                        <div class="quality-item">
+                            <span class="quality-label">pH</span>
+                            <span class="quality-value"><?php echo number_format($promedios['ph'], 1); ?></span>
+                            <span class="quality-status good">Balanceado</span>
+                        </div>
+                        <div class="quality-item">
+                            <span class="quality-label">Temperatura</span>
+                            <span class="quality-value"><?php echo number_format($promedios['temp'], 1); ?>°C</span>
+                            <span class="quality-status normal">Normal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mantenimientos programados -->
+                <div class="card compact">
+                    <h3>🔧 Próximos Mantenimientos</h3>
+                    <ul class="maintenance-list compact">
+                        <?php foreach ($proximos_mantenimientos as $m): ?>
+                        <li>
+                            <span class="date"><?php echo date('d/m', strtotime($m['fecha_programada'])); ?></span>
+                            <span class="task"><?php echo htmlspecialchars($m['descripcion']); ?></span>
+                            <span class="pool"><?php echo htmlspecialchars($m['alberca']); ?></span>
+                        </li>
+                        <?php endforeach; ?>
+                        <?php if (empty($proximos_mantenimientos)): ?>
+                        <li>No hay mantenimientos programados próximamente.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+
+                <!-- Alertas importantes -->
+                <div class="card compact alert-card">
+                    <h3>⚠️ Alertas</h3>
+                    <?php if (!empty($alertas_albercas)): ?>
+                        <?php foreach ($alertas_albercas as $alerta): ?>
+                        <div class="alert-item">
+                            <span class="alert-icon">🔴</span>
+                            <div class="alert-content">
+                                <strong><?php echo htmlspecialchars($alerta); ?> en mantenimiento</strong>
+                                <p>Requiere atención o seguimiento.</p>
+                            </div>
+                        </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="alert-item success">
+                            <span class="alert-icon">✅</span>
+                            <div class="alert-content">
+                                <strong>Sin alertas activas</strong>
+                                <p>Todas las albercas operan con normalidad.</p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECCIÓN HORARIOS -->
+        <div id="horarios" class="section-container">
+            <section>
+                <h2>Control de Horarios</h2>
+                <div>
+                    <h3>Horario Actual</h3>
+                    <p>Apertura: <?php echo date('g:i A', strtotime($horario_actual['apertura'])); ?></p>
+                    <p>Cierre: <?php echo date('g:i A', strtotime($horario_actual['cierre'])); ?></p>
+                </div>
+                <div>
+                    <h3>Modificar Horario</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="actualizar_horario">
+                        <div>
+                            <label>Hora de apertura:</label>
+                            <input type="time" name="apertura" value="<?php echo substr($horario_actual['apertura'], 0, 5); ?>" required>
+                        </div>
+                        <div>
+                            <label>Hora de cierre:</label>
+                            <input type="time" name="cierre" value="<?php echo substr($horario_actual['cierre'], 0, 5); ?>" required>
+                        </div>
+                        <div>
+                            <label>Fecha especial (opcional):</label>
+                            <input type="date" name="fecha_especial">
+                        </div>
+                        <button type="submit">Actualizar Horario</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN CALIDAD DEL AGUA -->
+        <div id="calidad-agua" class="section-container">
+            <section>
+                <h2>Calidad del Agua</h2>
+                <div>
+                    <h3>Parámetros Actuales</h3>
+                    <ul>
+                        <?php foreach ($ultima_calidad as $c): ?>
+                        <li><?php echo htmlspecialchars($c['alberca']); ?>: Cloro <?php echo $c['cloro_ppm']; ?> ppm | pH <?php echo $c['ph']; ?> | Temperatura <?php echo $c['temperatura']; ?>°C</li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Registrar Nuevos Parámetros</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="registrar_calidad">
+                        <div>
+                            <label>Seleccionar alberca:</label>
+                            <select name="alberca_id" required>
+                                <?php while($a = $catalogo_albercas->fetch_assoc()): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Cloro (ppm):</label>
+                            <input type="number" step="0.1" name="cloro" placeholder="1.0 - 3.0" required>
+                        </div>
+                        <div>
+                            <label>pH:</label>
+                            <input type="number" step="0.1" name="ph" placeholder="7.2 - 7.8" required>
+                        </div>
+                        <div>
+                            <label>Temperatura (°C):</label>
+                            <input type="number" step="0.1" name="temperatura" placeholder="24 - 28" required>
+                        </div>
+                        <button type="submit">Registrar</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN PERSONAL -->
+        <div id="personal" class="section-container">
+            <section>
+                <h2>Personal de Limpieza</h2>
+                <div>
+                    <h3>Personal Asignado Hoy</h3>
+                    <ul>
+                        <?php foreach ($personal_asignado as $p): ?>
+                        <li><?php echo htmlspecialchars($p['nombre']); ?> - <?php echo htmlspecialchars($p['turno']); ?> (<?php echo date('g:i A', strtotime($p['hora_inicio'])); ?> - <?php echo date('g:i A', strtotime($p['hora_fin'])); ?>) - Área: <?php echo htmlspecialchars($p['area']); ?></li>
+                        <?php endforeach; ?>
+                        <?php if (empty($personal_asignado)): ?>
+                        <li>No hay personal asignado hoy.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Asignar Personal</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="asignar_personal">
+                        <div>
+                            <label>Personal de limpieza:</label>
+                            <select name="id_personal" required>
+                                <?php while($p = $catalogo_personal_limpieza->fetch_assoc()): ?>
+                                <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Turno:</label>
+                            <select name="id_turno" required>
+                                <?php while($t = $catalogo_turnos->fetch_assoc()): ?>
+                                <option value="<?php echo $t['id_turno']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Área asignada:</label>
+                            <select name="id_area" required>
+                                <?php while($a = $catalogo_areas->fetch_assoc()): ?>
+                                <option value="<?php echo $a['id_area']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <button type="submit">Asignar</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN REPORTES -->
+        <div id="reportes" class="section-container">
+            <section>
+                <h2>Reportes e Incidencias</h2>
+                <div>
+                    <h3>Reportes Recientes</h3>
+                    <ul>
+                        <?php foreach ($reportes_recientes as $r): ?>
+                        <li><?php echo date('Y-m-d', strtotime($r['fecha_reporte'])); ?>: <?php echo htmlspecialchars($r['descripcion']); ?> - <?php echo htmlspecialchars($r['estado']); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Reportar Nueva Incidencia</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="reportar_incidencia">
+                        <div>
+                            <label>Tipo de incidencia:</label>
+                            <select name="id_tipo_incidencia" required>
+                                <?php while($ti = $catalogo_tipos_incidencia->fetch_assoc()): ?>
+                                <option value="<?php echo $ti['id_tipo_incidencia']; ?>"><?php echo htmlspecialchars($ti['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Alberca/Área:</label>
+                            <select name="id_alberca">
+                                <option value="">Seleccione una alberca (opcional)</option>
+                                <?php 
+                                $albercas_select = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
+                                while($a = $albercas_select->fetch_assoc()): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Descripción:</label>
+                            <textarea name="descripcion" rows="3" required></textarea>
+                        </div>
+                        <div>
+                            <label>Prioridad:</label>
+                            <select name="id_prioridad" required>
+                                <?php while($p = $catalogo_prioridades->fetch_assoc()): ?>
+                                <option value="<?php echo $p['id_prioridad']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <button type="submit">Reportar Incidencia</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN MANTENIMIENTO -->
+        <div id="mantenimiento" class="section-container">
+            <section>
+                <h2>Registro de Mantenimiento</h2>
+                <div>
+                    <h3>Mantenimientos Programados</h3>
+                    <ul>
+                        <?php foreach ($proximos_mantenimientos as $m): ?>
+                        <li><?php echo $m['fecha_programada']; ?>: <?php echo htmlspecialchars($m['descripcion']); ?> - <?php echo htmlspecialchars($m['alberca']); ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Registrar Mantenimiento Realizado</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="registrar_mantenimiento">
+                        <div>
+                            <label>Alberca:</label>
+                            <select name="id_alberca">
+                                <option value="">Seleccione (opcional)</option>
+                                <?php 
+                                $albercas_mant = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
+                                while($a = $albercas_mant->fetch_assoc()): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Equipo (opcional):</label>
+                            <select name="id_equipo">
+                                <option value="">Seleccione un equipo</option>
+                                <?php while($e = $catalogo_equipos->fetch_assoc()): ?>
+                                <option value="<?php echo $e['id_equipo']; ?>"><?php echo htmlspecialchars($e['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Tipo de mantenimiento:</label>
+                            <select name="id_tipo_mantenimiento" required>
+                                <?php while($tm = $catalogo_tipos_mantenimiento->fetch_assoc()): ?>
+                                <option value="<?php echo $tm['id_tipo_mantenimiento']; ?>"><?php echo htmlspecialchars($tm['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Fecha programada:</label>
+                            <input type="date" name="fecha_programada" required>
+                        </div>
+                        <div>
+                            <label>Descripción del trabajo realizado:</label>
+                            <textarea name="descripcion" rows="3" required></textarea>
+                        </div>
+                        <div>
+                            <label>Técnico responsable:</label>
+                            <select name="id_tecnico" required>
+                                <?php while($t = $catalogo_tecnicos->fetch_assoc()): ?>
+                                <option value="<?php echo $t['id']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <button type="submit">Registrar Mantenimiento</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+        <!-- SECCIÓN CONTROL DE ACCESO -->
+        <div id="acceso" class="section-container">
+            <section>
+                <h2>Control de Acceso y Capacidad</h2>
+                <div>
+                    <h3>Aforo Actual</h3>
+                    <ul>
+                        <?php foreach ($albercas as $a): 
+                            $porcentaje = $a['capacidad_maxima'] > 0 ? round(($a['aforo_actual'] / $a['capacidad_maxima']) * 100) : 0;
+                        ?>
+                        <li><?php echo htmlspecialchars($a['nombre']); ?>: <?php echo $a['aforo_actual']; ?>/<?php echo $a['capacidad_maxima']; ?> personas (<?php echo $porcentaje; ?>%)</li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Total de visitantes hoy: <?php echo $visitantes_hoy; ?> personas</h3>
+                    <h3>Capacidad máxima total: <?php echo $capacidad_total; ?> personas</h3>
+                    <h3>Porcentaje de ocupación: <?php echo $porcentaje_ocupacion; ?>%</h3>
+                </div>
+                <div>
+                    <h3>Registrar Acceso</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="registrar_acceso">
+                        <div>
+                            <label>Tipo de registro:</label>
+                            <select name="tipo_acceso" required>
+                                <option value="entrada">Entrada de visitante</option>
+                                <option value="salida">Salida de visitante</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Cantidad de personas:</label>
+                            <input type="number" name="cantidad" min="1" max="20" value="1" required>
+                        </div>
+                        <div>
+                            <label>Alberca destino:</label>
+                            <select name="id_alberca" required>
+                                <?php 
+                                $albercas_acceso = $conn->query("SELECT id_alberca, nombre FROM cat_albercas WHERE activo = 1");
+                                while($a = $albercas_acceso->fetch_assoc()): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endwhile; ?>
+                            </select>
+                        </div>
+                        <button type="submit">Registrar</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>© 2026 Nuestras Albercas - Sistema de Gestión para Encargados</p>
+        <p>Última actualización: <?php echo date('d/m/Y H:i:s'); ?></p>
+    </div>
+
+    <script>
+        // Navegación entre secciones
+        document.querySelectorAll('.nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const sectionId = this.getAttribute('data-section');
+                
+                document.querySelectorAll('.section-container').forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                const activeSection = document.getElementById(sectionId);
+                if (activeSection) {
+                    activeSection.classList.add('active');
+                }
+                
+                document.querySelectorAll('.nav a').forEach(navLink => {
+                    navLink.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    </script>
+
+</body>
+</html>

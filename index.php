@@ -1,10 +1,35 @@
 <?php
+// index.php - Página principal del sistema
 require_once 'includes/config.php';
-require_once 'includes/database.php'; // Asegúrate de incluir database.php
+require_once 'includes/database.php';
 require_once 'includes/auth.php';
 
+// Iniciar sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Obtener el usuario actual usando la función usuarioActual()
+// Si la función no existe, la creamos manualmente
+if (!function_exists('usuarioActual')) {
+    function usuarioActual() {
+        if (isset($_SESSION['usuario_id'])) {
+            return [
+                'id' => $_SESSION['usuario_id'],
+                'nombre' => $_SESSION['usuario_nombre'],
+                'email' => $_SESSION['usuario_email'],
+                'rol_id' => $_SESSION['rol_id'],
+                'rol_nombre' => $_SESSION['rol_nombre'] ?? null
+            ];
+        }
+        return null;
+    }
+}
+
+// Obtener datos del usuario
 $user = usuarioActual();
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -29,11 +54,35 @@ $user = usuarioActual();
             <div class="user-info">
                 <i class="fas fa-user-circle"></i>
                 <span>Bienvenido, <?php echo htmlspecialchars($user['nombre']); ?></span>
-                <?php if ($user['rol'] === 'admin'): ?>
-                    <span style="background: var(--primary-gold); color: var(--primary-blue); padding: 2px 10px; border-radius: 15px; font-size: 0.8rem;">Admin</span>
+                <?php 
+                // Mostrar badge según el rol
+                $rol_nombre = $user['rol_nombre'] ?? '';
+                if ($rol_nombre === 'Encargado de alberca'): ?>
+                    <span style="background: var(--primary-gold); color: var(--primary-blue); padding: 2px 10px; border-radius: 15px; font-size: 0.8rem;">Encargado</span>
+                <?php elseif ($rol_nombre === 'Personal de limpieza'): ?>
+                    <span style="background: #2ecc71; color: white; padding: 2px 10px; border-radius: 15px; font-size: 0.8rem;">Limpieza</span>
+                <?php elseif ($rol_nombre === 'Técnico de mantenimiento'): ?>
+                    <span style="background: #3498db; color: white; padding: 2px 10px; border-radius: 15px; font-size: 0.8rem;">Mantenimiento</span>
                 <?php endif; ?>
             </div>
             <div class="user-info">
+                <?php 
+                // Redirigir al panel según el rol
+                $panel_url = '#';
+                $rol_id = $user['rol_id'] ?? 0;
+                switch ($rol_id) {
+                    case 1:
+                        $panel_url = 'usuarios/EncargadoDeAlberca/index.php';
+                        break;
+                    case 2:
+                        $panel_url = 'usuarios/PersonalDeLimpieza/index.php';
+                        break;
+                    case 3:
+                        $panel_url = 'usuarios/TecnicoDeMantenimiento/index.php';
+                        break;
+                }
+                ?>
+                <a href="<?php echo $panel_url; ?>" style="margin-right: 15px;"><i class="fas fa-tachometer-alt"></i> Mi Panel</a>
                 <a href="logout.php"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
             </div>
         </div>
@@ -41,7 +90,7 @@ $user = usuarioActual();
         <!-- Usuario no logueado: muestra enlaces de inicio de sesión y registro -->
         <div class="user-header" style="justify-content: flex-end;">
             <div class="user-info">
-                <a href="login.php" style="margin-right: 10px;"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
+                <a href="login.php" style="margin-right: 15px;"><i class="fas fa-sign-in-alt"></i> Iniciar sesión</a>
                 <a href="registro.php"><i class="fas fa-user-plus"></i> Registrarse</a>
             </div>
         </div>
@@ -158,7 +207,7 @@ $user = usuarioActual();
                 </div>
                 <div class="promo-content">
                     <h3>BOLETO GENERAL</h3>
-                    <div class="promo-price">$300 </div>
+                    <div class="promo-price">$300</div>
                     <p>Boleto ordinario</p>
                     <a href="<?php echo $user ? '#' : 'login.php'; ?>" class="btn-promo">
                         <?php echo $user ? 'Comprar ahora' : 'Inicia sesión para comprar'; ?>
