@@ -95,22 +95,60 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta Estado de Albercas -->
+                <!-- Tarjeta Estado de Albercas con gráfica de dona -->
                 <div class="dashboard-card card-estado-albercas">
                     <h3>📊 Estado de Albercas</h3>
-                    <div class="pool-status-list">
-                        <?php foreach (($albercas ?? []) as $alberca): 
-                            $porcentaje = $alberca['capacidad_maxima'] > 0 ? round(($alberca['aforo_actual'] / $alberca['capacidad_maxima']) * 100) : 0;
-                            $clase_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'operational' : 'warning';
-                            $texto_estado = ($alberca['aforo_actual'] < $alberca['capacidad_maxima']) ? 'Operativa' : 'Completa';
-                        ?>
-                        <div class="pool-status-item">
-                            <span class="pool-name"><?php echo htmlspecialchars($alberca['nombre']); ?></span>
-                            <span class="pool-status-badge <?php echo $clase_estado; ?>"><?php echo $texto_estado; ?></span>
-                            <div class="pool-progress"><div class="progress-bar" style="width: <?php echo $porcentaje; ?>%"></div></div>
-                            <span class="pool-stats"><?php echo $alberca['aforo_actual']; ?>/<?php echo $alberca['capacidad_maxima']; ?></span>
+                    
+                    <!-- Contenedor para gráfica y lista -->
+                    <div class="estado-albercas-container">
+                        
+                        <!-- Gráfica de dona -->
+                        <div class="dona-chart-container">
+                            <canvas id="donaChart" width="200" height="200"></canvas>
+                            <div class="chart-legend">
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #2ecc71;"></span>
+                                    <span>Operativas</span>
+                                    <span class="legend-value" id="operativasCount">0</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #e74c3c;"></span>
+                                    <span>Completas</span>
+                                    <span class="legend-value" id="completasCount">0</span>
+                                </div>
+                                <div class="legend-item">
+                                    <span class="legend-color" style="background: #f39c12;"></span>
+                                    <span>Mantenimiento</span>
+                                    <span class="legend-value" id="mantenimientoCount">0</span>
+                                </div>
+                            </div>
                         </div>
-                        <?php endforeach; ?>
+                        
+                        <!-- Lista de albercas -->
+                        <div class="pool-status-list">
+                            <?php foreach (($albercas ?? []) as $alberca): 
+                                $porcentaje = $alberca['capacidad_maxima'] > 0 ? round(($alberca['aforo_actual'] / $alberca['capacidad_maxima']) * 100) : 0;
+                                
+                                if ($alberca['aforo_actual'] >= $alberca['capacidad_maxima']) {
+                                    $clase_estado = 'warning';
+                                    $texto_estado = 'Completa';
+                                } elseif ($alberca['aforo_actual'] > 0) {
+                                    $clase_estado = 'operational';
+                                    $texto_estado = 'Operativa';
+                                } else {
+                                    $clase_estado = 'maintenance';
+                                    $texto_estado = 'Mantenimiento';
+                                }
+                            ?>
+                            <div class="pool-status-item">
+                                <span class="pool-name"><?php echo htmlspecialchars($alberca['nombre']); ?></span>
+                                <span class="pool-status-badge <?php echo $clase_estado; ?>"><?php echo $texto_estado; ?></span>
+                                <div class="pool-progress"><div class="progress-bar" style="width: <?php echo $porcentaje; ?>%"></div></div>
+                                <span class="pool-stats"><?php echo $alberca['aforo_actual']; ?>/<?php echo $alberca['capacidad_maxima']; ?></span>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -191,26 +229,26 @@
                     <?php endif; ?>
                 </div>
 
-                <!-- Tarjeta Estadísticas Extra -->
-                <div class="card-estadisticas-extra">
-                    <div class="stat-extra-card">
-                        <div class="stat-extra-number"><?php echo $total_entradas_hoy ?? 0; ?></div>
-                        <div class="stat-extra-label">Entradas hoy</div>
-                    </div>
-                    <div class="stat-extra-card">
-                        <div class="stat-extra-number"><?php echo $total_salidas_hoy ?? 0; ?></div>
-                        <div class="stat-extra-label">Salidas hoy</div>
-                    </div>
-                    <div class="stat-extra-card">
-                        <div class="stat-extra-number"><?php echo $personas_actuales ?? 0; ?></div>
-                        <div class="stat-extra-label">Personas en el parque</div>
-                    </div>
-                    <div class="stat-extra-card">
-                        <div class="stat-extra-number"><?php echo $mantenimientos_completados ?? 0; ?></div>
-                        <div class="stat-extra-label">Mant. completados</div>
-                    </div>
+                <!-- Tarjetas Estadísticas Extra -->
+                <div class="stat-extra-card stat-entradas">
+                    <div class="stat-extra-number"><?php echo $total_entradas_hoy ?? 0; ?></div>
+                    <div class="stat-extra-label">Entradas hoy</div>
                 </div>
 
+                <div class="stat-extra-card stat-salidas">
+                    <div class="stat-extra-number"><?php echo $total_salidas_hoy ?? 0; ?></div>
+                    <div class="stat-extra-label">Salidas hoy</div>
+                </div>
+
+                <div class="stat-extra-card stat-personas">
+                    <div class="stat-extra-number"><?php echo $personas_actuales ?? 0; ?></div>
+                    <div class="stat-extra-label">Personas en el parque</div>
+                </div>
+
+                <div class="stat-extra-card stat-mantenimientos">
+                    <div class="stat-extra-number"><?php echo $mantenimientos_completados ?? 0; ?></div>
+                    <div class="stat-extra-label">Mant. completados</div>
+                </div>
             </div>
         </div>
 
@@ -264,9 +302,9 @@
                         <div>
                             <label>Seleccionar alberca:</label>
                             <select name="alberca_id" required>
-                                <?php while($a = ($catalogo_albercas ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_albercas ?? []) as $a): ?>
                                 <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
@@ -309,25 +347,25 @@
                         <div>
                             <label>Personal de limpieza:</label>
                             <select name="id_personal" required>
-                                <?php while($p = ($catalogo_personal_limpieza ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_personal_limpieza ?? []) as $p): ?>
                                 <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label>Turno:</label>
                             <select name="id_turno" required>
-                                <?php while($t = ($catalogo_turnos ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_turnos ?? []) as $t): ?>
                                 <option value="<?php echo $t['id_turno']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label>Área asignada:</label>
                             <select name="id_area" required>
-                                <?php while($a = ($catalogo_areas ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_areas ?? []) as $a): ?>
                                 <option value="<?php echo $a['id_area']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <button type="submit">Asignar</button>
@@ -355,15 +393,18 @@
                         <div>
                             <label>Tipo de incidencia:</label>
                             <select name="id_tipo_incidencia" required>
-                                <?php while($ti = ($catalogo_tipos_incidencia ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_tipos_incidencia ?? []) as $ti): ?>
                                 <option value="<?php echo $ti['id_tipo_incidencia']; ?>"><?php echo htmlspecialchars($ti['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label>Alberca/Área:</label>
                             <select name="id_alberca">
                                 <option value="">Seleccione una alberca (opcional)</option>
+                                <?php foreach (($catalogo_albercas ?? []) as $a): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
@@ -373,9 +414,9 @@
                         <div>
                             <label>Prioridad:</label>
                             <select name="id_prioridad" required>
-                                <?php while($p = ($catalogo_prioridades ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_prioridades ?? []) as $p): ?>
                                 <option value="<?php echo $p['id_prioridad']; ?>"><?php echo htmlspecialchars($p['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <button type="submit">Reportar Incidencia</button>
@@ -404,20 +445,26 @@
                             <label>Alberca:</label>
                             <select name="id_alberca">
                                 <option value="">Seleccione (opcional)</option>
+                                <?php foreach (($catalogo_albercas ?? []) as $a): ?>
+                                <option value="<?php echo $a['id_alberca']; ?>"><?php echo htmlspecialchars($a['nombre']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label>Equipo (opcional):</label>
                             <select name="id_equipo">
                                 <option value="">Seleccione un equipo</option>
+                                <?php foreach (($catalogo_equipos ?? []) as $e): ?>
+                                <option value="<?php echo $e['id_equipo']; ?>"><?php echo htmlspecialchars($e['nombre']); ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
                             <label>Tipo de mantenimiento:</label>
                             <select name="id_tipo_mantenimiento" required>
-                                <?php while($tm = ($catalogo_tipos_mantenimiento ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_tipos_mantenimiento ?? []) as $tm): ?>
                                 <option value="<?php echo $tm['id_tipo_mantenimiento']; ?>"><?php echo htmlspecialchars($tm['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div>
@@ -431,9 +478,9 @@
                         <div>
                             <label>Técnico responsable:</label>
                             <select name="id_tecnico" required>
-                                <?php while($t = ($catalogo_tecnicos ?? [])->fetch_assoc()): ?>
+                                <?php foreach (($catalogo_tecnicos ?? []) as $t): ?>
                                 <option value="<?php echo $t['id']; ?>"><?php echo htmlspecialchars($t['nombre']); ?></option>
-                                <?php endwhile; ?>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <button type="submit">Registrar Mantenimiento</button>
@@ -524,35 +571,29 @@
             });
         });
 
-        // ====================================
-        // MENÚ HAMBURGUESA - EXPANDIR/CONTRAER NAVBAR
-        // ====================================
+        // MENÚ HAMBURGUESA
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const nav = document.querySelector('.nav');
         const content = document.getElementById('mainContent');
         const dashboardGrid = document.getElementById('dashboardGrid');
 
-        let isExpanded = true; // Estado inicial: expandido (grid 20 columnas)
+        let isExpanded = true;
 
         function toggleNavbar() {
             if (isExpanded) {
-                // Contraer navbar
                 nav.classList.add('collapsed');
                 content.classList.add('expanded');
                 if (dashboardGrid) {
                     dashboardGrid.classList.add('grid-expanded');
-                    // Actualizar variable CSS para grid de 21 columnas
                     document.documentElement.style.setProperty('--grid-cols', '21');
                 }
                 hamburgerBtn.classList.add('active');
                 isExpanded = false;
             } else {
-                // Expandir navbar
                 nav.classList.remove('collapsed');
                 content.classList.remove('expanded');
                 if (dashboardGrid) {
                     dashboardGrid.classList.remove('grid-expanded');
-                    // Volver a grid de 20 columnas
                     document.documentElement.style.setProperty('--grid-cols', '20');
                 }
                 hamburgerBtn.classList.remove('active');
@@ -564,12 +605,72 @@
             hamburgerBtn.addEventListener('click', toggleNavbar);
         }
 
-        // Asegurar que el grid tenga las columnas correctas al cargar
         document.addEventListener('DOMContentLoaded', function() {
             if (dashboardGrid && !dashboardGrid.classList.contains('grid-expanded')) {
                 document.documentElement.style.setProperty('--grid-cols', '20');
             }
         });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <script>
+    // Inicializar gráfica de dona
+    document.addEventListener('DOMContentLoaded', function() {
+        // Datos desde PHP
+        const operativas = <?php echo json_encode($operativas); ?>;
+        const completas = <?php echo json_encode($completas); ?>;
+        const mantenimiento = <?php echo json_encode($mantenimiento); ?>;
+        
+        // Actualizar leyenda
+        const operativasCountEl = document.getElementById('operativasCount');
+        const completasCountEl = document.getElementById('completasCount');
+        const mantenimientoCountEl = document.getElementById('mantenimientoCount');
+        
+        if (operativasCountEl) operativasCountEl.textContent = operativas;
+        if (completasCountEl) completasCountEl.textContent = completas;
+        if (mantenimientoCountEl) mantenimientoCountEl.textContent = mantenimiento;
+        
+        // Crear gráfica de dona
+        const donaChartEl = document.getElementById('donaChart');
+        if (donaChartEl && (operativas > 0 || completas > 0 || mantenimiento > 0)) {
+            const ctx = donaChartEl.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Operativas', 'Completas', 'Mantenimiento'],
+                    datasets: [{
+                        data: [operativas, completas, mantenimiento],
+                        backgroundColor: ['#2ecc71', '#e74c3c', '#f39c12'],
+                        borderColor: 'rgba(255,255,255,0.2)',
+                        borderWidth: 2,
+                        hoverOffset: 10,
+                        cutout: '60%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = operativas + completas + mantenimiento;
+                                    const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
+                                    return `${label}: ${value} alberca(s) (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
     </script>
 
 </body>

@@ -1,6 +1,7 @@
 /* ====================================
    DASHBOARD ENCARGADO - NUESTRAS ALBERCAS
    Sistema de navegación por secciones con menú hamburguesa
+   SIN SCROLL - Grid uniforme
 ======================================= */
 
 :root {
@@ -23,15 +24,16 @@
     --font-display:  'Bebas Neue', sans-serif;
     --font-body:     'DM Sans', sans-serif;
     --font-mono:     'JetBrains Mono', monospace;
-    --radius-card:   20px;
-    --radius-sm:     12px;
-    --shadow-card:   0 8px 32px rgba(0,0,0,0.4);
+    --radius-card:   16px;
+    --radius-sm:     10px;
+    --shadow-card:   0 4px 16px rgba(0,0,0,0.3);
     --border-gold:   1px solid rgba(255,170,0,0.25);
     
     /* Variables para el grid */
     --nav-width: 260px;
     --nav-collapsed: 70px;
     --grid-cols: 20;
+    --grid-rows: 12;
 }
 
 *, *::before, *::after {
@@ -41,16 +43,19 @@
 }
 
 html {
-    font-size: 14px;
+    font-size: 13px;
     scroll-behavior: smooth;
+    height: 100%;
+    overflow: hidden;
 }
 
 body {
     font-family: var(--font-body);
     background-color: var(--primary-blue-dark);
     color: var(--text-light);
-    line-height: 1.5;
-    min-height: 100vh;
+    line-height: 1.4;
+    height: 100vh;
+    overflow: hidden;
     background-image: radial-gradient(ellipse at 20% 20%, rgba(30,60,92,0.8) 0%, transparent 60%),
                       radial-gradient(ellipse at 80% 80%, rgba(0,40,80,0.6) 0%, transparent 60%);
 }
@@ -68,30 +73,30 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 32px;
-    height: 70px;
+    padding: 0 24px;
+    height: 60px;
 }
 
 .header h1 {
     font-family: var(--font-display);
-    font-size: 1.8rem;
-    letter-spacing: 3px;
+    font-size: 1.5rem;
+    letter-spacing: 2px;
     color: var(--primary-gold);
 }
 
 .header p {
-    font-size: 0.85rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
 }
 
 .header .logout a {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--primary-gold);
     text-decoration: none;
     border: 1px solid var(--primary-gold);
-    padding: 6px 16px;
-    border-radius: 8px;
+    padding: 4px 12px;
+    border-radius: 6px;
     transition: all 0.2s ease;
 }
 
@@ -105,16 +110,22 @@ body {
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 10px;
-    margin-right: 20px;
+    padding: 8px;
+    margin-right: 16px;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
     z-index: 101;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.hamburger-btn:hover {
+    background: rgba(255,170,0,0.1);
 }
 
 .hamburger-line {
-    width: 25px;
+    width: 22px;
     height: 2px;
     background-color: var(--primary-gold);
     transition: all 0.3s ease;
@@ -122,7 +133,7 @@ body {
 }
 
 .hamburger-btn.active .hamburger-line:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+    transform: translateY(7px) rotate(45deg);
 }
 
 .hamburger-btn.active .hamburger-line:nth-child(2) {
@@ -130,14 +141,14 @@ body {
 }
 
 .hamburger-btn.active .hamburger-line:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+    transform: translateY(-7px) rotate(-45deg);
 }
 
 /* NAVEGACIÓN */
 .nav {
     position: fixed;
     left: 0;
-    top: 70px;
+    top: 60px;
     bottom: 0;
     width: var(--nav-width);
     background: rgba(10, 26, 42, 0.95);
@@ -145,14 +156,14 @@ body {
     border-right: 1px solid var(--border-gold);
     display: flex;
     flex-direction: column;
-    padding: 24px 0;
-    gap: 4px;
+    padding: 16px 0;
+    gap: 2px;
     z-index: 90;
     transition: width 0.3s ease;
     overflow-x: hidden;
+    overflow-y: auto;
 }
 
-/* Estado colapsado */
 .nav.collapsed {
     width: var(--nav-collapsed);
 }
@@ -163,16 +174,16 @@ body {
 
 .nav.collapsed a::before {
     margin-right: 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
 }
 
 .nav a {
     display: flex;
     align-items: center;
-    padding: 12px 24px;
+    padding: 10px 20px;
     color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 500;
     transition: all 0.2s ease;
     border-left: 3px solid transparent;
@@ -185,7 +196,7 @@ body {
 
 .nav a::before {
     content: '';
-    font-size: 1.2rem;
+    font-size: 1.1rem;
 }
 
 .nav a:hover, .nav a.active {
@@ -205,182 +216,313 @@ body {
 
 /* CONTENIDO */
 .content {
-    margin-top: 70px;
-    margin-left: var(--nav-width);
-    padding: 24px;
-    min-height: calc(100vh - 70px);
-    transition: margin-left 0.3s ease;
+    position: fixed;
+    top: 60px;
+    left: var(--nav-width);
+    right: 0;
+    bottom: 0;
+    padding: 12px;
+    transition: left 0.3s ease;
+    overflow: hidden;
 }
 
 .content.expanded {
-    margin-left: var(--nav-collapsed);
+    left: var(--nav-collapsed);
 }
 
 /* SECCIONES - Ocultar/Mostrar */
 .section-container {
     display: none;
+    height: 100%;
+    width: 100%;
 }
 
 .section-container.active {
     display: block;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.2s ease;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
 /* ====================================
-   DASHBOARD CON GRID 20x20
+   DASHBOARD CON GRID UNIFORME SIN SCROLL
 ======================================= */
 #inicio.active {
-    height: calc(100vh - 70px - 60px);
-    overflow-y: hidden;
+    height: 100%;
+    width: 100%;
     padding: 0;
 }
 
 #inicio .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(var(--grid-cols), 1fr);
-    grid-auto-rows: minmax(auto, auto);
-    gap: 12px;
+    grid-template-columns: repeat(20, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    gap: 10px;
     height: 100%;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-#inicio .dashboard-grid::-webkit-scrollbar {
-    display: none;
-}
-
-/* Clase para cuando el navbar está colapsado - grid de 21 columnas */
-#inicio .dashboard-grid.grid-expanded {
-    grid-template-columns: repeat(21, 1fr);
+    width: 100%;
 }
 
 /* ====================================
-   TARJETAS DEL DASHBOARD (POSICIONADAS EN EL GRID)
+   TARJETAS DEL DASHBOARD - NAVBAR EXPANDIDO (20 columnas)
 ======================================= */
 
-/* Tarjeta de bienvenida y estadísticas - ocupa primeras filas */
+/* Tarjeta de bienvenida y estadísticas */
 .welcome-stats {
-    grid-column: 1 / 21;
+    grid-column: 1 / 11;
+    grid-row: 1 / 2;
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: rgba(255,255,255,0.05);
     border: var(--border-gold);
     border-radius: var(--radius-card);
-    padding: 12px 20px;
-    margin-bottom: 0;
+    padding: 8px 16px;
+    gap: 16px;
 }
 
-/* Cuando el grid tiene 21 columnas */
-.grid-expanded .welcome-stats {
-    grid-column: 1 / 22;
+.welcome h2 {
+    font-size: 1.1rem;
+    margin-bottom: 2px;
+}
+
+.welcome p {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.date-time {
+    font-size: 0.6rem;
+    margin-top: 4px;
+}
+
+.time {
+    font-size: 0.85rem;
+    margin-left: 6px;
+    color: var(--primary-gold);
+}
+
+.stats-mini {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-mini {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.03);
+    padding: 4px 10px;
+    border-radius: 20px;
+}
+
+.stat-mini-icon {
+    font-size: 1.2rem;
+}
+
+.stat-mini-number {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--primary-gold);
+    display: block;
+    line-height: 1;
+}
+
+.stat-mini-label {
+    font-size: 0.55rem;
+    color: var(--text-muted);
+    display: block;
 }
 
 /* Tarjeta Estado de Albercas */
 .card-estado-albercas {
     grid-column: 1 / 11;
-    grid-row: 2 / 8;
+    grid-row: 2 / 7;
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.grid-expanded .card-estado-albercas {
-    grid-column: 1 / 12;
+.card-estado-albercas h3 {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    flex-shrink: 0;
 }
 
 /* Tarjeta Calidad del Agua */
 .card-calidad-agua {
-    grid-column: 11 / 21;
-    grid-row: 2 / 6;
+    grid-column: 11 / 15;
+    grid-row: 1 / 3;
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.grid-expanded .card-calidad-agua {
-    grid-column: 12 / 22;
+.card-calidad-agua h3 {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    flex-shrink: 0;
 }
 
 /* Tarjeta Mantenimientos Programados */
 .card-mantenimientos {
     grid-column: 11 / 21;
-    grid-row: 6 / 12;
+    grid-row: 3 / 6;
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.grid-expanded .card-mantenimientos {
-    grid-column: 12 / 22;
+.card-mantenimientos h3 {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    letter-spacing: 1px;
+    flex-shrink: 0;
 }
 
 /* Tarjeta Alertas */
 .card-alertas {
     grid-column: 1 / 11;
-    grid-row: 8 / 14;
-}
-
-.grid-expanded .card-alertas {
-    grid-column: 1 / 12;
-}
-
-/* Tarjeta Estadísticas Rápidas Extra */
-.card-estadisticas-extra {
-    grid-column: 1 / 21;
-    grid-row: 14 / 16;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 12px;
-    background: transparent;
-    border: none;
-    backdrop-filter: none;
-    padding: 0;
-}
-
-.grid-expanded .card-estadisticas-extra {
-    grid-column: 1 / 22;
-}
-
-/* Estilos generales de tarjetas */
-.dashboard-card {
+    grid-row: 7 / 12;
     background: rgba(255,255,255,0.05);
     border: var(--border-gold);
     border-radius: var(--radius-card);
-    padding: 14px;
+    padding: 10px 12px;
     backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
-.dashboard-card h3 {
-    font-size: 0.8rem;
-    margin-bottom: 10px;
+.card-alertas h3 {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
     color: var(--text-muted);
     font-family: var(--font-mono);
     letter-spacing: 1px;
+    flex-shrink: 0;
+}
+
+/* ====================================
+   TARJETAS DE ESTADÍSTICAS EXTRA - INDEPENDIENTES
+======================================= */
+
+/* Tarjeta Entradas hoy */
+.stat-entradas {
+    grid-column: 15 / 18;
+    grid-row: 1 / 2;
+}
+
+/* Tarjeta Salidas hoy */
+.stat-salidas {
+    grid-column: 18 / 21;
+    grid-row: 1 / 2;
+}
+
+/* Tarjeta Personas en el parque */
+.stat-personas {
+    grid-column: 15 / 18;
+    grid-row: 2 / 3;
+}
+
+/* Tarjeta Mantenimientos completados */
+.stat-mantenimientos {
+    grid-column: 18 / 21;
+    grid-row: 2 / 3;
+}
+
+/* Estilos base de las tarjetas de estadísticas extra */
+.stat-extra-card {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 10px 12px;
+    backdrop-filter: blur(10px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.stat-extra-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+    border-color: var(--primary-gold);
+}
+
+.stat-extra-number {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: var(--primary-gold);
+    font-family: var(--font-display);
+    line-height: 1.2;
+    letter-spacing: 1px;
+}
+
+.stat-extra-label {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 /* Estado de albercas compacto */
 .pool-status-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex: 1;
+    overflow-y: auto;
 }
 
 .pool-status-item {
     display: grid;
-    grid-template-columns: 80px 80px 1fr 50px;
+    grid-template-columns: 70px 70px 1fr 45px;
     align-items: center;
-    gap: 6px;
-    font-size: 0.75rem;
-    padding: 4px 0;
+    gap: 4px;
+    font-size: 0.7rem;
+    padding: 3px 0;
     border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
 .pool-name {
     font-weight: 600;
+    font-size: 0.7rem;
 }
 
 .pool-status-badge {
-    padding: 2px 6px;
-    border-radius: 6px;
-    font-size: 0.65rem;
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-size: 0.6rem;
     text-align: center;
     font-weight: bold;
 }
@@ -400,7 +542,7 @@ body {
 .pool-progress {
     background: rgba(255,255,255,0.1);
     border-radius: 10px;
-    height: 4px;
+    height: 3px;
     overflow: hidden;
 }
 
@@ -411,7 +553,7 @@ body {
 }
 
 .pool-stats {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
     text-align: right;
 }
@@ -420,17 +562,19 @@ body {
 .water-quality-summary {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
 }
 
 .quality-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 10px;
+    padding: 5px 8px;
     background: rgba(255,255,255,0.03);
     border-radius: var(--radius-sm);
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
 .quality-label {
@@ -441,12 +585,13 @@ body {
     font-family: var(--font-mono);
     font-weight: bold;
     color: var(--primary-gold);
+    font-size: 0.75rem;
 }
 
 .quality-status {
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.6rem;
 }
 
 .quality-status.good {
@@ -464,30 +609,35 @@ body {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 5px;
+    flex: 1;
 }
 
 .maintenance-list li {
     display: grid;
-    grid-template-columns: 45px 1fr 55px;
-    gap: 6px;
-    padding: 6px 8px;
+    grid-template-columns: 40px 1fr 50px;
+    gap: 5px;
+    padding: 5px 6px;
     background: rgba(255,255,255,0.03);
     border-radius: var(--radius-sm);
-    font-size: 0.7rem;
+    font-size: 0.65rem;
 }
 
 .maintenance-list .date {
     font-family: var(--font-mono);
     color: var(--primary-gold);
+    font-size: 0.6rem;
 }
 
 .maintenance-list .task {
     font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .maintenance-list .pool {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
     text-align: right;
 }
@@ -495,11 +645,11 @@ body {
 /* Alertas */
 .alert-item {
     display: flex;
-    gap: 8px;
-    padding: 8px 10px;
+    gap: 6px;
+    padding: 6px 8px;
     background: rgba(255,255,255,0.03);
     border-radius: var(--radius-sm);
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 }
 
 .alert-item.success {
@@ -508,61 +658,103 @@ body {
 }
 
 .alert-icon {
-    font-size: 1rem;
+    font-size: 0.85rem;
 }
 
 .alert-content strong {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     margin-bottom: 2px;
 }
 
 .alert-content p {
-    font-size: 0.65rem;
+    font-size: 0.6rem;
     color: var(--text-muted);
 }
 
-/* Estadísticas extra */
-.stat-extra-card {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    text-align: center;
+/* ====================================
+   GRÁFICA DE DONA - ESTADO DE ALBERCAS
+======================================= */
+
+.estado-albercas-container {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+    min-height: 0;
 }
 
-.stat-extra-number {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--primary-gold);
-    font-family: var(--font-display);
+.dona-chart-container {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 180px;
 }
 
-.stat-extra-label {
+#donaChart {
+    max-width: 140px;
+    max-height: 140px;
+}
+
+.chart-legend {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-size: 0.7rem;
     color: var(--text-muted);
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.legend-value {
+    margin-left: auto;
+    font-weight: bold;
+    color: var(--primary-gold);
 }
 
 /* ====================================
    ESTILOS PARA OTRAS SECCIONES
 ======================================= */
+#horarios, #calidad-agua, #personal,
+#reportes, #mantenimiento, #acceso {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
 #horarios section, #calidad-agua section, #personal section,
 #reportes section, #mantenimiento section, #acceso section {
     background: rgba(255,255,255,0.05);
     border: var(--border-gold);
     border-radius: var(--radius-card);
-    padding: 28px;
+    padding: 16px;
     backdrop-filter: blur(10px);
+    height: 100%;
+    overflow-y: auto;
 }
 
 #horarios section h2, #calidad-agua section h2,
 #personal section h2, #reportes section h2,
 #mantenimiento section h2, #acceso section h2 {
     font-family: var(--font-display);
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     color: var(--primary-gold);
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 1px dashed rgba(255,170,0,0.3);
 }
 
@@ -570,18 +762,18 @@ body {
 form {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    margin-top: 16px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 form > div {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-family: var(--font-mono);
     text-transform: uppercase;
     color: var(--text-muted);
@@ -592,8 +784,8 @@ input, select, textarea {
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: var(--radius-sm);
     color: var(--text-light);
-    padding: 10px 14px;
-    font-size: 0.85rem;
+    padding: 6px 10px;
+    font-size: 0.75rem;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -606,18 +798,18 @@ button[type="submit"] {
     color: var(--primary-blue-dark);
     border: none;
     border-radius: var(--radius-sm);
-    padding: 10px 24px;
+    padding: 8px 16px;
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 0.85rem;
     cursor: pointer;
     transition: all 0.2s ease;
     align-self: flex-start;
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 button[type="submit"]:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,170,0,0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(255,170,0,0.3);
 }
 
 /* LISTAS */
@@ -625,25 +817,35 @@ ul {
     list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
 }
 
 li {
-    padding: 10px 12px;
+    padding: 6px 10px;
     background: rgba(255,255,255,0.03);
     border-radius: var(--radius-sm);
-    font-size: 0.85rem;
+    font-size: 0.75rem;
 }
 
 /* FOOTER */
 .footer {
-    margin-top: 32px;
-    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    left: var(--nav-width);
+    right: 0;
+    padding: 6px;
     text-align: center;
     border-top: 1px solid rgba(255,170,0,0.2);
     color: var(--text-muted);
-    font-size: 0.7rem;
+    font-size: 0.6rem;
     font-family: var(--font-mono);
+    background: rgba(10, 26, 42, 0.9);
+    transition: left 0.3s ease;
+    z-index: 80;
+}
+
+.footer.expanded {
+    left: var(--nav-collapsed);
 }
 
 /* RESPONSIVE */
@@ -658,30 +860,80 @@ li {
     
     .nav a::before {
         margin-right: 0;
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     
     .content {
-        margin-left: var(--nav-collapsed);
+        left: var(--nav-collapsed);
+    }
+    
+    .footer {
+        left: var(--nav-collapsed);
     }
     
     .welcome-stats {
         flex-direction: column;
         align-items: flex-start;
-        gap: 12px;
+        gap: 8px;
+        padding: 8px 12px;
     }
     
     .stats-mini {
         flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .card-estado-albercas,
+    .card-calidad-agua,
+    .card-mantenimientos,
+    .card-alertas {
+        padding: 8px;
+    }
+    
+    .pool-status-item {
+        grid-template-columns: 60px 60px 1fr 40px;
+        font-size: 0.65rem;
+    }
+    
+    .estado-albercas-container {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .dona-chart-container {
+        flex-direction: row;
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .chart-legend {
+        width: auto;
+    }
+    
+    .stat-entradas,
+    .stat-salidas,
+    .stat-personas,
+    .stat-mantenimientos {
+        grid-column: auto;
+        grid-row: auto;
+    }
+    
+    .stat-extra-number {
+        font-size: 1.3rem;
+    }
+    
+    .stat-extra-label {
+        font-size: 0.55rem;
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
     .nav {
         top: auto;
         bottom: 0;
         width: 100%;
-        height: 60px;
+        height: 50px;
         flex-direction: row;
         justify-content: space-around;
         padding: 0;
@@ -698,24 +950,81 @@ li {
     }
     
     .content {
-        margin-left: 0;
-        margin-bottom: 60px;
-        padding: 16px;
+        top: 60px;
+        left: 0;
+        bottom: 50px;
     }
     
-    .header {
-        padding: 0 16px;
+    .footer {
+        left: 0;
+        bottom: 50px;
     }
     
     .header h1 {
-        font-size: 1.2rem;
+        font-size: 1rem;
     }
     
-    #inicio.active {
-        height: calc(100vh - 70px - 60px - 60px);
+    .header p {
+        font-size: 0.65rem;
     }
     
     .hamburger-btn {
         display: none;
+    }
+    
+    #inicio .dashboard-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow-y: auto;
+    }
+    
+    .welcome-stats,
+    .card-estado-albercas,
+    .card-calidad-agua,
+    .card-mantenimientos,
+    .card-alertas,
+    .stat-entradas,
+    .stat-salidas,
+    .stat-personas,
+    .stat-mantenimientos {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    .dona-chart-container {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .chart-legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .pool-status-item {
+        grid-template-columns: 50px 50px 1fr 35px;
+        font-size: 0.6rem;
+    }
+    
+    .stat-extra-number {
+        font-size: 1.1rem;
+    }
+    
+    .welcome-stats {
+        padding: 6px 10px;
+    }
+    
+    .stat-mini {
+        padding: 2px 6px;
+    }
+    
+    .stat-mini-icon {
+        font-size: 1rem;
+    }
+    
+    .stat-mini-number {
+        font-size: 0.85rem;
     }
 }
