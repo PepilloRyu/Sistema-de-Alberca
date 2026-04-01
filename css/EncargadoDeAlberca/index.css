@@ -1028,3 +1028,655 @@ li {
         font-size: 0.85rem;
     }
 }
+
+
+/* ====================================
+   MAPA INTERACTIVO ESTILO CLUB PENGUIN
+======================================= */
+
+.mapa-interactivo-container {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.mapa-interactivo-container h3 {
+    font-size: 1rem;
+    color: var(--primary-gold);
+    margin-bottom: 8px;
+}
+
+.mapa-instruccion {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mapa-albercas {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mapa-fondo {
+    position: relative;
+    display: inline-block;
+}
+
+.mapa-imagen {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+}
+
+/* Hotspots - Áreas interactivas */
+.mapa-hotspot {
+    position: absolute;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 50%;
+    background: rgba(255,170,0,0.3);
+    border: 2px solid rgba(255,170,0,0.6);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.mapa-hotspot:hover {
+    opacity: 1;
+    background: rgba(255,170,0,0.6);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(255,170,0,0.5);
+}
+
+/* Posiciones de los hotspots - AJUSTA SEGÚN TU MAPA */
+.hotspot-principal {
+    top: 30%;
+    left: 25%;
+    width: 80px;
+    height: 80px;
+}
+
+.hotspot-familiar {
+    top: 45%;
+    left: 45%;
+    width: 70px;
+    height: 70px;
+}
+
+.hotspot-infantil {
+    top: 60%;
+    left: 35%;
+    width: 60px;
+    height: 60px;
+}
+
+.hotspot-vista-mar {
+    top: 20%;
+    left: 70%;
+    width: 75px;
+    height: 75px;
+}
+
+.hotspot-deportiva {
+    top: 70%;
+    left: 65%;
+    width: 85px;
+    height: 85px;
+}
+
+/* Tooltips estilo Club Penguin */
+.hotspot-tooltip {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 26, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--primary-gold);
+    border-radius: 12px;
+    padding: 10px 15px;
+    min-width: 160px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+    margin-bottom: 10px;
+}
+
+.mapa-hotspot:hover .hotspot-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-5px);
+}
+
+.hotspot-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 8px;
+    border-style: solid;
+    border-color: var(--primary-gold) transparent transparent transparent;
+}
+
+.tooltip-title {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.tooltip-calidad {
+    font-size: 0.7rem;
+    color: var(--text-light);
+    line-height: 1.4;
+}
+
+/* Tabla de calidad del agua */
+.calidad-tabla {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.calidad-tabla h3 {
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    margin-bottom: 15px;
+}
+
+.tabla-container {
+    overflow-x: auto;
+}
+
+.calidad-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calidad-table th,
+.calidad-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.calidad-table th {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.calidad-table td {
+    font-size: 0.8rem;
+}
+
+.calidad-good {
+    color: var(--success);
+    font-weight: bold;
+}
+
+.calidad-warning {
+    color: var(--warning);
+    font-weight: bold;
+}
+
+.estado-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.estado-badge.optimo {
+    background: rgba(46,204,113,0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+.estado-badge.revisar {
+    background: rgba(243,156,18,0.2);
+    color: var(--warning);
+    border: 1px solid var(--warning);
+}
+
+/* Formulario de calidad */
+.calidad-formulario {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+}
+
+.calidad-formulario h3 {
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    margin-bottom: 15px;
+}
+
+.form-calidad {
+    margin-top: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.btn-registrar {
+    background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
+    color: var(--primary-blue-dark);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 24px;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.btn-registrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,170,0,0.3);
+}
+
+/* Versión alternativa: Mapa con SVG interactivo */
+.mapa-svg-container {
+    text-align: center;
+}
+
+.mapa-svg {
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+}
+
+.mapa-svg path {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.mapa-svg path:hover {
+    filter: brightness(1.2);
+    stroke: var(--primary-gold);
+    stroke-width: 3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mapa-hotspot {
+        opacity: 0.6;
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    .hotspot-tooltip {
+        min-width: 120px;
+        padding: 6px 10px;
+    }
+    
+    .tooltip-title {
+        font-size: 0.7rem;
+    }
+    
+    .tooltip-calidad {
+        font-size: 0.6rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ====================================
+   MAPA INTERACTIVO ESTILO CLUB PENGUIN
+======================================= */
+
+.mapa-interactivo-container {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.mapa-interactivo-container h3 {
+    font-size: 1rem;
+    color: var(--primary-gold);
+    margin-bottom: 8px;
+}
+
+.mapa-instruccion {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.mapa-imagen-wrapper {
+    position: relative;
+    text-align: center;
+    background: rgba(0,0,0,0.2);
+    border-radius: var(--radius-card);
+    padding: 10px;
+}
+
+.mapa-imagen {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+}
+
+/* Áreas interactivas - efecto hover */
+.hotspot-area {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hotspot-area:hover {
+    filter: brightness(1.1);
+    outline: 2px solid var(--primary-gold);
+}
+
+/* Tooltip flotante estilo burbuja */
+.mapa-tooltip {
+    position: fixed;
+    background: rgba(10, 26, 42, 0.98);
+    backdrop-filter: blur(12px);
+    border: 2px solid var(--primary-gold);
+    border-radius: 20px;
+    padding: 15px 20px;
+    min-width: 220px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+
+.mapa-tooltip.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-5px);
+}
+
+.tooltip-arrow {
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid var(--primary-gold);
+}
+
+.tooltip-arrow::after {
+    content: '';
+    position: absolute;
+    top: -13px;
+    left: -10px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid var(--primary-blue-dark);
+}
+
+.tooltip-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    color: var(--primary-gold);
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed rgba(255,170,0,0.3);
+}
+
+.tooltip-calidad {
+    font-size: 0.8rem;
+}
+
+.calidad-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.calidad-row .label {
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.calidad-row .value {
+    color: var(--primary-gold);
+    font-weight: bold;
+    font-family: var(--font-mono);
+}
+
+.calidad-row .value.estado {
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+}
+
+.calidad-row .value.estado.optimo {
+    background: rgba(46,204,113,0.2);
+    color: var(--success);
+}
+
+.calidad-row .value.estado.atencion {
+    background: rgba(243,156,18,0.2);
+    color: var(--warning);
+}
+
+.calidad-row .value.estado.critico {
+    background: rgba(231,76,60,0.2);
+    color: var(--danger);
+}
+
+/* Leyenda del mapa */
+.mapa-leyenda {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255,170,0,0.2);
+    flex-wrap: wrap;
+}
+
+.leyenda-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+.leyenda-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+.leyenda-color.optimo {
+    background: var(--success);
+    box-shadow: 0 0 5px var(--success);
+}
+
+.leyenda-color.atencion {
+    background: var(--warning);
+    box-shadow: 0 0 5px var(--warning);
+}
+
+.leyenda-color.critico {
+    background: var(--danger);
+    box-shadow: 0 0 5px var(--danger);
+}
+
+.leyenda-icon {
+    font-size: 1rem;
+}
+
+/* Tabla de calidad */
+.calidad-tabla {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.calidad-tabla h3 {
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    margin-bottom: 15px;
+}
+
+.tabla-container {
+    overflow-x: auto;
+}
+
+.calidad-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.calidad-table th,
+.calidad-table td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.calidad-table th {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.calidad-table td {
+    font-size: 0.8rem;
+}
+
+.calidad-good {
+    color: var(--success);
+    font-weight: bold;
+}
+
+.calidad-warning {
+    color: var(--warning);
+    font-weight: bold;
+}
+
+.text-muted {
+    color: var(--text-muted);
+    text-align: center;
+}
+
+.estado-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+.estado-badge.optimo {
+    background: rgba(46,204,113,0.2);
+    color: var(--success);
+    border: 1px solid var(--success);
+}
+
+/* Formulario */
+.calidad-formulario {
+    background: rgba(255,255,255,0.05);
+    border: var(--border-gold);
+    border-radius: var(--radius-card);
+    padding: 20px;
+}
+
+.calidad-formulario h3 {
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    margin-bottom: 15px;
+}
+
+.form-calidad {
+    margin-top: 0;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.btn-registrar {
+    background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
+    color: var(--primary-blue-dark);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 12px 24px;
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.btn-registrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255,170,0,0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .mapa-leyenda {
+        gap: 12px;
+    }
+    
+    .leyenda-item {
+        font-size: 0.6rem;
+    }
+    
+    .tooltip-title {
+        font-size: 0.9rem;
+    }
+    
+    .calidad-row {
+        font-size: 0.7rem;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
