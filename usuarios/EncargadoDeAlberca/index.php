@@ -28,6 +28,6 @@ $data = $controller->getDashboardData();
 // Extraer variables para la vista
 extract($data);
 
-// Incluir la vista
+// Incluir la vista (el CSS está DENTRO de la vista, no aquí)
 include __DIR__ . '/../../views/EncargadoDeAlberca/index.php';
 ?>

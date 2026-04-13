@@ -1,38 +1,57 @@
 /* ====================================
    DASHBOARD ENCARGADO - NUESTRAS ALBERCAS
-   Sistema de navegación por secciones con menú hamburguesa
-   SIN SCROLL - Grid uniforme
+   Paleta de colores: Te-Pathé Acuático
+   - Azul principal: #1a5f7a
+   - Azul oscuro: #0d3e52
+   - Verde agua: #4f9da6
+   - Turquesa: #7fc1c5
+   - Naranja: #f9a26c
+   - Naranja oscuro: #e67e22
+   - Fondo beige: #fff7e8
+   - Texto oscuro: #2c3e50
 ======================================= */
 
+@import url('inicio.css');
+@import url('horarios.css');
+@import url('calidad-agua.css');
+@import url('mapa.css');
+@import url('personal.css');
+@import url('reportes.css');
+@import url('mantenimiento.css');
+@import url('control-acceso.css');
+
+
 :root {
-    --primary-blue:        #1e3c5c;
-    --primary-blue-dark:   #0a1a2a;
-    --primary-blue-mid:    #1e4b6e;
-    --primary-gold:        #ffaa00;
-    --primary-gold-dark:   #b37400;
-    --accent-orange:       #ff6b35;
-    --accent-orange-dark:  #b34700;
-    --text-light:          #f4f4f4;
-    --text-muted:          #8aafc8;
-    --text-dark:           #1e2d3d;
-    --card-bg:             rgba(255,255,255,0.05);
-    --success:             #2ecc71;
-    --warning:             #f39c12;
-    --danger:              #e74c3c;
-    --info:                #3498db;
+    /* COLORES PRINCIPALES - Paleta Te-Pathé */
+    --primary-blue:        #1a5f7a;
+    --primary-blue-dark:   #0d3e52;
+    --primary-blue-mid:    #4f9da6;
+    --primary-gold:        #f9a26c;
+    --primary-gold-dark:   #e67e22;
+    --accent-orange:       #f9a26c;
+    --accent-orange-dark:  #e67e22;
+    --text-light:          #fff7e8;
+    --text-muted:          #7f8c8d;
+    --text-dark:           #2c3e50;
+    --card-bg:             rgba(31, 95, 122, 0.08);
+    --success:             #4f9da6;
+    --warning:             #f9a26c;
+    --danger:              #e67e22;
+    --info:                #7fc1c5;
 
     --font-display:  'Bebas Neue', sans-serif;
     --font-body:     'DM Sans', sans-serif;
     --font-mono:     'JetBrains Mono', monospace;
     --radius-card:   16px;
     --radius-sm:     10px;
-    --shadow-card:   0 4px 16px rgba(0,0,0,0.3);
-    --border-gold:   1px solid rgba(255,170,0,0.25);
+    --shadow-card:   0 4px 16px rgba(0,0,0,0.08);
+    --border-gold:   1px solid rgba(249,162,108,0.35);
     
     /* Variables para el grid */
-    --nav-width: 260px;
+    --nav-width: 70px;  /* Cambiado: estado contraído por defecto */
+    --nav-expanded: 260px;
     --nav-collapsed: 70px;
-    --grid-cols: 20;
+    --grid-cols: 21;    /* Ajustado para navbar contraído */
     --grid-rows: 12;
 }
 
@@ -51,13 +70,13 @@ html {
 
 body {
     font-family: var(--font-body);
-    background-color: var(--primary-blue-dark);
-    color: var(--text-light);
+    background-color: #fff7e8;
+    color: var(--text-dark);
     line-height: 1.4;
     height: 100vh;
     overflow: hidden;
-    background-image: radial-gradient(ellipse at 20% 20%, rgba(30,60,92,0.8) 0%, transparent 60%),
-                      radial-gradient(ellipse at 80% 80%, rgba(0,40,80,0.6) 0%, transparent 60%);
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(31,95,122,0.05) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(79,157,166,0.05) 0%, transparent 60%);
 }
 
 /* HEADER */
@@ -67,7 +86,7 @@ body {
     left: 0;
     right: 0;
     z-index: 100;
-    background: rgba(10, 26, 42, 0.95);
+    background: rgba(26,95,122,0.95);
     backdrop-filter: blur(20px);
     border-bottom: 2px solid var(--primary-gold);
     display: flex;
@@ -75,6 +94,11 @@ body {
     justify-content: space-between;
     padding: 0 24px;
     height: 60px;
+}
+
+.header .user-info {
+    display: flex;
+    flex-direction: column;
 }
 
 .header h1 {
@@ -86,7 +110,7 @@ body {
 
 .header p {
     font-size: 0.75rem;
-    color: var(--text-muted);
+    color: var(--text-light);
 }
 
 .header .logout a {
@@ -102,10 +126,10 @@ body {
 
 .header .logout a:hover {
     background: var(--primary-gold);
-    color: var(--primary-blue-dark);
+    color: var(--primary-blue);
 }
 
-/* BOTÓN HAMBURGUESA */
+/* BOTÓN HAMBURGUESA - Oculto por defecto con hover */
 .hamburger-btn {
     background: transparent;
     border: none;
@@ -118,10 +142,13 @@ body {
     z-index: 101;
     border-radius: 8px;
     transition: background 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .hamburger-btn:hover {
-    background: rgba(255,170,0,0.1);
+    background: rgba(249,162,108,0.1);
 }
 
 .hamburger-line {
@@ -144,14 +171,14 @@ body {
     transform: translateY(-7px) rotate(-45deg);
 }
 
-/* NAVEGACIÓN */
+/* NAVEGACIÓN - ANIMACIÓN HOVER */
 .nav {
     position: fixed;
     left: 0;
     top: 60px;
     bottom: 0;
-    width: var(--nav-width);
-    background: rgba(10, 26, 42, 0.95);
+    width: var(--nav-width); /* 70px contraído */
+    background: rgba(13,62,82,0.95);
     backdrop-filter: blur(20px);
     border-right: 1px solid var(--border-gold);
     display: flex;
@@ -159,29 +186,53 @@ body {
     padding: 16px 0;
     gap: 2px;
     z-index: 90;
-    transition: width 0.3s ease;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
+/* Efecto hover: se expande al pasar el cursor */
+.nav:hover {
+    width: var(--nav-expanded); /* 260px expandido */
+}
+
+/* Los spans solo se muestran cuando el navbar está expandido (hover) */
+.nav a span {
+    display: inline-block;
+    margin-left: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.05s;
+    white-space: nowrap;
+}
+
+.nav:hover a span {
+    opacity: 1;
+}
+
+/* Estado collapsed (cuando el usuario hace clic en hamburguesa) */
 .nav.collapsed {
     width: var(--nav-collapsed);
 }
 
 .nav.collapsed a span {
     display: none;
+    opacity: 0;
 }
 
-.nav.collapsed a::before {
-    margin-right: 0;
-    font-size: 1.2rem;
+.nav.collapsed:hover {
+    width: var(--nav-collapsed);
+}
+
+.nav.collapsed:hover a span {
+    display: none;
+    opacity: 0;
 }
 
 .nav a {
     display: flex;
     align-items: center;
     padding: 10px 20px;
-    color: var(--text-muted);
+    color: #bdc3c7;
     text-decoration: none;
     font-size: 0.85rem;
     font-weight: 500;
@@ -190,43 +241,51 @@ body {
     white-space: nowrap;
 }
 
-.nav a span {
-    margin-left: 12px;
+.nav a i {
+    width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-right: 12px;
+    flex-shrink: 0;
 }
 
-.nav a::before {
-    content: '';
-    font-size: 1.1rem;
+.nav.collapsed a i {
+    margin-right: 0;
 }
 
 .nav a:hover, .nav a.active {
     color: var(--primary-gold);
     border-left-color: var(--primary-gold);
-    background: rgba(255,170,0,0.08);
+    background: rgba(249,162,108,0.08);
 }
 
-/* Iconos del menú */
-.nav a[data-section="inicio"]::before { content: '🏠'; }
-.nav a[data-section="horarios"]::before { content: '⏰'; }
-.nav a[data-section="calidad-agua"]::before { content: '💧'; }
-.nav a[data-section="personal"]::before { content: '👥'; }
-.nav a[data-section="reportes"]::before { content: '📋'; }
-.nav a[data-section="mantenimiento"]::before { content: '🔧'; }
-.nav a[data-section="acceso"]::before { content: '🚪'; }
-
-/* CONTENIDO */
+/* CONTENIDO - Se desplaza con el navbar */
 .content {
     position: fixed;
     top: 60px;
-    left: var(--nav-width);
+    left: var(--nav-width); /* 70px */
     right: 0;
     bottom: 0;
     padding: 12px;
-    transition: left 0.3s ease;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 }
 
+/* Cuando el navbar está expandido por hover, el contenido se desplaza */
+.nav:hover ~ .content {
+    left: var(--nav-expanded);
+}
+
+/* Cuando el navbar tiene clase collapsed, el contenido se ajusta */
 .content.expanded {
+    left: var(--nav-collapsed);
+}
+
+.nav.collapsed ~ .content {
+    left: var(--nav-collapsed);
+}
+
+.nav.collapsed:hover ~ .content {
     left: var(--nav-collapsed);
 }
 
@@ -247,488 +306,7 @@ body {
     to { opacity: 1; }
 }
 
-/* ====================================
-   DASHBOARD CON GRID UNIFORME SIN SCROLL
-======================================= */
-#inicio.active {
-    height: 100%;
-    width: 100%;
-    padding: 0;
-}
-
-#inicio .dashboard-grid {
-    display: grid;
-    grid-template-columns: repeat(20, 1fr);
-    grid-template-rows: repeat(12, 1fr);
-    gap: 10px;
-    height: 100%;
-    width: 100%;
-}
-
-/* ====================================
-   TARJETAS DEL DASHBOARD - NAVBAR EXPANDIDO (20 columnas)
-======================================= */
-
-/* Tarjeta de bienvenida y estadísticas */
-.welcome-stats {
-    grid-column: 1 / 11;
-    grid-row: 1 / 2;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 8px 16px;
-    gap: 16px;
-}
-
-.welcome h2 {
-    font-size: 1.1rem;
-    margin-bottom: 2px;
-}
-
-.welcome p {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-}
-
-.date-time {
-    font-size: 0.6rem;
-    margin-top: 4px;
-}
-
-.time {
-    font-size: 0.85rem;
-    margin-left: 6px;
-    color: var(--primary-gold);
-}
-
-.stats-mini {
-    display: flex;
-    gap: 12px;
-}
-
-.stat-mini {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.03);
-    padding: 4px 10px;
-    border-radius: 20px;
-}
-
-.stat-mini-icon {
-    font-size: 1.2rem;
-}
-
-.stat-mini-number {
-    font-size: 1rem;
-    font-weight: bold;
-    color: var(--primary-gold);
-    display: block;
-    line-height: 1;
-}
-
-.stat-mini-label {
-    font-size: 0.55rem;
-    color: var(--text-muted);
-    display: block;
-}
-
-/* Tarjeta Estado de Albercas */
-.card-estado-albercas {
-    grid-column: 1 / 11;
-    grid-row: 2 / 7;
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.card-estado-albercas h3 {
-    font-size: 0.7rem;
-    margin-bottom: 8px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-
-/* Tarjeta Calidad del Agua */
-.card-calidad-agua {
-    grid-column: 11 / 15;
-    grid-row: 1 / 3;
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.card-calidad-agua h3 {
-    font-size: 0.7rem;
-    margin-bottom: 8px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-
-/* Tarjeta Mantenimientos Programados */
-.card-mantenimientos {
-    grid-column: 11 / 21;
-    grid-row: 3 / 6;
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.card-mantenimientos h3 {
-    font-size: 0.7rem;
-    margin-bottom: 8px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-
-/* Tarjeta Alertas */
-.card-alertas {
-    grid-column: 1 / 11;
-    grid-row: 7 / 12;
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-
-.card-alertas h3 {
-    font-size: 0.7rem;
-    margin-bottom: 8px;
-    color: var(--text-muted);
-    font-family: var(--font-mono);
-    letter-spacing: 1px;
-    flex-shrink: 0;
-}
-
-/* ====================================
-   TARJETAS DE ESTADÍSTICAS EXTRA - INDEPENDIENTES
-======================================= */
-
-/* Tarjeta Entradas hoy */
-.stat-entradas {
-    grid-column: 15 / 18;
-    grid-row: 1 / 2;
-}
-
-/* Tarjeta Salidas hoy */
-.stat-salidas {
-    grid-column: 18 / 21;
-    grid-row: 1 / 2;
-}
-
-/* Tarjeta Personas en el parque */
-.stat-personas {
-    grid-column: 15 / 18;
-    grid-row: 2 / 3;
-}
-
-/* Tarjeta Mantenimientos completados */
-.stat-mantenimientos {
-    grid-column: 18 / 21;
-    grid-row: 2 / 3;
-}
-
-/* Estilos base de las tarjetas de estadísticas extra */
-.stat-extra-card {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 10px 12px;
-    backdrop-filter: blur(10px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    transition: all 0.2s ease;
-}
-
-.stat-extra-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-card);
-    border-color: var(--primary-gold);
-}
-
-.stat-extra-number {
-    font-size: 1.6rem;
-    font-weight: bold;
-    color: var(--primary-gold);
-    font-family: var(--font-display);
-    line-height: 1.2;
-    letter-spacing: 1px;
-}
-
-.stat-extra-label {
-    font-size: 0.65rem;
-    color: var(--text-muted);
-    margin-top: 6px;
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Estado de albercas compacto */
-.pool-status-list {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-    overflow-y: auto;
-}
-
-.pool-status-item {
-    display: grid;
-    grid-template-columns: 70px 70px 1fr 45px;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.7rem;
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.pool-name {
-    font-weight: 600;
-    font-size: 0.7rem;
-}
-
-.pool-status-badge {
-    padding: 2px 5px;
-    border-radius: 5px;
-    font-size: 0.6rem;
-    text-align: center;
-    font-weight: bold;
-}
-
-.pool-status-badge.operational {
-    background: rgba(46,204,113,0.2);
-    color: var(--success);
-    border: 1px solid var(--success);
-}
-
-.pool-status-badge.maintenance {
-    background: rgba(243,156,18,0.2);
-    color: var(--warning);
-    border: 1px solid var(--warning);
-}
-
-.pool-progress {
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    height: 3px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    background: linear-gradient(90deg, var(--primary-gold), var(--accent-orange));
-    height: 100%;
-    border-radius: 10px;
-}
-
-.pool-stats {
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    text-align: right;
-}
-
-/* Calidad del agua */
-.water-quality-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    flex: 1;
-    justify-content: center;
-}
-
-.quality-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 8px;
-    background: rgba(255,255,255,0.03);
-    border-radius: var(--radius-sm);
-    font-size: 0.7rem;
-}
-
-.quality-label {
-    font-weight: 500;
-}
-
-.quality-value {
-    font-family: var(--font-mono);
-    font-weight: bold;
-    color: var(--primary-gold);
-    font-size: 0.75rem;
-}
-
-.quality-status {
-    padding: 2px 6px;
-    border-radius: 10px;
-    font-size: 0.6rem;
-}
-
-.quality-status.good {
-    background: rgba(46,204,113,0.2);
-    color: var(--success);
-}
-
-.quality-status.normal {
-    background: rgba(52,152,219,0.2);
-    color: var(--info);
-}
-
-/* Mantenimientos */
-.maintenance-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    flex: 1;
-}
-
-.maintenance-list li {
-    display: grid;
-    grid-template-columns: 40px 1fr 50px;
-    gap: 5px;
-    padding: 5px 6px;
-    background: rgba(255,255,255,0.03);
-    border-radius: var(--radius-sm);
-    font-size: 0.65rem;
-}
-
-.maintenance-list .date {
-    font-family: var(--font-mono);
-    color: var(--primary-gold);
-    font-size: 0.6rem;
-}
-
-.maintenance-list .task {
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.maintenance-list .pool {
-    font-size: 0.6rem;
-    color: var(--text-muted);
-    text-align: right;
-}
-
-/* Alertas */
-.alert-item {
-    display: flex;
-    gap: 6px;
-    padding: 6px 8px;
-    background: rgba(255,255,255,0.03);
-    border-radius: var(--radius-sm);
-    margin-bottom: 5px;
-}
-
-.alert-item.success {
-    background: rgba(46,204,113,0.03);
-    border-left: 2px solid var(--success);
-}
-
-.alert-icon {
-    font-size: 0.85rem;
-}
-
-.alert-content strong {
-    display: block;
-    font-size: 0.7rem;
-    margin-bottom: 2px;
-}
-
-.alert-content p {
-    font-size: 0.6rem;
-    color: var(--text-muted);
-}
-
-/* ====================================
-   GRÁFICA DE DONA - ESTADO DE ALBERCAS
-======================================= */
-
-.estado-albercas-container {
-    display: flex;
-    gap: 10px;
-    flex: 1;
-    min-height: 0;
-}
-
-.dona-chart-container {
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    width: 180px;
-}
-
-#donaChart {
-    max-width: 140px;
-    max-height: 140px;
-}
-
-.chart-legend {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.legend-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.legend-color {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-
-.legend-value {
-    margin-left: auto;
-    font-weight: bold;
-    color: var(--primary-gold);
-}
-
-/* ====================================
-   ESTILOS PARA OTRAS SECCIONES
-======================================= */
+/* Otras secciones - scroll */
 #horarios, #calidad-agua, #personal,
 #reportes, #mantenimiento, #acceso {
     height: 100%;
@@ -736,29 +314,7 @@ body {
     padding-right: 4px;
 }
 
-#horarios section, #calidad-agua section, #personal section,
-#reportes section, #mantenimiento section, #acceso section {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 16px;
-    backdrop-filter: blur(10px);
-    height: 100%;
-    overflow-y: auto;
-}
-
-#horarios section h2, #calidad-agua section h2,
-#personal section h2, #reportes section h2,
-#mantenimiento section h2, #acceso section h2 {
-    font-family: var(--font-display);
-    font-size: 1.3rem;
-    color: var(--primary-gold);
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed rgba(255,170,0,0.3);
-}
-
-/* FORMULARIOS */
+/* Formularios generales */
 form {
     display: flex;
     flex-direction: column;
@@ -779,11 +335,16 @@ label {
     color: var(--text-muted);
 }
 
+label i {
+    margin-right: 6px;
+    color: var(--primary-gold);
+}
+
 input, select, textarea {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.1);
     border-radius: var(--radius-sm);
-    color: var(--text-light);
+    color: var(--text-dark);
     padding: 6px 10px;
     font-size: 0.75rem;
 }
@@ -795,7 +356,7 @@ input:focus, select:focus, textarea:focus {
 
 button[type="submit"] {
     background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
-    color: var(--primary-blue-dark);
+    color: var(--primary-blue);
     border: none;
     border-radius: var(--radius-sm);
     padding: 8px 16px;
@@ -807,12 +368,16 @@ button[type="submit"] {
     margin-top: 6px;
 }
 
-button[type="submit"]:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(255,170,0,0.3);
+button[type="submit"] i {
+    margin-left: 8px;
 }
 
-/* LISTAS */
+button[type="submit"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(249,162,108,0.3);
+}
+
+/* Listas generales */
 ul {
     list-style: none;
     display: flex;
@@ -822,12 +387,13 @@ ul {
 
 li {
     padding: 6px 10px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(26,95,122,0.05);
     border-radius: var(--radius-sm);
     font-size: 0.75rem;
+    color: var(--text-dark);
 }
 
-/* FOOTER */
+/* Footer */
 .footer {
     position: fixed;
     bottom: 0;
@@ -835,20 +401,62 @@ li {
     right: 0;
     padding: 6px;
     text-align: center;
-    border-top: 1px solid rgba(255,170,0,0.2);
+    border-top: 1px solid rgba(249,162,108,0.2);
     color: var(--text-muted);
     font-size: 0.6rem;
     font-family: var(--font-mono);
-    background: rgba(10, 26, 42, 0.9);
-    transition: left 0.3s ease;
+    background: rgba(255,247,232,0.9);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 80;
+}
+
+/* Footer se desplaza con el navbar */
+.nav:hover ~ .footer {
+    left: var(--nav-expanded);
 }
 
 .footer.expanded {
     left: var(--nav-collapsed);
 }
 
-/* RESPONSIVE */
+.nav.collapsed ~ .footer {
+    left: var(--nav-collapsed);
+}
+
+/* Notificaciones */
+.notification {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    background: white;
+    box-shadow: var(--shadow-card);
+    z-index: 200;
+    animation: slideIn 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.notification.success {
+    border-left: 4px solid var(--success);
+}
+
+.notification.error {
+    border-left: 4px solid var(--danger);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive general */
 @media (max-width: 900px) {
     .nav {
         width: var(--nav-collapsed);
@@ -858,9 +466,8 @@ li {
         display: none;
     }
     
-    .nav a::before {
+    .nav a i {
         margin-right: 0;
-        font-size: 1.2rem;
     }
     
     .content {
@@ -871,60 +478,13 @@ li {
         left: var(--nav-collapsed);
     }
     
-    .welcome-stats {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-        padding: 8px 12px;
+    /* En móvil, el hover no aplica igual */
+    .nav:hover {
+        width: var(--nav-collapsed);
     }
     
-    .stats-mini {
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-    
-    .card-estado-albercas,
-    .card-calidad-agua,
-    .card-mantenimientos,
-    .card-alertas {
-        padding: 8px;
-    }
-    
-    .pool-status-item {
-        grid-template-columns: 60px 60px 1fr 40px;
-        font-size: 0.65rem;
-    }
-    
-    .estado-albercas-container {
-        flex-direction: column;
-        gap: 16px;
-    }
-    
-    .dona-chart-container {
-        flex-direction: row;
-        width: 100%;
-        justify-content: center;
-        gap: 20px;
-    }
-    
-    .chart-legend {
-        width: auto;
-    }
-    
-    .stat-entradas,
-    .stat-salidas,
-    .stat-personas,
-    .stat-mantenimientos {
-        grid-column: auto;
-        grid-row: auto;
-    }
-    
-    .stat-extra-number {
-        font-size: 1.3rem;
-    }
-    
-    .stat-extra-label {
-        font-size: 0.55rem;
+    .nav:hover a span {
+        display: none;
     }
 }
 
@@ -949,6 +509,15 @@ li {
         display: none;
     }
     
+    .nav:hover {
+        width: 100%;
+        height: 50px;
+    }
+    
+    .nav:hover a span {
+        display: none;
+    }
+    
     .content {
         top: 60px;
         left: 0;
@@ -964,719 +533,7 @@ li {
         font-size: 1rem;
     }
     
-    .header p {
-        font-size: 0.65rem;
-    }
-    
     .hamburger-btn {
         display: none;
-    }
-    
-    #inicio .dashboard-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        overflow-y: auto;
-    }
-    
-    .welcome-stats,
-    .card-estado-albercas,
-    .card-calidad-agua,
-    .card-mantenimientos,
-    .card-alertas,
-    .stat-entradas,
-    .stat-salidas,
-    .stat-personas,
-    .stat-mantenimientos {
-        width: 100%;
-        margin-bottom: 0;
-    }
-    
-    .dona-chart-container {
-        flex-direction: column;
-        gap: 12px;
-    }
-    
-    .chart-legend {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .pool-status-item {
-        grid-template-columns: 50px 50px 1fr 35px;
-        font-size: 0.6rem;
-    }
-    
-    .stat-extra-number {
-        font-size: 1.1rem;
-    }
-    
-    .welcome-stats {
-        padding: 6px 10px;
-    }
-    
-    .stat-mini {
-        padding: 2px 6px;
-    }
-    
-    .stat-mini-icon {
-        font-size: 1rem;
-    }
-    
-    .stat-mini-number {
-        font-size: 0.85rem;
-    }
-}
-
-
-/* ====================================
-   MAPA INTERACTIVO ESTILO CLUB PENGUIN
-======================================= */
-
-.mapa-interactivo-container {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-.mapa-interactivo-container h3 {
-    font-size: 1rem;
-    color: var(--primary-gold);
-    margin-bottom: 8px;
-}
-
-.mapa-instruccion {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.mapa-albercas {
-    position: relative;
-    width: 100%;
-    min-height: 400px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.mapa-fondo {
-    position: relative;
-    display: inline-block;
-}
-
-.mapa-imagen {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
-}
-
-/* Hotspots - Áreas interactivas */
-.mapa-hotspot {
-    position: absolute;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 50%;
-    background: rgba(255,170,0,0.3);
-    border: 2px solid rgba(255,170,0,0.6);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.mapa-hotspot:hover {
-    opacity: 1;
-    background: rgba(255,170,0,0.6);
-    transform: scale(1.05);
-    box-shadow: 0 0 15px rgba(255,170,0,0.5);
-}
-
-/* Posiciones de los hotspots - AJUSTA SEGÚN TU MAPA */
-.hotspot-principal {
-    top: 30%;
-    left: 25%;
-    width: 80px;
-    height: 80px;
-}
-
-.hotspot-familiar {
-    top: 45%;
-    left: 45%;
-    width: 70px;
-    height: 70px;
-}
-
-.hotspot-infantil {
-    top: 60%;
-    left: 35%;
-    width: 60px;
-    height: 60px;
-}
-
-.hotspot-vista-mar {
-    top: 20%;
-    left: 70%;
-    width: 75px;
-    height: 75px;
-}
-
-.hotspot-deportiva {
-    top: 70%;
-    left: 65%;
-    width: 85px;
-    height: 85px;
-}
-
-/* Tooltips estilo Club Penguin */
-.hotspot-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(10, 26, 42, 0.95);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--primary-gold);
-    border-radius: 12px;
-    padding: 10px 15px;
-    min-width: 160px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    pointer-events: none;
-    z-index: 100;
-    margin-bottom: 10px;
-}
-
-.mapa-hotspot:hover .hotspot-tooltip {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(-5px);
-}
-
-.hotspot-tooltip::after {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 8px;
-    border-style: solid;
-    border-color: var(--primary-gold) transparent transparent transparent;
-}
-
-.tooltip-title {
-    font-family: var(--font-display);
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    margin-bottom: 5px;
-    text-align: center;
-}
-
-.tooltip-calidad {
-    font-size: 0.7rem;
-    color: var(--text-light);
-    line-height: 1.4;
-}
-
-/* Tabla de calidad del agua */
-.calidad-tabla {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-.calidad-tabla h3 {
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    margin-bottom: 15px;
-}
-
-.tabla-container {
-    overflow-x: auto;
-}
-
-.calidad-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.calidad-table th,
-.calidad-table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.calidad-table th {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.calidad-table td {
-    font-size: 0.8rem;
-}
-
-.calidad-good {
-    color: var(--success);
-    font-weight: bold;
-}
-
-.calidad-warning {
-    color: var(--warning);
-    font-weight: bold;
-}
-
-.estado-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: bold;
-}
-
-.estado-badge.optimo {
-    background: rgba(46,204,113,0.2);
-    color: var(--success);
-    border: 1px solid var(--success);
-}
-
-.estado-badge.revisar {
-    background: rgba(243,156,18,0.2);
-    color: var(--warning);
-    border: 1px solid var(--warning);
-}
-
-/* Formulario de calidad */
-.calidad-formulario {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-}
-
-.calidad-formulario h3 {
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    margin-bottom: 15px;
-}
-
-.form-calidad {
-    margin-top: 0;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.btn-registrar {
-    background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
-    color: var(--primary-blue-dark);
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 10px 24px;
-    font-family: var(--font-display);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    width: 100%;
-}
-
-.btn-registrar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,170,0,0.3);
-}
-
-/* Versión alternativa: Mapa con SVG interactivo */
-.mapa-svg-container {
-    text-align: center;
-}
-
-.mapa-svg {
-    max-width: 100%;
-    height: auto;
-    cursor: pointer;
-}
-
-.mapa-svg path {
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.mapa-svg path:hover {
-    filter: brightness(1.2);
-    stroke: var(--primary-gold);
-    stroke-width: 3;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .mapa-hotspot {
-        opacity: 0.6;
-        width: 40px !important;
-        height: 40px !important;
-    }
-    
-    .hotspot-tooltip {
-        min-width: 120px;
-        padding: 6px 10px;
-    }
-    
-    .tooltip-title {
-        font-size: 0.7rem;
-    }
-    
-    .tooltip-calidad {
-        font-size: 0.6rem;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ====================================
-   MAPA INTERACTIVO ESTILO CLUB PENGUIN
-======================================= */
-
-.mapa-interactivo-container {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-.mapa-interactivo-container h3 {
-    font-size: 1rem;
-    color: var(--primary-gold);
-    margin-bottom: 8px;
-}
-
-.mapa-instruccion {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    margin-bottom: 20px;
-    text-align: center;
-}
-
-.mapa-imagen-wrapper {
-    position: relative;
-    text-align: center;
-    background: rgba(0,0,0,0.2);
-    border-radius: var(--radius-card);
-    padding: 10px;
-}
-
-.mapa-imagen {
-    max-width: 100%;
-    height: auto;
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-card);
-    cursor: pointer;
-}
-
-/* Áreas interactivas - efecto hover */
-.hotspot-area {
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.hotspot-area:hover {
-    filter: brightness(1.1);
-    outline: 2px solid var(--primary-gold);
-}
-
-/* Tooltip flotante estilo burbuja */
-.mapa-tooltip {
-    position: fixed;
-    background: rgba(10, 26, 42, 0.98);
-    backdrop-filter: blur(12px);
-    border: 2px solid var(--primary-gold);
-    border-radius: 20px;
-    padding: 15px 20px;
-    min-width: 220px;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.2s ease;
-    z-index: 1000;
-    pointer-events: none;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-}
-
-.mapa-tooltip.visible {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-5px);
-}
-
-.tooltip-arrow {
-    position: absolute;
-    bottom: -12px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 12px solid transparent;
-    border-right: 12px solid transparent;
-    border-top: 12px solid var(--primary-gold);
-}
-
-.tooltip-arrow::after {
-    content: '';
-    position: absolute;
-    top: -13px;
-    left: -10px;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid var(--primary-blue-dark);
-}
-
-.tooltip-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    color: var(--primary-gold);
-    text-align: center;
-    margin-bottom: 10px;
-    padding-bottom: 8px;
-    border-bottom: 1px dashed rgba(255,170,0,0.3);
-}
-
-.tooltip-calidad {
-    font-size: 0.8rem;
-}
-
-.calidad-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-.calidad-row .label {
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.calidad-row .value {
-    color: var(--primary-gold);
-    font-weight: bold;
-    font-family: var(--font-mono);
-}
-
-.calidad-row .value.estado {
-    padding: 2px 10px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-}
-
-.calidad-row .value.estado.optimo {
-    background: rgba(46,204,113,0.2);
-    color: var(--success);
-}
-
-.calidad-row .value.estado.atencion {
-    background: rgba(243,156,18,0.2);
-    color: var(--warning);
-}
-
-.calidad-row .value.estado.critico {
-    background: rgba(231,76,60,0.2);
-    color: var(--danger);
-}
-
-/* Leyenda del mapa */
-.mapa-leyenda {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 20px;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255,170,0,0.2);
-    flex-wrap: wrap;
-}
-
-.leyenda-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-}
-
-.leyenda-color {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-}
-
-.leyenda-color.optimo {
-    background: var(--success);
-    box-shadow: 0 0 5px var(--success);
-}
-
-.leyenda-color.atencion {
-    background: var(--warning);
-    box-shadow: 0 0 5px var(--warning);
-}
-
-.leyenda-color.critico {
-    background: var(--danger);
-    box-shadow: 0 0 5px var(--danger);
-}
-
-.leyenda-icon {
-    font-size: 1rem;
-}
-
-/* Tabla de calidad */
-.calidad-tabla {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-    margin-bottom: 24px;
-}
-
-.calidad-tabla h3 {
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    margin-bottom: 15px;
-}
-
-.tabla-container {
-    overflow-x: auto;
-}
-
-.calidad-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.calidad-table th,
-.calidad-table td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.calidad-table th {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.calidad-table td {
-    font-size: 0.8rem;
-}
-
-.calidad-good {
-    color: var(--success);
-    font-weight: bold;
-}
-
-.calidad-warning {
-    color: var(--warning);
-    font-weight: bold;
-}
-
-.text-muted {
-    color: var(--text-muted);
-    text-align: center;
-}
-
-.estado-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.7rem;
-    font-weight: bold;
-}
-
-.estado-badge.optimo {
-    background: rgba(46,204,113,0.2);
-    color: var(--success);
-    border: 1px solid var(--success);
-}
-
-/* Formulario */
-.calidad-formulario {
-    background: rgba(255,255,255,0.05);
-    border: var(--border-gold);
-    border-radius: var(--radius-card);
-    padding: 20px;
-}
-
-.calidad-formulario h3 {
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    margin-bottom: 15px;
-}
-
-.form-calidad {
-    margin-top: 0;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    margin-bottom: 15px;
-}
-
-.btn-registrar {
-    background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
-    color: var(--primary-blue-dark);
-    border: none;
-    border-radius: var(--radius-sm);
-    padding: 12px 24px;
-    font-family: var(--font-display);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    width: 100%;
-}
-
-.btn-registrar:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(255,170,0,0.3);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .mapa-leyenda {
-        gap: 12px;
-    }
-    
-    .leyenda-item {
-        font-size: 0.6rem;
-    }
-    
-    .tooltip-title {
-        font-size: 0.9rem;
-    }
-    
-    .calidad-row {
-        font-size: 0.7rem;
-    }
-    
-    .form-row {
-        grid-template-columns: 1fr;
     }
 }
