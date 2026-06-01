@@ -466,3 +466,52 @@
         display: none;
     }
 }
+
+.lista-albercas {
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(249, 162, 108, 0.3);
+}
+
+.lista-titulo {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: var(--primary-blue);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.lista-albercas-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lista-albercas-ul li {
+    padding: 8px 12px;
+    background: white;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+    text-align: center;
+}
+
+.lista-albercas-ul li:hover {
+    background: var(--primary-gold);
+    color: white;
+    transform: translateX(5px);
+    border-color: var(--primary-gold-dark);
+}
+
+.lista-albercas-ul li.activo-lista {
+    background: var(--primary-blue-mid);
+    color: white;
+    border-color: var(--primary-gold);
+}
