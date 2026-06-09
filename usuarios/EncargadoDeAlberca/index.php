@@ -1,20 +1,22 @@
 <?php
 // usuarios/EncargadoDeAlberca/index.php
-session_start();
 
-require_once __DIR__ . '/../../controllers/AuthController.php';
+// 1. Llamamos a nuestro nuevo guardia de seguridad
+require_once __DIR__ . '/../../controllers/DashboardController.php';
 require_once __DIR__ . '/../../controllers/EncargadoDeAlberca/EncargadoController.php';
 
-$auth = new AuthController();
-$auth->requireRol(1); // Solo encargado de alberca
+$dashboard = new DashboardController();
 
-$usuario = $auth->getCurrentUser();
+// 2. Verificamos que el usuario tenga el rol 2 (Encargado de Alberca)
+$usuario = $dashboard->verificarAcceso(2);
+
+// 3. Inicializamos el controlador pasándole el ID del encargado
 $controller = new EncargadoController($usuario['id']);
 
 $mensaje = '';
 $tipo_mensaje = '';
 
-// Procesar formularios
+// 4. Procesar acciones (botones, formularios)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     $result = $controller->procesarAccion($action, $_POST);
@@ -22,12 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo_mensaje = $result['success'] ? 'success' : 'error';
 }
 
-// Obtener datos del dashboard
+// 5. Obtener todos los datos para llenar el panel visual
 $data = $controller->getDashboardData();
 
-// Extraer variables para la vista
+// 6. Extraer las variables para que la vista las pueda usar
 extract($data);
 
-// Incluir la vista (el CSS está DENTRO de la vista, no aquí)
+// 7. Mostrar la pantalla
 include __DIR__ . '/../../views/EncargadoDeAlberca/index.php';
 ?>

@@ -213,5 +213,29 @@
         });
     }
     </script>
+    <script>
+    // ==========================================
+    // SISTEMA DE CIERRE DE SESIÓN POR INACTIVIDAD
+    // ==========================================
+    let inactivityTimer;
+
+    function resetTimer() {
+        clearTimeout(inactivityTimer);
+        // 900,000 milisegundos = 15 minutos
+        inactivityTimer = setTimeout(expulsarUsuario, 900000); 
+    }
+
+    function expulsarUsuario() {
+        // Redirigir al archivo que destruye la sesión (ajusta la ruta según donde estés)
+        window.location.href = '../../logout.php'; 
+    }
+
+    // Reiniciar el reloj cada vez que el usuario haga algo en la pantalla
+    window.onload = resetTimer;
+    document.onmousemove = resetTimer; // Si mueve el mouse
+    document.onkeypress = resetTimer;  // Si teclea algo
+    document.onclick = resetTimer;     // Si da clic
+    document.onscroll = resetTimer;    // Si baja la pantalla
+</script>
 </body>
 </html>

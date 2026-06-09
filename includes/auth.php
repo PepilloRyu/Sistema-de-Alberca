@@ -8,6 +8,41 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 class Auth {
+    
+    // ==========================================
+    // NUEVA FUNCIÓN: REGISTRO DE USUARIOS
+    // ==========================================
+    public static function register($nombre, $email, $password) {
+        $conn = Database::getInstance()->getConnection();
+        
+        // 1. Verificar si el correo ya existe
+        $stmtCheck = $conn->prepare("SELECT id FROM usuarios WHERE email = ?");
+        $stmtCheck->bind_param("s", $email);
+        $stmtCheck->execute();
+        $resultCheck = $stmtCheck->get_result();
+        
+        if ($resultCheck->num_rows > 0) {
+            $stmtCheck->close();
+            return false; // El correo ya está registrado
+        }
+        $stmtCheck->close();
+        
+        // 2. Hashear (encriptar) la contraseña
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        // 3. Insertar el nuevo usuario (Se guarda sin rol específico por ahora)
+        $stmtInsert = $conn->prepare("INSERT INTO usuarios (nombre, email, password, activo) VALUES (?, ?, ?, 1)");
+        $stmtInsert->bind_param("sss", $nombre, $email, $hashedPassword);
+        
+        $success = $stmtInsert->execute();
+        $stmtInsert->close();
+        
+        return $success;
+    }
+
+    // ==========================================
+    // FUNCIÓN: INICIO DE SESIÓN
+    // ==========================================
     public static function login($email, $password) {
         $conn = Database::getInstance()->getConnection();
         

@@ -284,8 +284,10 @@ class EncargadoController {
         $catalogo_prioridades = $this->conn->query("SELECT id_prioridad, nombre FROM cat_prioridad")->fetch_all(MYSQLI_ASSOC);
         $catalogo_tipos_mantenimiento = $this->conn->query("SELECT id_tipo_mantenimiento, nombre FROM cat_tipo_mantenimiento")->fetch_all(MYSQLI_ASSOC);
         $catalogo_equipos = $this->conn->query("SELECT id_equipo, nombre FROM cat_equipos WHERE activo = 1")->fetch_all(MYSQLI_ASSOC);
-        $catalogo_tecnicos = $this->conn->query("SELECT id, nombre FROM usuarios WHERE id_rol = 3 AND activo = 1")->fetch_all(MYSQLI_ASSOC);
-        $catalogo_personal_limpieza = $this->conn->query("SELECT id, nombre FROM usuarios WHERE id_rol = 2 AND activo = 1")->fetch_all(MYSQLI_ASSOC);
+        
+        // CORRECCIÓN DE ROLES APLICADA AQUÍ: Limpieza = 3, Técnico = 4
+        $catalogo_personal_limpieza = $this->conn->query("SELECT id, nombre FROM usuarios WHERE id_rol = 3 AND activo = 1")->fetch_all(MYSQLI_ASSOC);
+        $catalogo_tecnicos = $this->conn->query("SELECT id, nombre FROM usuarios WHERE id_rol = 4 AND activo = 1")->fetch_all(MYSQLI_ASSOC);
         
         // Contar estados para gráfica
         $operativas = 0;

@@ -20,7 +20,6 @@
 @import url('mantenimiento.css');
 @import url('control-acceso.css');
 
-
 :root {
     /* COLORES PRINCIPALES - Paleta Te-Pathé */
     --primary-blue:        #1a5f7a;
@@ -47,11 +46,11 @@
     --shadow-card:   0 4px 16px rgba(0,0,0,0.08);
     --border-gold:   1px solid rgba(249,162,108,0.35);
     
-    /* Variables para el grid */
-    --nav-width: 70px;  /* Cambiado: estado contraído por defecto */
-    --nav-expanded: 260px;
-    --nav-collapsed: 70px;
-    --grid-cols: 21;    /* Ajustado para navbar contraído */
+    /* Variables para el grid AUMENTADAS */
+    --nav-width: 85px;  
+    --nav-expanded: 280px;
+    --nav-collapsed: 85px;
+    --grid-cols: 21;    
     --grid-rows: 12;
 }
 
@@ -62,7 +61,7 @@
 }
 
 html {
-    font-size: 13px;
+    font-size: 16px; /* ¡AQUÍ ESTABA EL PROBLEMA PRINCIPAL! Lo subimos a 16px */
     scroll-behavior: smooth;
     height: 100%;
     overflow: hidden;
@@ -72,14 +71,14 @@ body {
     font-family: var(--font-body);
     background-color: #fff7e8;
     color: var(--text-dark);
-    line-height: 1.4;
+    line-height: 1.6;
     height: 100vh;
     overflow: hidden;
     background-image: radial-gradient(ellipse at 20% 20%, rgba(31,95,122,0.05) 0%, transparent 60%),
                       radial-gradient(ellipse at 80% 80%, rgba(79,157,166,0.05) 0%, transparent 60%);
 }
 
-/* HEADER */
+/* HEADER AJUSTADO */
 .header {
     position: fixed;
     top: 0;
@@ -93,7 +92,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 24px;
-    height: 60px;
+    height: 75px; /* Más altura */
 }
 
 .header .user-info {
@@ -103,23 +102,23 @@ body {
 
 .header h1 {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 2rem;
     letter-spacing: 2px;
     color: var(--primary-gold);
 }
 
 .header p {
-    font-size: 0.75rem;
+    font-size: 1rem;
     color: var(--text-light);
 }
 
 .header .logout a {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: 0.9rem;
     color: var(--primary-gold);
     text-decoration: none;
     border: 1px solid var(--primary-gold);
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 6px;
     transition: all 0.2s ease;
 }
@@ -129,77 +128,33 @@ body {
     color: var(--primary-blue);
 }
 
-/* BOTÓN HAMBURGUESA - Oculto por defecto con hover */
-.hamburger-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    margin-right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 101;
-    border-radius: 8px;
-    transition: background 0.2s ease;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-}
-
-.hamburger-btn:hover {
-    background: rgba(249,162,108,0.1);
-}
-
-.hamburger-line {
-    width: 22px;
-    height: 2px;
-    background-color: var(--primary-gold);
-    transition: all 0.3s ease;
-    border-radius: 2px;
-}
-
-.hamburger-btn.active .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-}
-
-.hamburger-btn.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.hamburger-btn.active .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-}
-
 /* NAVEGACIÓN - ANIMACIÓN HOVER */
 .nav {
     position: fixed;
     left: 0;
-    top: 60px;
+    top: 75px;
     bottom: 0;
-    width: var(--nav-width); /* 70px contraído */
+    width: var(--nav-width); 
     background: rgba(13,62,82,0.95);
     backdrop-filter: blur(20px);
     border-right: 1px solid var(--border-gold);
     display: flex;
     flex-direction: column;
-    padding: 16px 0;
-    gap: 2px;
+    padding: 20px 0;
+    gap: 5px;
     z-index: 90;
     transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     overflow-x: hidden;
     overflow-y: auto;
 }
 
-/* Efecto hover: se expande al pasar el cursor */
 .nav:hover {
-    width: var(--nav-expanded); /* 260px expandido */
+    width: var(--nav-expanded); 
 }
 
-/* Los spans solo se muestran cuando el navbar está expandido (hover) */
 .nav a span {
     display: inline-block;
-    margin-left: 12px;
+    margin-left: 15px;
     opacity: 0;
     transition: opacity 0.2s ease 0.05s;
     white-space: nowrap;
@@ -209,7 +164,6 @@ body {
     opacity: 1;
 }
 
-/* Estado collapsed (cuando el usuario hace clic en hamburguesa) */
 .nav.collapsed {
     width: var(--nav-collapsed);
 }
@@ -231,20 +185,20 @@ body {
 .nav a {
     display: flex;
     align-items: center;
-    padding: 10px 20px;
+    padding: 15px 25px; /* Más área de clic */
     color: #bdc3c7;
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 1.1rem; /* Letras del menú más grandes */
     font-weight: 500;
     transition: all 0.2s ease;
-    border-left: 3px solid transparent;
+    border-left: 4px solid transparent;
     white-space: nowrap;
 }
 
 .nav a i {
-    width: 24px;
+    width: 35px;
     text-align: center;
-    font-size: 1.1rem;
+    font-size: 1.6rem; /* ¡ICONOS MÁS GRANDES! */
     margin-right: 12px;
     flex-shrink: 0;
 }
