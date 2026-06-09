@@ -1,0 +1,539 @@
+/* ====================================
+   DASHBOARD ENCARGADO - NUESTRAS ALBERCAS
+   Paleta de colores: Te-Pathé Acuático
+   - Azul principal: #1a5f7a
+   - Azul oscuro: #0d3e52
+   - Verde agua: #4f9da6
+   - Turquesa: #7fc1c5
+   - Naranja: #f9a26c
+   - Naranja oscuro: #e67e22
+   - Fondo beige: #fff7e8
+   - Texto oscuro: #2c3e50
+======================================= */
+
+@import url('inicio.css');
+@import url('horarios.css');
+@import url('calidad-agua.css');
+@import url('mapa.css');
+@import url('personal.css');
+@import url('reportes.css');
+@import url('mantenimiento.css');
+@import url('control-acceso.css');
+
+
+:root {
+    /* COLORES PRINCIPALES - Paleta Te-Pathé */
+    --primary-blue:        #1a5f7a;
+    --primary-blue-dark:   #0d3e52;
+    --primary-blue-mid:    #4f9da6;
+    --primary-gold:        #f9a26c;
+    --primary-gold-dark:   #e67e22;
+    --accent-orange:       #f9a26c;
+    --accent-orange-dark:  #e67e22;
+    --text-light:          #fff7e8;
+    --text-muted:          #7f8c8d;
+    --text-dark:           #2c3e50;
+    --card-bg:             rgba(31, 95, 122, 0.08);
+    --success:             #4f9da6;
+    --warning:             #f9a26c;
+    --danger:              #e67e22;
+    --info:                #7fc1c5;
+
+    --font-display:  'Bebas Neue', sans-serif;
+    --font-body:     'DM Sans', sans-serif;
+    --font-mono:     'JetBrains Mono', monospace;
+    --radius-card:   16px;
+    --radius-sm:     10px;
+    --shadow-card:   0 4px 16px rgba(0,0,0,0.08);
+    --border-gold:   1px solid rgba(249,162,108,0.35);
+    
+    /* Variables para el grid */
+    --nav-width: 70px;  /* Cambiado: estado contraído por defecto */
+    --nav-expanded: 260px;
+    --nav-collapsed: 70px;
+    --grid-cols: 21;    /* Ajustado para navbar contraído */
+    --grid-rows: 12;
+}
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 13px;
+    scroll-behavior: smooth;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: #fff7e8;
+    color: var(--text-dark);
+    line-height: 1.4;
+    height: 100vh;
+    overflow: hidden;
+    background-image: radial-gradient(ellipse at 20% 20%, rgba(31,95,122,0.05) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 80%, rgba(79,157,166,0.05) 0%, transparent 60%);
+}
+
+/* HEADER */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background: rgba(26,95,122,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 2px solid var(--primary-gold);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    height: 60px;
+}
+
+.header .user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.header h1 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    letter-spacing: 2px;
+    color: var(--primary-gold);
+}
+
+.header p {
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.header .logout a {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--primary-gold);
+    text-decoration: none;
+    border: 1px solid var(--primary-gold);
+    padding: 4px 12px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.header .logout a:hover {
+    background: var(--primary-gold);
+    color: var(--primary-blue);
+}
+
+/* BOTÓN HAMBURGUESA - Oculto por defecto con hover */
+.hamburger-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 101;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.hamburger-btn:hover {
+    background: rgba(249,162,108,0.1);
+}
+
+.hamburger-line {
+    width: 22px;
+    height: 2px;
+    background-color: var(--primary-gold);
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.hamburger-btn.active .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* NAVEGACIÓN - ANIMACIÓN HOVER */
+.nav {
+    position: fixed;
+    left: 0;
+    top: 60px;
+    bottom: 0;
+    width: var(--nav-width); /* 70px contraído */
+    background: rgba(13,62,82,0.95);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border-gold);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    gap: 2px;
+    z-index: 90;
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Efecto hover: se expande al pasar el cursor */
+.nav:hover {
+    width: var(--nav-expanded); /* 260px expandido */
+}
+
+/* Los spans solo se muestran cuando el navbar está expandido (hover) */
+.nav a span {
+    display: inline-block;
+    margin-left: 12px;
+    opacity: 0;
+    transition: opacity 0.2s ease 0.05s;
+    white-space: nowrap;
+}
+
+.nav:hover a span {
+    opacity: 1;
+}
+
+/* Estado collapsed (cuando el usuario hace clic en hamburguesa) */
+.nav.collapsed {
+    width: var(--nav-collapsed);
+}
+
+.nav.collapsed a span {
+    display: none;
+    opacity: 0;
+}
+
+.nav.collapsed:hover {
+    width: var(--nav-collapsed);
+}
+
+.nav.collapsed:hover a span {
+    display: none;
+    opacity: 0;
+}
+
+.nav a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #bdc3c7;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border-left: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.nav a i {
+    width: 24px;
+    text-align: center;
+    font-size: 1.1rem;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.nav.collapsed a i {
+    margin-right: 0;
+}
+
+.nav a:hover, .nav a.active {
+    color: var(--primary-gold);
+    border-left-color: var(--primary-gold);
+    background: rgba(249,162,108,0.08);
+}
+
+/* CONTENIDO - Se desplaza con el navbar */
+.content {
+    position: fixed;
+    top: 60px;
+    left: var(--nav-width); /* 70px */
+    right: 0;
+    bottom: 0;
+    padding: 12px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+/* Cuando el navbar está expandido por hover, el contenido se desplaza */
+.nav:hover ~ .content {
+    left: var(--nav-expanded);
+}
+
+/* Cuando el navbar tiene clase collapsed, el contenido se ajusta */
+.content.expanded {
+    left: var(--nav-collapsed);
+}
+
+.nav.collapsed ~ .content {
+    left: var(--nav-collapsed);
+}
+
+.nav.collapsed:hover ~ .content {
+    left: var(--nav-collapsed);
+}
+
+/* SECCIONES - Ocultar/Mostrar */
+.section-container {
+    display: none;
+    height: 100%;
+    width: 100%;
+}
+
+.section-container.active {
+    display: block;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Otras secciones - scroll */
+#horarios, #calidad-agua, #personal,
+#reportes, #mantenimiento, #acceso {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+/* Formularios generales */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+label {
+    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+label i {
+    margin-right: 6px;
+    color: var(--primary-gold);
+}
+
+input, select, textarea {
+    background: rgba(255,255,255,0.9);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: var(--radius-sm);
+    color: var(--text-dark);
+    padding: 6px 10px;
+    font-size: 0.75rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-gold);
+    outline: none;
+}
+
+button[type="submit"] {
+    background: linear-gradient(135deg, var(--primary-gold), var(--accent-orange));
+    color: var(--primary-blue);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    align-self: flex-start;
+    margin-top: 6px;
+}
+
+button[type="submit"] i {
+    margin-left: 8px;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(249,162,108,0.3);
+}
+
+/* Listas generales */
+ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+li {
+    padding: 6px 10px;
+    background: rgba(26,95,122,0.05);
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-dark);
+}
+
+/* Footer */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: var(--nav-width);
+    right: 0;
+    padding: 6px;
+    text-align: center;
+    border-top: 1px solid rgba(249,162,108,0.2);
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    background: rgba(255,247,232,0.9);
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 80;
+}
+
+/* Footer se desplaza con el navbar */
+.nav:hover ~ .footer {
+    left: var(--nav-expanded);
+}
+
+.footer.expanded {
+    left: var(--nav-collapsed);
+}
+
+.nav.collapsed ~ .footer {
+    left: var(--nav-collapsed);
+}
+
+/* Notificaciones */
+.notification {
+    position: fixed;
+    top: 70px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    background: white;
+    box-shadow: var(--shadow-card);
+    z-index: 200;
+    animation: slideIn 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.notification.success {
+    border-left: 4px solid var(--success);
+}
+
+.notification.error {
+    border-left: 4px solid var(--danger);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Responsive general */
+@media (max-width: 900px) {
+    .nav {
+        width: var(--nav-collapsed);
+    }
+    
+    .nav a span {
+        display: none;
+    }
+    
+    .nav a i {
+        margin-right: 0;
+    }
+    
+    .content {
+        left: var(--nav-collapsed);
+    }
+    
+    .footer {
+        left: var(--nav-collapsed);
+    }
+    
+    /* En móvil, el hover no aplica igual */
+    .nav:hover {
+        width: var(--nav-collapsed);
+    }
+    
+    .nav:hover a span {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .nav {
+        top: auto;
+        bottom: 0;
+        width: 100%;
+        height: 50px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+        border-right: none;
+        border-top: 1px solid var(--border-gold);
+    }
+    
+    .nav.collapsed {
+        width: 100%;
+    }
+    
+    .nav a span {
+        display: none;
+    }
+    
+    .nav:hover {
+        width: 100%;
+        height: 50px;
+    }
+    
+    .nav:hover a span {
+        display: none;
+    }
+    
+    .content {
+        top: 60px;
+        left: 0;
+        bottom: 50px;
+    }
+    
+    .footer {
+        left: 0;
+        bottom: 50px;
+    }
+    
+    .header h1 {
+        font-size: 1rem;
+    }
+    
+    .hamburger-btn {
+        display: none;
+    }
+}
