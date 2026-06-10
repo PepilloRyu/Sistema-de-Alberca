@@ -1,0 +1,21 @@
+[2026-06-10T09:49:35-06:00] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'albercas.equipo_revisiones' doesn't exist
+SELECT eq.*,a.nombre alberca,
+       (SELECT er.comentario FROM equipo_revisiones er WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_comentario,
+       (SELECT u.nombre FROM equipo_revisiones er LEFT JOIN usuarios u ON u.idUsuario=er.revisado_por WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_tecnico
+     FROM equipos_alberca eq
+     JOIN albercas a ON a.idAlberca=eq.idAlberca
+     ORDER BY FIELD(eq.estado,'critico','fuera_servicio','revision','operativo'),COALESCE(eq.proxima_revision,'2999-12-31'),a.idAlberca,eq.tipo,eq.nombre
+[2026-06-10T09:49:38-06:00] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'albercas.equipo_revisiones' doesn't exist
+SELECT eq.*,a.nombre alberca,
+       (SELECT er.comentario FROM equipo_revisiones er WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_comentario,
+       (SELECT u.nombre FROM equipo_revisiones er LEFT JOIN usuarios u ON u.idUsuario=er.revisado_por WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_tecnico
+     FROM equipos_alberca eq
+     JOIN albercas a ON a.idAlberca=eq.idAlberca
+     ORDER BY FIELD(eq.estado,'critico','fuera_servicio','revision','operativo'),COALESCE(eq.proxima_revision,'2999-12-31'),a.idAlberca,eq.tipo,eq.nombre
+[2026-06-10T09:49:53-06:00] SQLSTATE[42S02]: Base table or view not found: 1146 Table 'albercas.equipo_revisiones' doesn't exist
+SELECT eq.*,a.nombre alberca,
+       (SELECT er.comentario FROM equipo_revisiones er WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_comentario,
+       (SELECT u.nombre FROM equipo_revisiones er LEFT JOIN usuarios u ON u.idUsuario=er.revisado_por WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_tecnico
+     FROM equipos_alberca eq
+     JOIN albercas a ON a.idAlberca=eq.idAlberca
+     ORDER BY FIELD(eq.estado,'critico','fuera_servicio','revision','operativo'),COALESCE(eq.proxima_revision,'2999-12-31'),a.idAlberca,eq.tipo,eq.nombre

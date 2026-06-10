@@ -1,0 +1,26 @@
+Sistema de Albercas - Credenciales demo
+
+Contraseña para todos los usuarios demo: Admin123!
+
+Administrador:
+  admin@albercas.local
+
+Encargado de Alberca:
+  encargado@albercas.local
+
+Personal de Limpieza:
+  limpieza@albercas.local
+
+Técnico de Mantenimiento:
+  tecnico@albercas.local
+
+Empleado Pendiente / Sin Rol:
+  pendiente@albercas.local
+
+IMPORTANTE:
+La columna usuarios.password_hash NO debe tener Admin123! en texto plano.
+Debe tener un hash bcrypt como:
+$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S
+
+Si el login marca error de base de datos, revisa config/db.php y ejecuta:
+http://localhost:8080/Sistema-de-Alberca/tools/diagnostico_login.php
