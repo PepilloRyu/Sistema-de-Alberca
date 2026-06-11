@@ -1,7 +1,7 @@
 <?php $user=current_user(); ?>
 <header class="topbar">
   <div class="topbar-title">
-    <div class="eyebrow">Operación interna · 07:00 - 21:00</div>
+    <div class="eyebrow">Operación interna</div>
     <h1><?= e($pageTitle) ?></h1>
   </div>
   <div class="topbar-actions">

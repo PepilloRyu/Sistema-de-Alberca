@@ -6,6 +6,24 @@ if (!function_exists('mb_substr')) { function mb_substr(string $s, int $start, ?
 if (!function_exists('mb_strimwidth')) { function mb_strimwidth(string $s, int $start, int $width, string $trim_marker='', ?string $enc=null): string { $slice = substr($s, $start, $width); return strlen($s) > $start + $width ? rtrim($slice).$trim_marker : $slice; } }
 define('ALBERCAS_ROOT', dirname(__DIR__, 2));
 function config(string $key, mixed $default=null): mixed { static $c=null; $c ??= require ALBERCAS_ROOT.'/config/app.php'; return $c[$key] ?? $default; }
+
+function system_setting(string $key, mixed $default=null): mixed {
+  static $cache=[];
+  if(array_key_exists($key,$cache)) return $cache[$key];
+  $cache[$key]=$default;
+  if(!class_exists('Database')) return $cache[$key];
+  try{
+    $db=Database::connection();
+    if(!$db) return $cache[$key];
+    $stmt=$db->prepare("SELECT valor FROM configuraciones_sistema WHERE clave=:clave LIMIT 1");
+    $stmt->execute(['clave'=>$key]);
+    $value=$stmt->fetchColumn();
+    if($value!==false) $cache[$key]=$value;
+  }catch(Throwable $e){
+    $cache[$key]=$default;
+  }
+  return $cache[$key];
+}
 function e(mixed $v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function url(string $path=''): string {
   $base=config('base_url','');

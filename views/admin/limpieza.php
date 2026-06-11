@@ -2,14 +2,14 @@
 $turnos = $turnos ?? [];
 $areas = $areas ?? [];
 $tasks = $tasks ?? [];
-$metrics = $metrics ?? ['total'=>0,'completas'=>0,'vencidas'=>0];
+$metrics = $metrics ?? ['total'=>0,'completas'=>0,'pendientes'=>0];
 $checklist = $checklist ?? [];
 $pools = $pools ?? [];
 $empleados = $empleados ?? [];
 
 $totalChecklist = max(0, (int)($metrics['total'] ?? count($checklist)));
 $doneChecklist = max(0, (int)($metrics['completas'] ?? 0));
-$lateChecklist = max(0, (int)($metrics['vencidas'] ?? 0));
+$lateChecklist = max(0, (int)($metrics['pendientes'] ?? 0));
 if ($totalChecklist === 0 && $checklist) {
   $totalChecklist = count($checklist);
   $doneChecklist = count(array_filter($checklist, fn($x) => (int)($x['completado'] ?? 0) === 1));
@@ -54,7 +54,7 @@ $coverageGlobal = count($areas) > 0 ? min(100, (int)round((count(array_filter($a
 $kpis = [
   ['label'=>'Turnos hoy','value'=>count($todayTurns),'sub'=>count($activeTurns).' activos ahora','icon'=>'fa-calendar-check','tone'=>'aqua'],
   ['label'=>'Checklist','value'=>$completionPct.'%','sub'=>$doneChecklist.'/'.$totalChecklist.' completadas','icon'=>'fa-clipboard-check','tone'=>'violet'],
-  ['label'=>'Pendientes','value'=>$pendingChecklist,'sub'=>$lateChecklist.' vencidas','icon'=>'fa-hourglass-half','tone'=>$lateChecklist>0?'coral':'amber'],
+  ['label'=>'Pendientes','value'=>$pendingChecklist,'sub'=>$lateChecklist.' pendientes','icon'=>'fa-hourglass-half','tone'=>$lateChecklist>0?'coral':'amber'],
   ['label'=>'Áreas cubiertas','value'=>$coverageGlobal.'%','sub'=>count(array_filter($areaCoverage)).'/'.count($areas).' áreas','icon'=>'fa-map-location-dot','tone'=>'blue'],
   ['label'=>'Equipo','value'=>count($empleados),'sub'=>'personal activo','icon'=>'fa-people-group','tone'=>'mint'],
 ];
@@ -146,7 +146,7 @@ function clean_short_time(?string $time): string {
       <div class="section-head tight clean-headline">
         <div>
           <h3>Checklist crítico del día</h3>
-          <span>RF10 · tareas completadas, pendientes y vencidas.</span>
+          <span>RF10 · tareas completadas y pendientes.</span>
         </div>
         <a class="mini-action" href="<?= e(page_url('admin-reportes')) ?>"><i class="fa-solid fa-chart-line"></i> Reporte</a>
       </div>
@@ -166,7 +166,7 @@ function clean_short_time(?string $time): string {
                 <b><?= e($item['tarea'] ?? 'Tarea') ?></b>
                 <small><?= e(clean_pool_label((string)($item['alberca'] ?? 'Alberca')).' · '.($item['area'] ?? 'Área').' · '.clean_short_time($item['hora_limite'] ?? null)) ?></small>
               </div>
-              <span><?= $completed?'OK':($isLate?'Vencida':'Pendiente') ?></span>
+              <span><?= $completed?'OK':($isLate?'Pendiente':'Pendiente') ?></span>
             </div>
           <?php endforeach; ?>
         </div>
@@ -232,7 +232,7 @@ function clean_short_time(?string $time): string {
   new Chart(el, {
     type: 'doughnut',
     data: {
-      labels: ['Completadas','Pendientes','Vencidas'],
+      labels: ['Completadas','Pendientes','Pendientes'],
       datasets: [{
         data: [<?= (int)$doneChecklist ?>, <?= (int)max(0,$pendingChecklist-$lateChecklist) ?>, <?= (int)$lateChecklist ?>],
         backgroundColor: ['#00B8A9','#38BDF8','#FF6B6B'],

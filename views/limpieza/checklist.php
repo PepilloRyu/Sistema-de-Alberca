@@ -7,7 +7,8 @@ $completed = 0;
 $overdue = 0;
 $pending = 0;
 $nextTask = null;
-$poolNames = ['Alberca principal','Alberca familiar','Alberca infantil','Alberca vista al mar','Alberca deportiva'];
+$poolNames = array_map(fn($pool)=>(string)($pool['nombre'] ?? ''), $pools ?? []);
+$poolNames = array_values(array_filter($poolNames));
 $poolStats = [];
 foreach($poolNames as $p){ $poolStats[$p] = ['total'=>0,'done'=>0,'pending'=>0,'overdue'=>0]; }
 $areaStats = [];
@@ -55,7 +56,7 @@ $areaValues = array_map(fn($x)=>$x['total'] ? (int)round(($x['done']/$x['total']
     </div>
     <div class="clean-check-kpi coral">
       <i class="fa-solid fa-triangle-exclamation"></i>
-      <div><span>Vencidas</span><b><?= e((string)$overdue) ?></b><small><?= $overdue ? 'Requiere atención' : 'Sin vencimientos' ?></small></div>
+      <div><span>Pendientes</span><b><?= e((string)$overdue) ?></b><small><?= $overdue ? 'Requiere atención' : 'Sin vencimientos' ?></small></div>
     </div>
     <div class="clean-check-kpi violet">
       <i class="fa-solid fa-clock"></i>
@@ -84,7 +85,7 @@ $areaValues = array_map(fn($x)=>$x['total'] ? (int)round(($x['done']/$x['total']
             $limit = DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $today.' '.(string)($x['hora_limite'] ?? '21:00:00')) ?: $now;
             $isOverdue = !$done && $limit < $now;
             $statusClass = $done ? 'success' : ($isOverdue ? 'danger' : 'warning');
-            $statusText = $done ? 'Completada' : ($isOverdue ? 'Vencida' : 'Pendiente');
+            $statusText = $done ? 'Completada' : ($isOverdue ? 'Pendiente' : 'Pendiente');
           ?>
           <tr data-status="<?= $done ? 'done' : 'pending' ?>" class="<?= $isOverdue ? 'row-risk' : '' ?>">
             <td>
@@ -125,7 +126,7 @@ $areaValues = array_map(fn($x)=>$x['total'] ? (int)round(($x['done']/$x['total']
       <div class="clean-ring" style="--p:<?= e((string)$progress) ?>"><b><?= e((string)$progress) ?>%</b><span>avance</span></div>
       <div class="clean-progress-facts">
         <div><b><?= e((string)$remaining) ?></b><span>restantes</span></div>
-        <div><b><?= e((string)$overdue) ?></b><span>vencidas</span></div>
+        <div><b><?= e((string)$overdue) ?></b><span>pendientes</span></div>
         <div><b><?= e((string)count($areaStats)) ?></b><span>áreas</span></div>
       </div>
     </div>
@@ -168,10 +169,9 @@ $areaValues = array_map(fn($x)=>$x['total'] ? (int)round(($x['done']/$x['total']
   <aside class="glass-card clean-close-card">
     <div class="clean-check-head compact"><div><h3>Cierre del turno</h3><span>Resumen para bitácora</span></div><i class="fa-solid fa-flag-checkered"></i></div>
     <div class="clean-close-stack">
-      <div class="clean-recommendation <?= e($qualityClass) ?>"><i class="fa-solid fa-lightbulb"></i><span><?= $overdue ? 'Atiende primero las tareas vencidas y registra observación de cierre.' : ($pending ? 'Continúa con la siguiente tarea antes del límite del turno.' : 'Turno listo para cierre; revisa historial y reporta incidencias si aplica.') ?></span></div>
+      <div class="clean-recommendation <?= e($qualityClass) ?>"><i class="fa-solid fa-lightbulb"></i><span><?= $overdue ? 'Atiende primero las tareas pendientes y registra observación de cierre.' : ($pending ? 'Continúa con la siguiente tarea antes del límite del turno.' : 'Turno listo para cierre; revisa historial y reporta incidencias si aplica.') ?></span></div>
       <div class="clean-quick-links">
         <a href="<?= e(page_url('limpieza-incidencias')) ?>"><i class="fa-solid fa-circle-exclamation"></i><span>Reportar incidencia</span></a>
-        <a href="<?= e(page_url('limpieza-historial')) ?>"><i class="fa-solid fa-clock-rotate-left"></i><span>Ver historial</span></a>
       </div>
     </div>
   </aside>

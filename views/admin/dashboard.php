@@ -30,10 +30,10 @@ $ticketsOpen = (int)($t['abiertos'] ?? 0);
 $ticketsCritical = (int)($t['criticos'] ?? 0);
 $cleanTotal = max(0, (int)($lm['total'] ?? 0));
 $cleanDone = max(0, (int)($lm['completas'] ?? 0));
-$cleanLate = max(0, (int)($lm['vencidas'] ?? 0));
+$cleanPending = max(0, $cleanTotal - $cleanDone);
 $cleanPct = $cleanTotal > 0 ? pct($cleanDone, $cleanTotal) : 100;
 $maintenanceToday = (int)($mm['hoy'] ?? 0);
-$operationalScore = max(0, min(100, 100 - ($ticketsCritical * 12) - ($usersPending * 5) - ($cleanLate * 7) - ($nonAvailable * 4)));
+$operationalScore = max(0, min(100, 100 - ($ticketsCritical * 12) - ($usersPending * 5) - ($cleanPending * 4) - ($nonAvailable * 4)));
 
 $qualityById = [];
 $qualityByName = [];
@@ -61,7 +61,7 @@ foreach ($p as $pool) {
   }
 
   $hasQuality = $cl !== null && $ph !== null && $temp !== null;
-  $ok = $hasQuality && $cl >= 1.0 && $cl <= 3.0 && $ph >= 7.2 && $ph <= 7.8;
+  $ok = $hasQuality;
   if ($ok) $waterOk++;
   $waterCards[] = [
     'nombre' => $name,
@@ -70,7 +70,7 @@ foreach ($p as $pool) {
     'temp' => $temp,
     'ok' => $ok,
     'hasQuality' => $hasQuality,
-    'estado' => $ok ? 'En rango' : ($hasQuality ? 'Revisar' : 'Sin registro')
+    'estado' => $ok ? 'Con registro' : 'Sin registro'
   ];
 }
 
@@ -84,7 +84,7 @@ $netFlow = (int)($op['entradas'] ?? 0) - (int)($op['salidas'] ?? 0);
 $pressureLabel = $occupancyPct >= 80 ? 'Alta' : ($occupancyPct >= 60 ? 'Media' : 'Controlada');
 $nextAction = 'Monitoreo normal';
 if ($ticketsCritical > 0) $nextAction = 'Atender ticket crítico';
-elseif ($cleanLate > 0) $nextAction = 'Cerrar limpieza vencida';
+elseif ($cleanPending > 0) $nextAction = 'Revisar checklist pendiente';
 elseif ($usersPending > 0) $nextAction = 'Aprobar usuarios';
 elseif ($nonAvailable > 0) $nextAction = 'Validar albercas no disponibles';
 
@@ -100,14 +100,14 @@ $chartData = [
     <div class="score-stack">
       <div><b><?= e($currentOccupancy) ?>/<?= e($totalCapacity) ?></b><span>ocupación total</span></div>
       <div><b><?= e($nonAvailable) ?></b><span>albercas con atención</span></div>
-      <div><b><?= e($waterOk) ?>/<?= e(count($p)) ?></b><span>química en rango</span></div>
+      <div><b><?= e($waterOk) ?>/<?= e(count($p)) ?></b><span>lecturas de agua</span></div>
     </div>
   </section>
 
   <section class="command-kpis">
     <a class="mini-kpi" href="<?= e(page_url('admin-albercas')) ?>"><i class="fa-solid fa-people-arrows"></i><span>Aforo actual</span><b><?= e($occupancyPct) ?>%</b><small><?= e($currentOccupancy) ?> personas</small></a>
     <a class="mini-kpi coral" href="<?= e(page_url('admin-mantenimiento')) ?>"><i class="fa-solid fa-screwdriver-wrench"></i><span>Tickets críticos</span><b><?= e($ticketsCritical) ?></b><small><?= e($ticketsOpen) ?> abiertos</small></a>
-    <a class="mini-kpi amber" href="<?= e(page_url('admin-limpieza')) ?>"><i class="fa-solid fa-broom"></i><span>Limpieza diaria</span><b><?= e($cleanPct) ?>%</b><small><?= e($cleanLate) ?> vencidas</small></a>
+    <a class="mini-kpi amber" href="<?= e(page_url('admin-limpieza')) ?>"><i class="fa-solid fa-broom"></i><span>Limpieza diaria</span><b><?= e($cleanPct) ?>%</b><small><?= e($cleanPending) ?> pendientes</small></a>
     <a class="mini-kpi violet" href="<?= e(page_url('admin-usuarios')) ?>"><i class="fa-solid fa-user-check"></i><span>Usuarios pendientes</span><b><?= e($usersPending) ?></b><small><?= e($u['activos'] ?? 0) ?> activos</small></a>
     <a class="mini-kpi sky" href="<?= e(page_url('admin-mantenimiento')) ?>"><i class="fa-solid fa-calendar-day"></i><span>Mantto. hoy</span><b><?= e($maintenanceToday) ?></b><small><?= e($mm['activos'] ?? 0) ?> activos</small></a>
   </section>

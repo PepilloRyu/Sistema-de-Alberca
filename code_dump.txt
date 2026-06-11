@@ -1,0 +1,1422 @@
+=====  controllers/AdminController.php
+<?php
+declare(strict_types=1);
+
+final class AdminController extends Controller {
+ public function dashboard(): void {
+   $usuarios = new UsuarioModel();
+   $tickets = new TicketModel();
+   $albercas = new AlbercaModel();
+   $operacion = new OperacionModel();
+   $limpieza = new LimpiezaModel();
+   $mantenimiento = new MantenimientoModel();
+
+   $u = $usuarios->metrics();
+   $roles = $usuarios->roleDistribution();
+   $t = $tickets->metrics();
+   $ticketStatus = $tickets->statusDistribution();
+   $ticketPriority = $tickets->priorityDistribution();
+   $ticketQueue = $tickets->queue();
+   $p = $albercas->dashboard();
+   $a = $operacion->alerts();
+   $op = $operacion->kpis();
+   $flow = $operacion->hourlyFlow();
+   $q = $operacion->quality();
+   $lm = $limpieza->metrics();
+   $turnos = $limpieza->shifts();
+   $checklist = $limpieza->checklist();
+   $mm = $mantenimiento->metrics();
+   $agenda = $mantenimiento->schedule();
+   $equipos = $mantenimiento->equipment();
+
+   $this->render('admin/dashboard', compact('u','roles','t','ticketStatus','ticketPriority','ticketQueue','p','a','op','flow','q','lm','turnos','checklist','mm','agenda','equipos') + [
+     'pageTitle'=>'Administrador | Centro de control operativo',
+     'routeType'=>'admin',
+     'activePage'=>'admin-dashboard'
+   ]);
+ }
+
+ public function usuarios(): void {
+   $m = new UsuarioModel();
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     $ok = $m->assign((int)($_POST['idUsuario'] ?? 0),(int)($_POST['idRol'] ?? 0),(string)($_POST['estado'] ?? 'pendiente'),(int)$_SESSION['usuario_id']);
+     flash($ok?'success':'danger',$ok?'Usuario actualizado.':'No se pudo actualizar el usuario.');
+     $this->go('admin-usuarios');
+   }
+   $users = $m->users();
+   $roles = $m->roles();
+   $this->render('admin/usuarios',compact('users','roles')+['pageTitle'=>'Administrador | Usuarios y roles','routeType'=>'admin','activePage'=>'admin-usuarios']);
+ }
+
+ public function albercas(): void {
+   $m = new AlbercaModel();
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     $ok = $m->status((int)($_POST['idAlberca'] ?? 0),(int)($_POST['idEstadoAlberca'] ?? 0),(int)$_SESSION['usuario_id']);
+     flash($ok?'success':'danger',$ok?'Estado actualizado.':'No se pudo actualizar el estado.');
+     $this->go('admin-albercas');
+   }
+   $pools = $m->dashboard();
+   $estados = $m->estados();
+   $op = (new OperacionModel())->kpis();
+   $quality = (new OperacionModel())->quality();
+   $alerts = (new OperacionModel())->alerts();
+   $tickets = (new TicketModel())->queue();
+   $agenda = (new MantenimientoModel())->schedule();
+   $this->render('admin/albercas',compact('pools','estados','op','quality','alerts','tickets','agenda')+['pageTitle'=>'Administrador | Albercas','routeType'=>'admin','activePage'=>'admin-albercas']);
+ }
+
+ public function catalogos(): void {
+   $estados = (new AlbercaModel())->estados();
+   $cats = (new TicketModel())->cats();
+   $roles = (new UsuarioModel())->roles();
+   $mantTipos = (new MantenimientoModel())->types();
+   $areas = (new LimpiezaModel())->areas();
+   $tareas = (new LimpiezaModel())->tasks();
+   $this->render('admin/catalogos',compact('estados','cats','roles','mantTipos','areas','tareas')+['pageTitle'=>'Administrador | Catálogos','routeType'=>'admin','activePage'=>'admin-catalogos']);
+ }
+
+ public function limpieza(): void {
+   $lm = new LimpiezaModel();
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     $ok = $lm->assignShift($_POST,(int)$_SESSION['usuario_id']);
+     flash($ok?'success':'danger',$ok?'Turno de limpieza asignado y checklist generado.':'No se pudo asignar turno.');
+     $this->go('admin-limpieza');
+   }
+   $turnos = $lm->shifts();
+   $areas = $lm->areas();
+   $tasks = $lm->tasks();
+   $metrics = $lm->metrics();
+   $checklist = $lm->checklist();
+   $pools = (new AlbercaModel())->dashboard();
+   $empleados = (new UsuarioModel())->byRole(3);
+   $this->render('admin/limpieza',compact('turnos','areas','tasks','metrics','checklist','pools','empleados')+['pageTitle'=>'Administrador | Limpieza operativa','routeType'=>'admin','activePage'=>'admin-limpieza']);
+ }
+
+ public function mantenimiento(): void {
+   $mm = new MantenimientoModel();
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     $ok = $mm->program($_POST,(int)$_SESSION['usuario_id']);
+     flash($ok?'success':'danger',$ok?'Mantenimiento programado.':'No se pudo programar mantenimiento.');
+     $this->go('admin-mantenimiento');
+   }
+   $schedule = $mm->schedule();
+   $types = $mm->types();
+   $pools = (new AlbercaModel())->all();
+   $tecnicos = (new UsuarioModel())->byRole(4);
+   $metrics = $mm->metrics();
+   $equipment = $mm->equipment();
+   $tickets = (new TicketModel())->queue();
+   $this->render('admin/mantenimiento',compact('schedule','types','pools','tecnicos','metrics','equipment','tickets')+['pageTitle'=>'Administrador | Mantenimiento técnico','routeType'=>'admin','activePage'=>'admin-mantenimiento']);
+ }
+
+ public function reportes(): void {
+   $albercas = new AlbercaModel();
+   $operacion = new OperacionModel();
+   $ticketsModel = new TicketModel();
+   $limpieza = new LimpiezaModel();
+   $mantenimiento = new MantenimientoModel();
+   $usuarios = new UsuarioModel();
+
+   $p = $albercas->dashboard();
+   $q = $operacion->quality();
+   $op = $operacion->kpis();
+   $flow = $operacion->hourlyFlow();
+   $alerts = $operacion->alerts();
+   $tickets = $ticketsModel->queue();
+   $ticketStatus = $ticketsModel->statusDistribution();
+   $ticketPriority = $ticketsModel->priorityDistribution();
+   $limpiezaMetrics = $limpieza->metrics();
+   $checklist = $limpieza->checklist();
+   $turnos = $limpieza->shifts();
+   $mantMetrics = $mantenimiento->metrics();
+   $schedule = $mantenimiento->schedule(null,false,80);
+   $equipment = $mantenimiento->equipment();
+   $userMetrics = $usuarios->metrics();
+   $roles = $usuarios->roleDistribution();
+
+   $this->render('admin/reportes',compact('p','q','op','flow','alerts','tickets','ticketStatus','ticketPriority','limpiezaMetrics','checklist','turnos','mantMetrics','schedule','equipment','userMetrics','roles')+['pageTitle'=>'Administrador | Reportes ejecutivos','routeType'=>'admin','activePage'=>'admin-reportes']);
+ }
+
+ public function seguridad(): void {
+   $usuarios = new UsuarioModel();
+   $users = $usuarios->users();
+   $roles = $usuarios->roles();
+   $metrics = $usuarios->securityMetrics();
+   $audits = $usuarios->auditTrail();
+   $this->render('admin/seguridad',compact('users','roles','metrics','audits')+['pageTitle'=>'Administrador | Seguridad y sesiones','routeType'=>'admin','activePage'=>'admin-seguridad']);
+ }
+}
+=====  controllers/AuthController.php
+<?php
+declare(strict_types=1);
+
+final class AuthController extends Controller {
+ public function login(): void {
+   if(!empty($_SESSION['usuario_id'])) $this->go(default_route_for_role($_SESSION['idRol']??null));
+   $this->plain('auth/login',['pageTitle'=>'Iniciar sesión','csrf'=>Seguridad::csrfToken(),'error'=>$this->err((string)($_GET['error']??'')),'success'=>isset($_GET['registered'])?'Registro enviado. Un administrador debe asignarte un rol.':'']);
+ }
+
+ public function register(): void {
+   $this->plain('auth/register',['pageTitle'=>'Registro interno','csrf'=>Seguridad::csrfToken(),'error'=>$this->regerr((string)($_GET['error']??''))]);
+ }
+
+ public function doLogin(): void {
+   $this->requirePost();
+   $email=strtolower(trim((string)($_POST['email']??'')));
+   $pass=(string)($_POST['password']??'');
+   if($email===''||$pass==='') $this->go('login',['error'=>'invalid']);
+   Model::clearLastError();
+   $model=new UsuarioModel();
+   $u=$model->findByEmail($email);
+   if(Database::error() || Model::lastError()) $this->go('login',['error'=>'db']);
+   if(!$u) $this->go('login',['error'=>'invalid']);
+   $hash=(string)($u['password_hash']??'');
+   if(password_get_info($hash)['algo']===0 || !password_verify($pass,$hash)) $this->go('login',['error'=>'invalid']);
+   if(($u['estado']??'')==='inactivo') $this->go('login',['error'=>'inactive']);
+   session_regenerate_id(true);
+   $_SESSION['usuario_id']=(int)$u['idUsuario'];
+   $_SESSION['idRol']=($u['estado'] ?? '')==='activo' && isset($u['idRol']) && $u['idRol']!==null ? (int)$u['idRol'] : null;
+   $_SESSION['usuario_nombre']=$u['nombre'];
+   $_SESSION['usuario_email']=$u['email'];
+   $_SESSION['usuario_estado']=$u['estado'];
+   $_SESSION['rol_nombre']=$_SESSION['idRol'] ? ($u['rol_nombre'] ?: role_name((int)$_SESSION['idRol'])) : 'Sin Rol';
+   Seguridad::activity();
+   $model->updateAccess((int)$u['idUsuario']);
+   redirect(page_url(default_route_for_role($_SESSION['idRol'])));
+ }
+
+ public function doRegister(): void {
+   $this->requirePost();
+   $n=trim((string)($_POST['nombre']??''));
+   $e=strtolower(trim((string)($_POST['email']??'')));
+   $p=(string)($_POST['password']??'');
+   $c=(string)($_POST['password_confirm']??'');
+   if(!$n||!$e||!$p||!$c)$this->go('registro',['error'=>'empty']);
+   if(!filter_var($e,FILTER_VALIDATE_EMAIL))$this->go('registro',['error'=>'email']);
+   if($p!==$c)$this->go('registro',['error'=>'confirm']);
+   if(!Seguridad::securePassword($p))$this->go('registro',['error'=>'password']);
+   $m=new UsuarioModel();
+   if($m->findByEmail($e))$this->go('registro',['error'=>'duplicate']);
+   if(!$m->createPending($n,$e,$p))$this->go('registro',['error'=>'db']);
+   $this->go('login',['registered'=>1]);
+ }
+
+ public function logout(): void { Seguridad::destroy(); $this->go('login'); }
+ public function sinRol(): void { $this->render('sin_rol/index',['pageTitle'=>'Pendiente de aprobación','routeType'=>'sin-rol','activePage'=>'sin-rol']); }
+
+ private function err(string $e): string { return match($e){
+   'invalid'=>'Correo o contraseña incorrectos.',
+   'inactive'=>'Usuario inactivo.',
+   'db'=>'No se pudo leer la base de datos. Enciende MySQL y revisa config/db.php: host, puerto, usuario, contraseña y nombre de base.',
+   'sesion_expirada'=>'Tu sesión expiró por 15 minutos de inactividad.',
+   default=>''
+ }; }
+ private function regerr(string $e): string { return match($e){
+   'empty'=>'Todos los campos son obligatorios.',
+   'email'=>'Correo institucional inválido.',
+   'confirm'=>'Las contraseñas no coinciden.',
+   'password'=>'Mínimo 8 caracteres, mayúscula, minúscula y número.',
+   'duplicate'=>'Este correo ya existe.',
+   'db'=>'No se pudo guardar. Importa la base o revisa config/db.php.',
+   default=>''
+ }; }
+}
+=====  controllers/EncargadoController.php
+<?php
+declare(strict_types=1);
+
+final class EncargadoController extends Controller {
+ public function dashboard(): void {
+  $op=new OperacionModel();
+  $p=(new AlbercaModel())->dashboard();
+  $k=$op->kpis();
+  $q=$op->quality();
+  $a=$op->alerts();
+  $flow=$op->hourlyFlow();
+  $tickets=(new TicketModel())->queue();
+  $this->render('encargado/dashboard',compact('p','k','q','a','flow','tickets')+['pageTitle'=>'Encargado | Centro operativo','routeType'=>'encargado','activePage'=>'encargado-dashboard']);
+ }
+
+ public function aforo(): void {
+  $op=new OperacionModel();
+  if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+   $this->requirePost();
+   $r=$op->aforo((int)($_POST['idAlberca'] ?? 0),(string)($_POST['tipo_movimiento'] ?? ''),(int)($_POST['cantidad'] ?? 0),(int)$_SESSION['usuario_id']);
+   flash($r['ok']?'success':'danger',$r['msg']);
+   $this->go('encargado-aforo');
+  }
+  $p=(new AlbercaModel())->dashboard();
+  $k=$op->kpis();
+  $flow=$op->hourlyFlow();
+  $recent=$op->recentAforo(8);
+  $this->render('encargado/aforo',compact('p','k','flow','recent')+['pageTitle'=>'Encargado | Control de aforo','routeType'=>'encargado','activePage'=>'encargado-aforo']);
+ }
+
+ public function calidad(): void {
+  $op=new OperacionModel();
+  if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+   $this->requirePost();
+   $ok=$op->saveQuality($_POST,(int)$_SESSION['usuario_id']);
+   flash($ok?'success':'danger',$ok?'Calidad registrada.':'No se pudo guardar.');
+   $this->go('encargado-calidad-agua');
+  }
+  $p=(new AlbercaModel())->all();
+  $q=$op->quality();
+  $this->render('encargado/calidad',compact('p','q')+['pageTitle'=>'Encargado | Calidad del agua','routeType'=>'encargado','activePage'=>'encargado-calidad-agua']);
+ }
+
+ public function alertas(): void {
+  $a=(new OperacionModel())->alerts();
+  $p=(new AlbercaModel())->dashboard();
+  $this->render('encargado/alertas',compact('a','p')+['pageTitle'=>'Encargado | Alertas','routeType'=>'encargado','activePage'=>'encargado-alertas']);
+ }
+
+ public function incidencias(): void {
+  $t=new TicketModel();
+  if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+   $this->requirePost();
+   $ok=$t->create($_POST,(int)$_SESSION['usuario_id']);
+   flash($ok?'success':'danger',$ok?'Ticket enviado a FIFO.':'No se pudo crear ticket.');
+   $this->go('encargado-incidencias');
+  }
+  $p=(new AlbercaModel())->all();
+  $cats=$t->cats();
+  $tickets=$t->queue();
+  $this->render('encargado/incidencias',compact('p','cats','tickets')+['pageTitle'=>'Encargado | Incidencias','routeType'=>'encargado','activePage'=>'encargado-incidencias']);
+ }
+
+ public function horarios(): void {
+  $p=(new AlbercaModel())->all();
+  $this->render('encargado/horarios',compact('p')+['pageTitle'=>'Encargado | Horarios','routeType'=>'encargado','activePage'=>'encargado-horarios']);
+ }
+}
+=====  controllers/LimpiezaController.php
+<?php
+declare(strict_types=1);
+
+final class LimpiezaController extends Controller {
+ public function dashboard(): void {
+  $uid=(int)$_SESSION['usuario_id'];
+  $m=new LimpiezaModel();
+  $metrics=$m->metrics();
+  $check=$m->checklist($uid);
+  $turnos=$m->shifts($uid);
+  $alerts=(new OperacionModel())->alerts();
+  $pools=(new AlbercaModel())->all();
+  $this->render('limpieza/dashboard',compact('metrics','check','turnos','alerts','pools')+['pageTitle'=>'Limpieza | Dashboard','routeType'=>'limpieza','activePage'=>'limpieza-dashboard']);
+ }
+
+ public function turnos(): void {
+  $turnos=(new LimpiezaModel())->shifts((int)$_SESSION['usuario_id']);
+  $this->render('limpieza/turnos',compact('turnos')+['pageTitle'=>'Limpieza | Turnos','routeType'=>'limpieza','activePage'=>'limpieza-turnos']);
+ }
+
+ public function checklist(): void {
+  $m=new LimpiezaModel();
+  $uid=(int)$_SESSION['usuario_id'];
+  if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+   $this->requirePost();
+   $ok=$m->complete((int)($_POST['idChecklist'] ?? 0),trim((string)($_POST['observaciones']??'Completado')),$uid);
+   flash($ok?'success':'danger',$ok?'Tarea completada.':'No se pudo completar.');
+   $this->go('limpieza-checklist');
+  }
+  $check=$m->checklist($uid);
+  $pools=(new AlbercaModel())->all();
+  $this->render('limpieza/checklist',compact('check','pools')+['pageTitle'=>'Limpieza | Checklist diario','routeType'=>'limpieza','activePage'=>'limpieza-checklist']);
+ }
+
+ public function incidencias(): void {
+  $t=new TicketModel();
+  $uid=(int)$_SESSION['usuario_id'];
+  if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+   $this->requirePost();
+   $ok=$t->create($_POST,$uid);
+   flash($ok?'success':'danger',$ok?'Incidencia reportada y enviada a la cola FIFO.':'No se pudo reportar la incidencia.');
+   $this->go('limpieza-incidencias');
+  }
+  $p=(new AlbercaModel())->all();
+  $pools=$p;
+  $cats=$t->cats();
+  $tickets=$t->recentByReporter($uid);
+  $queue=$t->queue();
+  $check=(new LimpiezaModel())->checklist($uid);
+  $this->render('limpieza/incidencias',compact('p','pools','cats','tickets','queue','check')+['pageTitle'=>'Limpieza | Incidencias','routeType'=>'limpieza','activePage'=>'limpieza-incidencias']);
+ }
+
+}
+=====  controllers/MantenimientoController.php
+<?php
+declare(strict_types=1);
+
+final class MantenimientoController extends Controller {
+ public function dashboard(): void {
+   $uid=(int)$_SESSION['usuario_id'];
+   $t=new TicketModel();
+   $m=new MantenimientoModel();
+   $metrics=$t->metrics();
+   $tickets=$t->queue($uid);
+   $schedule=$m->schedule($uid,true,20);
+   $equipment=$m->equipment();
+   $this->render('mantenimiento/dashboard',compact('metrics','tickets','schedule','equipment')+['pageTitle'=>'Mantenimiento | Dashboard','routeType'=>'mantenimiento','activePage'=>'mantenimiento-dashboard']);
+ }
+
+ public function tickets(): void {
+   $t=new TicketModel();
+   $uid=(int)$_SESSION['usuario_id'];
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     if(($_POST['action']??'')==='assign') $ok=$t->assign((int)($_POST['idTicket'] ?? 0),$uid);
+     else $ok=$t->follow((int)($_POST['idTicket'] ?? 0),$uid,trim((string)($_POST['comentario']??'')),(int)($_POST['idEstadoTicket'] ?? 0));
+     flash($ok?'success':'danger',$ok?'Ticket actualizado.':'No se pudo actualizar el ticket.');
+     $this->go('mantenimiento-tickets');
+   }
+   $tickets=$t->queue($uid);
+   $cats=$t->cats();
+   $this->render('mantenimiento/tickets',compact('tickets','cats')+['pageTitle'=>'Mantenimiento | Tickets FIFO','routeType'=>'mantenimiento','activePage'=>'mantenimiento-tickets']);
+ }
+
+ public function agenda(): void {
+   $schedule=(new MantenimientoModel())->schedule((int)$_SESSION['usuario_id'],true,50);
+   $this->render('mantenimiento/agenda',compact('schedule')+['pageTitle'=>'Mantenimiento | Agenda','routeType'=>'mantenimiento','activePage'=>'mantenimiento-agenda']);
+ }
+
+ public function equipos(): void {
+   $m=new MantenimientoModel();
+   $uid=(int)$_SESSION['usuario_id'];
+   if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
+     $this->requirePost();
+     $ok=false;
+     if(($_POST['action']??'')==='update_equipo'){
+       $ok=$m->updateEquipment(
+         (int)($_POST['idEquipo']??0),
+         (string)($_POST['estado']??'revision'),
+         (string)($_POST['ultima_revision']??date('Y-m-d')),
+         (string)($_POST['proxima_revision']??date('Y-m-d',strtotime('+30 days'))),
+         (string)($_POST['comentario']??''),
+         $uid
+       );
+     }
+     flash($ok?'success':'danger',$ok?'Revision de equipo guardada.':'No se pudo actualizar el equipo.');
+     $this->go('mantenimiento-equipos');
+   }
+   $equipment=$m->equipment();
+   $this->render('mantenimiento/equipos',compact('equipment')+['pageTitle'=>'Mantenimiento | Equipos','routeType'=>'mantenimiento','activePage'=>'mantenimiento-equipos']);
+ }
+
+}
+=====  models/AlbercaModel.php
+<?php
+declare(strict_types=1);
+
+final class AlbercaModel extends Model {
+ public function all(): array {
+   return $this->query("SELECT a.*,e.nombre estado_nombre,e.clase_ui,e.bloquea_aforo,
+       COALESCE((SELECT SUM(CASE WHEN m.tipo_movimiento='entrada' THEN m.cantidad ELSE -m.cantidad END)
+                 FROM aforo_movimientos m WHERE m.idAlberca=a.idAlberca AND DATE(m.registrado_en)=CURDATE()),0) ocupacion_actual
+     FROM albercas a
+     JOIN catalogo_estados_alberca e ON e.idEstadoAlberca=a.idEstadoAlberca
+     ORDER BY a.idAlberca");
+ }
+
+ public function dashboard(): array {
+   $rows = $this->query("SELECT a.idAlberca,a.nombre,a.capacidad_maxima,a.ubicacion,a.uso_eventos,a.horario_apertura,a.horario_cierre,
+       e.idEstadoAlberca,e.nombre estado_nombre,e.clase_ui,e.bloquea_aforo,
+       COALESCE(SUM(CASE WHEN m.tipo_movimiento='entrada' THEN m.cantidad ELSE -m.cantidad END),0) ocupacion_actual,
+       (SELECT CONCAT(c.cloro_ppm,' ppm · pH ',c.ph,' · ',c.temperatura_c,'°C')
+        FROM calidad_agua_registros c
+        WHERE c.idAlberca=a.idAlberca
+        ORDER BY c.registrado_en DESC,c.idCalidadAgua DESC
+        LIMIT 1) ultimo_quimico
+     FROM albercas a
+     JOIN catalogo_estados_alberca e ON e.idEstadoAlberca=a.idEstadoAlberca
+     LEFT JOIN aforo_movimientos m ON m.idAlberca=a.idAlberca AND DATE(m.registrado_en)=CURDATE()
+     GROUP BY a.idAlberca,a.nombre,a.capacidad_maxima,a.ubicacion,a.uso_eventos,a.horario_apertura,a.horario_cierre,e.idEstadoAlberca,e.nombre,e.clase_ui,e.bloquea_aforo
+     ORDER BY a.idAlberca");
+   return array_map(function($x){
+     $x['ocupacion_actual'] = max(0,(int)($x['ocupacion_actual'] ?? 0));
+     $x['ultimo_quimico'] = $x['ultimo_quimico'] ?: 'Sin registro';
+     return $x;
+   }, $rows);
+ }
+
+ public function estados(): array {
+   return $this->query("SELECT * FROM catalogo_estados_alberca ORDER BY idEstadoAlberca");
+ }
+
+ public function status(int $id,int $estado, ?int $user=null): bool {
+   if($id<=0 || $estado<=0) return false;
+   $exists = $this->row("SELECT idEstadoAlberca FROM catalogo_estados_alberca WHERE idEstadoAlberca=:e",['e'=>$estado]);
+   if(!$exists) return false;
+   $affected = $this->execAffected("UPDATE albercas SET idEstadoAlberca=:e,actualizado_en=NOW() WHERE idAlberca=:id",['e'=>$estado,'id'=>$id]);
+   $ok = $affected > 0 || ($affected === 0 && (bool)$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:id AND idEstadoAlberca=:e",['id'=>$id,'e'=>$estado]));
+   if($ok) $this->audit($user ?? (int)($_SESSION['usuario_id'] ?? 0),'albercas','actualizar_estado',['idAlberca'=>$id,'idEstadoAlberca'=>$estado]);
+   return (bool)$ok;
+ }
+}
+=====  models/LimpiezaModel.php
+<?php
+declare(strict_types=1);
+
+final class LimpiezaModel extends Model {
+ public function checklist(?int $user=null): array {
+   $where = $user ? ' AND (cl.asignado_a=:u OR cl.asignado_a IS NULL)' : '';
+   $params = $user ? ['u'=>$user] : [];
+   return $this->query("SELECT cl.*,a.nombre alberca,ar.nombre area,ta.nombre tarea,COALESCE(u.nombre,'Equipo general') responsable
+     FROM checklist_limpieza cl
+     JOIN albercas a ON a.idAlberca=cl.idAlberca
+     JOIN catalogo_areas_limpieza ar ON ar.idAreaLimpieza=cl.idAreaLimpieza
+     JOIN catalogo_tareas_limpieza ta ON ta.idTareaLimpieza=cl.idTareaLimpieza
+     LEFT JOIN usuarios u ON u.idUsuario=cl.asignado_a
+     WHERE cl.fecha=CURDATE() {$where}
+     ORDER BY cl.completado ASC,cl.hora_limite ASC,cl.idChecklist ASC",$params);
+ }
+
+ public function shifts(?int $user=null): array {
+   $where = $user ? ' AND tl.idUsuario=:u' : '';
+   $params = $user ? ['u'=>$user] : [];
+   return $this->query("SELECT tl.*,u.nombre empleado,a.nombre alberca,ar.nombre area
+     FROM turnos_limpieza tl
+     JOIN usuarios u ON u.idUsuario=tl.idUsuario
+     JOIN albercas a ON a.idAlberca=tl.idAlberca
+     JOIN catalogo_areas_limpieza ar ON ar.idAreaLimpieza=tl.idAreaLimpieza
+     WHERE tl.fecha BETWEEN CURDATE() AND DATE_ADD(CURDATE(),INTERVAL 7 DAY) {$where}
+     ORDER BY tl.fecha,tl.hora_inicio",$params);
+ }
+
+ public function complete(int $id,string $obs, ?int $user=null): bool {
+   if($id<=0) return false;
+   $where = $user ? ' AND (asignado_a=:u OR asignado_a IS NULL)' : '';
+   $params = ['o'=>mb_substr(trim($obs),0,255),'id'=>$id];
+   if($user) $params['u']=$user;
+   $affected = $this->execAffected("UPDATE checklist_limpieza SET completado=1,completado_en=NOW(),observaciones=:o,actualizado_en=NOW() WHERE idChecklist=:id {$where} AND completado=0",$params);
+   $ok = $affected > 0;
+   if($ok) $this->audit($user ?? (int)($_SESSION['usuario_id'] ?? 0),'limpieza','completar_checklist',['idChecklist'=>$id]);
+   return $ok;
+ }
+
+ public function tasks(): array {
+   return $this->query("SELECT * FROM catalogo_tareas_limpieza ORDER BY nombre");
+ }
+
+ public function areas(): array {
+   return $this->query("SELECT * FROM catalogo_areas_limpieza ORDER BY nombre");
+ }
+
+ public function assignShift(array $d,int $admin): bool {
+   $user=(int)($d['idUsuario'] ?? 0);
+   $pool=(int)($d['idAlberca'] ?? 0);
+   $area=(int)($d['idAreaLimpieza'] ?? 0);
+   $fecha=(string)($d['fecha'] ?? '');
+   $inicio=(string)($d['hora_inicio'] ?? '');
+   $fin=(string)($d['hora_fin'] ?? '');
+   if($user<=0 || $pool<=0 || $area<=0 || !$this->validDate($fecha) || !$this->validTime($inicio) || !$this->validTime($fin) || $inicio>=$fin) return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND idRol=3 AND estado='activo'",['u'=>$user])) return false;
+   if(!$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:a",['a'=>$pool])) return false;
+   if(!$this->row("SELECT idAreaLimpieza FROM catalogo_areas_limpieza WHERE idAreaLimpieza=:ar",['ar'=>$area])) return false;
+   $ok = $this->transaction(function(PDO $db) use ($user,$pool,$area,$fecha,$inicio,$fin,$admin){
+     $s=$db->prepare("INSERT INTO turnos_limpieza(idUsuario,idAlberca,idAreaLimpieza,fecha,hora_inicio,hora_fin,estado,creado_por,creado_en) VALUES(:u,:a,:ar,:f,:hi,:hf,'asignado',:c,NOW())");
+     $s->execute(['u'=>$user,'a'=>$pool,'ar'=>$area,'f'=>$fecha,'hi'=>$inicio,'hf'=>$fin,'c'=>$admin]);
+     $tasks=$db->query("SELECT idTareaLimpieza FROM catalogo_tareas_limpieza ORDER BY idTareaLimpieza")->fetchAll(PDO::FETCH_COLUMN);
+     $ins=$db->prepare("INSERT INTO checklist_limpieza(fecha,idAlberca,idAreaLimpieza,idTareaLimpieza,asignado_a,hora_limite,completado,observaciones,creado_en)
+       SELECT :f,:a,:ar,:t,:u,:lim,0,'Generado por turno asignado',NOW()
+       WHERE NOT EXISTS (
+         SELECT 1 FROM checklist_limpieza
+         WHERE fecha=:f2 AND idAlberca=:a2 AND idAreaLimpieza=:ar2 AND idTareaLimpieza=:t2 AND asignado_a=:u2
+       )");
+     foreach($tasks as $taskId){
+       $ins->execute(['f'=>$fecha,'a'=>$pool,'ar'=>$area,'t'=>(int)$taskId,'u'=>$user,'lim'=>$fin,'f2'=>$fecha,'a2'=>$pool,'ar2'=>$area,'t2'=>(int)$taskId,'u2'=>$user]);
+     }
+     $n=$db->prepare("INSERT INTO notificaciones(idUsuario,titulo,mensaje,creada_en) VALUES(:u,'Turno de limpieza asignado',:m,NOW())");
+     $n->execute(['u'=>$user,'m'=>'Tienes turno el '.$fecha.' de '.$inicio.' a '.$fin]);
+     return true;
+   });
+   if($ok) $this->audit($admin,'limpieza','asignar_turno',['idUsuario'=>$user,'idAlberca'=>$pool,'idAreaLimpieza'=>$area,'fecha'=>$fecha,'inicio'=>$inicio,'fin'=>$fin]);
+   return $ok;
+ }
+
+ public function history(?int $user=null,int $days=30): array {
+   $days=max(1,min(365,$days));
+   $where=$user?' AND (cl.asignado_a=:u OR cl.asignado_a IS NULL)':'';
+   $params=$user?['u'=>$user]:[];
+   return $this->query("SELECT cl.*,a.nombre alberca,ar.nombre area,ta.nombre tarea,COALESCE(u.nombre,'Equipo general') responsable,
+       CASE WHEN cl.completado=1 THEN 'Completada' ELSE 'Pendiente' END estado_operativo
+     FROM checklist_limpieza cl
+     JOIN albercas a ON a.idAlberca=cl.idAlberca
+     JOIN catalogo_areas_limpieza ar ON ar.idAreaLimpieza=cl.idAreaLimpieza
+     JOIN catalogo_tareas_limpieza ta ON ta.idTareaLimpieza=cl.idTareaLimpieza
+     LEFT JOIN usuarios u ON u.idUsuario=cl.asignado_a
+     WHERE cl.fecha >= DATE_SUB(CURDATE(), INTERVAL {$days} DAY) {$where}
+     ORDER BY cl.fecha DESC, cl.completado ASC, cl.hora_limite DESC
+     LIMIT 100",$params);
+ }
+
+ public function historyMetrics(?int $user=null,int $days=30): array {
+   $days=max(1,min(365,$days));
+   $where=$user?' AND (asignado_a=:u OR asignado_a IS NULL)':'';
+   $params=$user?['u'=>$user]:[];
+   $m=$this->row("SELECT COUNT(*) total,
+       COALESCE(SUM(completado=1),0) completas,
+       COALESCE(SUM(completado=0),0) pendientes,
+       COUNT(DISTINCT idAlberca) albercas_cubiertas
+     FROM checklist_limpieza
+     WHERE fecha >= DATE_SUB(CURDATE(), INTERVAL {$days} DAY) {$where}",$params);
+   return ['total'=>(int)($m['total'] ?? 0),'completas'=>(int)($m['completas'] ?? 0),'pendientes'=>(int)($m['pendientes'] ?? 0),'albercas_cubiertas'=>(int)($m['albercas_cubiertas'] ?? 0)];
+ }
+
+ public function historyByPool(?int $user=null,int $days=30): array {
+   $days=max(1,min(365,$days));
+   $where=$user?' AND (cl.asignado_a=:u OR cl.asignado_a IS NULL)':'';
+   $params=$user?['u'=>$user]:[];
+   return $this->query("SELECT a.nombre alberca,COUNT(cl.idChecklist) total,COALESCE(SUM(cl.completado=1),0) completas
+     FROM albercas a
+     LEFT JOIN checklist_limpieza cl ON cl.idAlberca=a.idAlberca AND cl.fecha>=DATE_SUB(CURDATE(),INTERVAL {$days} DAY) {$where}
+     GROUP BY a.idAlberca,a.nombre
+     ORDER BY a.idAlberca",$params);
+ }
+
+ public function historyByArea(?int $user=null,int $days=30): array {
+   $days=max(1,min(365,$days));
+   $where=$user?' AND (cl.asignado_a=:u OR cl.asignado_a IS NULL)':'';
+   $params=$user?['u'=>$user]:[];
+   return $this->query("SELECT ar.nombre area,COUNT(cl.idChecklist) total,COALESCE(SUM(cl.completado=1),0) completas
+     FROM catalogo_areas_limpieza ar
+     LEFT JOIN checklist_limpieza cl ON cl.idAreaLimpieza=ar.idAreaLimpieza AND cl.fecha>=DATE_SUB(CURDATE(),INTERVAL {$days} DAY) {$where}
+     GROUP BY ar.idAreaLimpieza,ar.nombre
+     ORDER BY total DESC, ar.nombre
+     LIMIT 8",$params);
+ }
+
+ public function metrics(): array {
+   $row = $this->row("SELECT COUNT(*) total,
+       COALESCE(SUM(completado=1),0) completas,
+       COALESCE(SUM(completado=0),0) pendientes
+     FROM checklist_limpieza
+     WHERE fecha=CURDATE()");
+   return ['total'=>(int)($row['total'] ?? 0),'completas'=>(int)($row['completas'] ?? 0),'pendientes'=>(int)($row['pendientes'] ?? 0)];
+ }
+
+ private function validDate(string $date): bool {
+   $d=DateTime::createFromFormat('Y-m-d',$date);
+   return $d && $d->format('Y-m-d')===$date;
+ }
+ private function validTime(string $time): bool {
+   foreach(['H:i','H:i:s'] as $fmt){
+     $t=DateTime::createFromFormat($fmt,$time);
+     $errors=DateTime::getLastErrors();
+     if($t && ($errors===false || ((int)$errors['warning_count']===0 && (int)$errors['error_count']===0)) && $t->format($fmt)===$time) return true;
+   }
+   return false;
+ }
+}
+=====  models/MantenimientoModel.php
+<?php
+declare(strict_types=1);
+
+final class MantenimientoModel extends Model {
+ public function schedule(?int $tech=null, bool $futureOnly=true, int $limit=30): array {
+   $where=[]; $params=[];
+   if($futureOnly) $where[]="mp.fecha_programada>=CURDATE()";
+   if($tech){ $where[]="mp.asignado_a=:u"; $params['u']=$tech; }
+   $sqlWhere = $where ? 'WHERE '.implode(' AND ',$where) : '';
+   $limit=max(1,min(100,$limit));
+   return $this->query("SELECT mp.*,a.nombre alberca,u.nombre tecnico,tm.nombre tipo
+     FROM mantenimientos_programados mp
+     JOIN albercas a ON a.idAlberca=mp.idAlberca
+     JOIN usuarios u ON u.idUsuario=mp.asignado_a
+     JOIN catalogo_tipos_mantenimiento tm ON tm.idTipoMantenimiento=mp.idTipoMantenimiento
+     {$sqlWhere}
+     ORDER BY mp.fecha_programada ASC,mp.hora_inicio ASC
+     LIMIT {$limit}",$params);
+ }
+
+ public function types(): array {
+   return $this->query("SELECT * FROM catalogo_tipos_mantenimiento ORDER BY nombre");
+ }
+
+ public function program(array $d,int $admin): bool {
+   $pool=(int)($d['idAlberca'] ?? 0);
+   $type=(int)($d['idTipoMantenimiento'] ?? 0);
+   $tech=(int)($d['asignado_a'] ?? 0);
+   $date=(string)($d['fecha_programada'] ?? '');
+   $start=(string)($d['hora_inicio'] ?? '');
+   $end=(string)($d['hora_fin'] ?? '');
+   $desc=mb_substr(trim((string)($d['descripcion'] ?? '')),0,255);
+   if($pool<=0 || $type<=0 || $tech<=0 || !$this->validDate($date) || !$this->validTime($start) || !$this->validTime($end) || $start>=$end) return false;
+   if(!$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:a",['a'=>$pool])) return false;
+   if(!$this->row("SELECT idTipoMantenimiento FROM catalogo_tipos_mantenimiento WHERE idTipoMantenimiento=:t",['t'=>$type])) return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND idRol=4 AND estado='activo'",['u'=>$tech])) return false;
+
+   $ok = $this->transaction(function(PDO $db) use ($pool,$type,$tech,$date,$start,$end,$desc,$admin){
+     $s=$db->prepare("INSERT INTO mantenimientos_programados(idAlberca,idTipoMantenimiento,asignado_a,fecha_programada,hora_inicio,hora_fin,estado,descripcion,creado_por,creado_en) VALUES(:a,:t,:u,:f,:hi,:hf,'programado',:d,:c,NOW())");
+     $s->execute(['a'=>$pool,'t'=>$type,'u'=>$tech,'f'=>$date,'hi'=>$start,'hf'=>$end,'d'=>$desc,'c'=>$admin]);
+     $mId=(int)$db->lastInsertId();
+     $n=$db->prepare("INSERT INTO notificaciones(idUsuario,titulo,mensaje,creada_en) VALUES(:u,'Mantenimiento asignado',:m,NOW())");
+     $n->execute(['u'=>$tech,'m'=>'Tienes mantenimiento programado para '.$date.' de '.$start.' a '.$end]);
+     return $mId>0;
+   });
+   if($ok) $this->audit($admin,'mantenimiento','programar',['idAlberca'=>$pool,'idTipoMantenimiento'=>$type,'asignado_a'=>$tech,'fecha'=>$date,'inicio'=>$start,'fin'=>$end]);
+   return $ok;
+ }
+
+ public function equipment(): array {
+   return $this->query("SELECT eq.*,a.nombre alberca,
+       (SELECT er.comentario FROM equipo_revisiones er WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_comentario,
+       (SELECT u.nombre FROM equipo_revisiones er LEFT JOIN usuarios u ON u.idUsuario=er.revisado_por WHERE er.idEquipo=eq.idEquipo ORDER BY er.revisado_en DESC,er.idRevision DESC LIMIT 1) ultimo_tecnico
+     FROM equipos_alberca eq
+     JOIN albercas a ON a.idAlberca=eq.idAlberca
+     ORDER BY FIELD(eq.estado,'critico','fuera_servicio','revision','operativo'),COALESCE(eq.proxima_revision,'2999-12-31'),a.idAlberca,eq.tipo,eq.nombre");
+ }
+
+ public function history(?int $tech=null, int $limit=40): array {
+   $where = $tech ? "WHERE mp.asignado_a=:u" : "";
+   $params = $tech ? ['u'=>$tech] : [];
+   $limit=max(1,min(100,$limit));
+   return $this->query("SELECT mp.*,a.nombre alberca,u.nombre tecnico,tm.nombre tipo,
+       TIMESTAMPDIFF(MINUTE,CONCAT(mp.fecha_programada,' ',mp.hora_inicio),CONCAT(mp.fecha_programada,' ',mp.hora_fin)) duracion_min
+     FROM mantenimientos_programados mp
+     JOIN albercas a ON a.idAlberca=mp.idAlberca
+     JOIN usuarios u ON u.idUsuario=mp.asignado_a
+     JOIN catalogo_tipos_mantenimiento tm ON tm.idTipoMantenimiento=mp.idTipoMantenimiento
+     {$where}
+     ORDER BY mp.fecha_programada DESC,mp.hora_inicio DESC
+     LIMIT {$limit}",$params);
+ }
+
+ public function updateEquipment(int $id,string $estado,string $ultima,string $proxima,string $comentario='',?int $user=null): bool {
+   $allowed=['operativo','revision','critico','fuera_servicio'];
+   if($id<=0 || !in_array($estado,$allowed,true)) return false;
+   if(!$this->row("SELECT idEquipo FROM equipos_alberca WHERE idEquipo=:id",['id'=>$id])) return false;
+   $ultima = $this->validDate($ultima) ? $ultima : date('Y-m-d');
+   $proxima = $this->validDate($proxima) ? $proxima : date('Y-m-d',strtotime('+30 days'));
+   $comment = mb_substr(trim($comentario),0,500);
+   $userId = $user ?: (int)($_SESSION['usuario_id'] ?? 0);
+   $ok = $this->transaction(function(PDO $db) use ($id,$estado,$ultima,$proxima,$comment,$userId){
+     $s=$db->prepare("UPDATE equipos_alberca SET estado=:estado,ultima_revision=:ultima,proxima_revision=:proxima WHERE idEquipo=:id");
+     $s->execute(['estado'=>$estado,'ultima'=>$ultima,'proxima'=>$proxima,'id'=>$id]);
+     $r=$db->prepare("INSERT INTO equipo_revisiones(idEquipo,estado,ultima_revision,proxima_revision,comentario,revisado_por,revisado_en) VALUES(:id,:estado,:ultima,:proxima,:comentario,:u,NOW())");
+     $r->execute(['id'=>$id,'estado'=>$estado,'ultima'=>$ultima,'proxima'=>$proxima,'comentario'=>$comment,'u'=>$userId ?: null]);
+     return true;
+   });
+   if($ok) $this->audit($userId,'equipos','actualizar_revision',['idEquipo'=>$id,'estado'=>$estado,'ultima_revision'=>$ultima,'proxima_revision'=>$proxima]);
+   return $ok;
+ }
+
+ public function metrics(): array {
+   $row = $this->row("SELECT COUNT(*) total,
+       COALESCE(SUM(fecha_programada=CURDATE()),0) hoy,
+       COALESCE(SUM(estado IN ('programado','en_proceso')),0) activos
+     FROM mantenimientos_programados
+     WHERE fecha_programada BETWEEN CURDATE() AND DATE_ADD(CURDATE(),INTERVAL 14 DAY)");
+   return ['total'=>(int)($row['total'] ?? 0),'hoy'=>(int)($row['hoy'] ?? 0),'activos'=>(int)($row['activos'] ?? 0)];
+ }
+
+ private function validDate(string $date): bool {
+   $d=DateTime::createFromFormat('Y-m-d',$date);
+   return $d && $d->format('Y-m-d')===$date;
+ }
+ private function validTime(string $time): bool {
+   foreach(['H:i','H:i:s'] as $fmt){
+     $t=DateTime::createFromFormat($fmt,$time);
+     $errors=DateTime::getLastErrors();
+     if($t && ($errors===false || ((int)$errors['warning_count']===0 && (int)$errors['error_count']===0)) && $t->format($fmt)===$time) return true;
+   }
+   return false;
+ }
+}
+=====  models/OperacionModel.php
+<?php
+declare(strict_types=1);
+
+final class OperacionModel extends Model {
+ public function kpis(): array {
+   $r = $this->row("SELECT COALESCE(SUM(CASE WHEN tipo_movimiento='entrada' THEN cantidad ELSE 0 END),0) entradas,
+       COALESCE(SUM(CASE WHEN tipo_movimiento='salida' THEN cantidad ELSE 0 END),0) salidas,
+       COALESCE(SUM(CASE WHEN tipo_movimiento='entrada' THEN cantidad ELSE -cantidad END),0) ocupacion
+     FROM aforo_movimientos
+     WHERE DATE(registrado_en)=CURDATE()");
+   return ['entradas'=>(int)($r['entradas'] ?? 0),'salidas'=>(int)($r['salidas'] ?? 0),'ocupacion'=>max(0,(int)($r['ocupacion'] ?? 0))];
+ }
+
+ public function aforo(int $pool,string $tipo,int $cant,int $user): array {
+   if(!in_array($tipo,['entrada','salida'],true) || $cant<1) return ['ok'=>false,'msg'=>'Movimiento invalido.'];
+   if($pool<=0 || $user<=0) return ['ok'=>false,'msg'=>'Datos incompletos.'];
+   $msg = 'No se pudo guardar el aforo.';
+
+   $ok = $this->transaction(function(PDO $db) use ($pool,$tipo,$cant,$user,&$msg){
+     $q = $db->prepare("SELECT a.idAlberca,a.nombre,a.capacidad_maxima,a.horario_apertura,a.horario_cierre,e.nombre estado_nombre,e.bloquea_aforo
+       FROM albercas a
+       JOIN catalogo_estados_alberca e ON e.idEstadoAlberca=a.idEstadoAlberca
+       WHERE a.idAlberca=:id
+       LIMIT 1
+       FOR UPDATE");
+     $q->execute(['id'=>$pool]);
+     $selected = $q->fetch();
+     if(!$selected){ $msg='Alberca no encontrada.'; return false; }
+
+     $now = date('H:i:s');
+     $open = (string)($selected['horario_apertura'] ?? '07:00:00');
+     $close = (string)($selected['horario_cierre'] ?? '21:00:00');
+     if($now < $open || $now >= $close){ $msg='Fuera del horario operativo: '.substr($open,0,5).' a '.substr($close,0,5).'.'; return false; }
+
+     $occStmt = $db->prepare("SELECT COALESCE(SUM(CASE WHEN tipo_movimiento='entrada' THEN cantidad ELSE -cantidad END),0) ocupacion_actual
+       FROM aforo_movimientos
+       WHERE idAlberca=:id AND DATE(registrado_en)=CURDATE()");
+     $occStmt->execute(['id'=>$pool]);
+     $actual = max(0,(int)($occStmt->fetch()['ocupacion_actual'] ?? 0));
+     $capacidad = max(0,(int)($selected['capacidad_maxima'] ?? 0));
+
+     if($tipo==='entrada'){
+       if((int)($selected['bloquea_aforo'] ?? 0)===1){ $msg='No se permiten entradas porque '.$selected['nombre'].' esta en estado: '.$selected['estado_nombre'].'.'; return false; }
+       if($actual + $cant > $capacidad){ $msg='El movimiento excede la capacidad de '.$selected['nombre'].'.'; return false; }
+     }
+     if($tipo==='salida' && $actual - $cant < 0){ $msg='La salida excede la ocupacion actual de '.$selected['nombre'].'.'; return false; }
+
+     $s = $db->prepare("INSERT INTO aforo_movimientos(idAlberca,tipo_movimiento,cantidad,registrado_por,registrado_en) VALUES(:a,:t,:c,:u,NOW())");
+     $s->execute(['a'=>$pool,'t'=>$tipo,'c'=>$cant,'u'=>$user]);
+     $newOcc = max(0,$actual + ($tipo==='entrada' ? $cant : -$cant));
+     if($capacidad>0 && $newOcc/$capacidad >= 0.85){
+       $exists = $db->prepare("SELECT idAlerta FROM alertas_alberca WHERE idAlberca=:a AND estado='abierta' AND titulo LIKE 'Aforo alto%' AND DATE(creada_en)=CURDATE() LIMIT 1");
+       $exists->execute(['a'=>$pool]);
+       if(!$exists->fetch()){
+         $alertMsg = 'Ocupacion al '.round(($newOcc/$capacidad)*100).'% ('.$newOcc.'/'.$capacidad.')';
+         $al = $db->prepare("INSERT INTO alertas_alberca(idAlberca,titulo,descripcion,nivel,estado,creada_por,creada_en) VALUES(:a,'Aforo alto detectado',:d,'alta','abierta',:u,NOW())");
+         $al->execute(['a'=>$pool,'d'=>$alertMsg,'u'=>$user]);
+       }
+     }
+     $msg='Aforo registrado correctamente.';
+     return true;
+   });
+   if($ok) $this->audit($user,'aforo','registrar_movimiento',['idAlberca'=>$pool,'tipo'=>$tipo,'cantidad'=>$cant]);
+   return ['ok'=>$ok,'msg'=>$ok?$msg:$msg];
+ }
+
+ public function recentAforo(int $limit=10): array {
+   $limit=max(1,min(25,$limit));
+   return $this->query("SELECT m.idMovimiento,m.tipo_movimiento,m.cantidad,m.registrado_en,a.nombre alberca,COALESCE(u.nombre,'Sistema') usuario
+     FROM aforo_movimientos m
+     JOIN albercas a ON a.idAlberca=m.idAlberca
+     LEFT JOIN usuarios u ON u.idUsuario=m.registrado_por
+     WHERE DATE(m.registrado_en)=CURDATE()
+     ORDER BY m.registrado_en DESC,m.idMovimiento DESC
+     LIMIT {$limit}");
+ }
+
+ public function quality(): array {
+   return $this->query("SELECT c.*,a.nombre alberca
+     FROM calidad_agua_registros c
+     JOIN albercas a ON a.idAlberca=c.idAlberca
+     INNER JOIN (
+       SELECT idAlberca,MAX(idCalidadAgua) idMax
+       FROM calidad_agua_registros
+       GROUP BY idAlberca
+     ) q ON q.idAlberca=c.idAlberca AND q.idMax=c.idCalidadAgua
+     ORDER BY a.idAlberca");
+ }
+
+ public function saveQuality(array $d,int $u): bool {
+   $pool=(int)($d['idAlberca'] ?? 0);
+   $cloro=(float)($d['cloro_ppm'] ?? -1);
+   $ph=(float)($d['ph'] ?? -1);
+   $temp=(float)($d['temperatura_c'] ?? -100);
+   $obs=trim((string)($d['observaciones'] ?? ''));
+   if($pool<=0 || $u<=0 || $cloro<0 || $ph<0 || $ph>14 || $temp<0 || $temp>60) return false;
+   if(!$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:a",['a'=>$pool])) return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND estado='activo'",['u'=>$u])) return false;
+   $ok = $this->transaction(function(PDO $db) use ($pool,$cloro,$ph,$temp,$obs,$u){
+     $s=$db->prepare("INSERT INTO calidad_agua_registros(idAlberca,cloro_ppm,ph,temperatura_c,observaciones,registrado_por,registrado_en) VALUES(:a,:c,:p,:t,:o,:u,NOW())");
+     $s->execute(['a'=>$pool,'c'=>$cloro,'p'=>$ph,'t'=>$temp,'o'=>$obs,'u'=>$u]);
+     return true;
+   });
+   if($ok) $this->audit($u,'calidad_agua','registrar_lectura',['idAlberca'=>$pool,'cloro'=>$cloro,'ph'=>$ph,'temperatura'=>$temp]);
+   return $ok;
+ }
+
+ public function alerts(int $limit=12): array {
+   $limit=max(1,min(50,$limit));
+   return $this->query("SELECT al.*,a.nombre alberca
+     FROM alertas_alberca al
+     JOIN albercas a ON a.idAlberca=al.idAlberca
+     WHERE al.estado='abierta'
+     ORDER BY FIELD(al.nivel,'critica','alta','media','baja'),al.creada_en DESC
+     LIMIT {$limit}");
+ }
+
+ public function hourlyFlow(): array {
+   $labels = ['07','08','09','10','11','12','13','14','15','16','17','18','19','20'];
+   $entries = array_fill_keys($labels, 0);
+   $exits = array_fill_keys($labels, 0);
+   $rows = $this->query("SELECT LPAD(HOUR(registrado_en),2,'0') hora,tipo_movimiento,COALESCE(SUM(cantidad),0) total
+     FROM aforo_movimientos
+     WHERE DATE(registrado_en)=CURDATE() AND HOUR(registrado_en) BETWEEN 7 AND 20
+     GROUP BY HOUR(registrado_en),tipo_movimiento
+     ORDER BY HOUR(registrado_en)");
+   foreach($rows as $r){
+     $h=(string)$r['hora'];
+     if(!isset($entries[$h])) continue;
+     if($r['tipo_movimiento']==='entrada') $entries[$h]=(int)$r['total'];
+     if($r['tipo_movimiento']==='salida') $exits[$h]=(int)$r['total'];
+   }
+   return ['labels'=>array_values($labels),'entradas'=>array_values($entries),'salidas'=>array_values($exits)];
+ }
+}
+=====  models/TicketModel.php
+<?php
+declare(strict_types=1);
+
+final class TicketModel extends Model {
+ private static bool $expiryChecked = false;
+
+ private function nextFolio(PDO $db): string {
+   $prefix = 'TK-'.date('Ymd').'-';
+   $stmt = $db->prepare("SELECT folio FROM tickets_mantenimiento WHERE folio LIKE :prefix ORDER BY folio DESC LIMIT 1 FOR UPDATE");
+   $stmt->execute(['prefix'=>$prefix.'%']);
+   $last = (string)($stmt->fetchColumn() ?: '');
+   $next = 1;
+   if(preg_match('/^'.preg_quote($prefix, '/').'(\d{4})$/', $last, $m)){
+     $next = min(9999, ((int)$m[1]) + 1);
+   }
+   return $prefix.str_pad((string)$next, 4, '0', STR_PAD_LEFT);
+ }
+
+ private function descriptionWithContext(array $d): string {
+   $desc = trim((string)($d['descripcion'] ?? ''));
+   $ctx = [];
+   $area = trim((string)($d['area_afectada'] ?? ''));
+   $evid = trim((string)($d['evidencia'] ?? ''));
+   if($area!=='') $ctx[]='Area: '.$area;
+   if($evid!=='') $ctx[]='Evidencia: '.$evid;
+   if(isset($d['origen'])) $ctx[]='Origen: '.trim((string)$d['origen']);
+   elseif(isset($_SESSION['idRol']) && (int)$_SESSION['idRol']===3) $ctx[]='Origen: Limpieza';
+   $full = ($ctx ? '['.implode(' | ',$ctx).'] ' : '').$desc;
+   return mb_substr($full,0,2000);
+ }
+
+ private function closeExpiredTickets(): void {
+   if(self::$expiryChecked || !$this->db) return;
+   self::$expiryChecked = true;
+   try{
+     $stmt = $this->db->prepare("UPDATE tickets_mantenimiento t
+       JOIN catalogo_estados_ticket e ON e.idEstadoTicket=t.idEstadoTicket
+       SET t.idEstadoTicket=5,
+           t.cerrado_en=NOW(),
+           t.cierre_motivo='Cerrado automáticamente por tiempo sin seguimiento',
+           t.actualizado_en=NOW()
+       WHERE e.es_final=0
+         AND TIMESTAMPDIFF(HOUR,COALESCE(t.ultimo_seguimiento_en,t.creado_en),NOW()) >= COALESCE((SELECT CAST(valor AS UNSIGNED) FROM configuraciones_sistema WHERE clave='ticket_auto_close_hours' LIMIT 1),12)");
+     $stmt->execute();
+     $closed = $stmt->rowCount();
+     if($closed > 0) $this->audit(null,'tickets','cierre_automatico',['total'=>$closed]);
+   }catch(Throwable $e){
+     $this->fail($e,'auto_close_tickets');
+   }
+ }
+
+ public function create(array $d,int $u): bool {
+   $tipo=(int)($d['idTipoIncidencia'] ?? 0);
+   $pool=(int)($d['idAlberca'] ?? 0);
+   $prio=(int)($d['idPrioridad'] ?? 0);
+   $descripcion=$this->descriptionWithContext($d);
+   if($u<=0 || $tipo<=0 || $pool<=0 || $prio<=0 || $descripcion==='') return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND estado='activo'",['u'=>$u])) return false;
+   if(!$this->row("SELECT idTipoIncidencia FROM catalogo_tipos_incidencia WHERE idTipoIncidencia=:t",['t'=>$tipo])) return false;
+   if(!$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:a",['a'=>$pool])) return false;
+   if(!$this->row("SELECT idPrioridad FROM catalogo_prioridades WHERE idPrioridad=:p",['p'=>$prio])) return false;
+
+   $folio='';
+   $ok = $this->transaction(function(PDO $db) use (&$folio,$tipo,$pool,$descripcion,$prio,$u){
+     $folio = $this->nextFolio($db);
+     $s=$db->prepare("INSERT INTO tickets_mantenimiento(folio,idTipoIncidencia,idAlberca,descripcion,idPrioridad,idEstadoTicket,reportado_por,creado_en) VALUES(:f,:t,:a,:d,:p,1,:u,NOW())");
+     $s->execute(['f'=>$folio,'t'=>$tipo,'a'=>$pool,'d'=>$descripcion,'p'=>$prio,'u'=>$u]);
+     $ticketId=(int)$db->lastInsertId();
+     $n=$db->prepare("INSERT INTO notificaciones(idUsuario,titulo,mensaje,creada_en) VALUES(NULL,'Nuevo ticket FIFO',:m,NOW())");
+     $n->execute(['m'=>'Ticket '.$folio.' creado y pendiente de asignacion tecnica.']);
+     return $ticketId>0;
+   });
+   if($ok) $this->audit($u,'tickets','crear',['folio'=>$folio,'idAlberca'=>$pool,'idTipoIncidencia'=>$tipo,'idPrioridad'=>$prio]);
+   return $ok;
+ }
+
+ public function cats(): array {
+   return [
+     'tipos'=>$this->query("SELECT * FROM catalogo_tipos_incidencia ORDER BY nombre"),
+     'prioridades'=>$this->query("SELECT * FROM catalogo_prioridades ORDER BY nivel DESC"),
+     'estados'=>$this->query("SELECT * FROM catalogo_estados_ticket ORDER BY idEstadoTicket"),
+   ];
+ }
+
+ public function queue(?int $tech=null,int $limit=40): array {
+   $this->closeExpiredTickets();
+   $where = $tech ? ' AND (t.asignado_a=:u OR t.asignado_a IS NULL)' : '';
+   $params = $tech ? ['u'=>$tech] : [];
+   $limit=max(1,min(100,$limit));
+   return $this->query("SELECT t.*,a.nombre alberca,ti.nombre tipo,p.nombre prioridad,p.nivel prioridad_nivel,et.nombre estado,et.es_final,COALESCE(u.nombre,'Sin asignar') tecnico,
+       COALESCE(rep.nombre,'Sistema') reportado_por_nombre,
+       TIMESTAMPDIFF(MINUTE,t.creado_en,NOW()) minutos_abierto
+     FROM tickets_mantenimiento t
+     JOIN albercas a ON a.idAlberca=t.idAlberca
+     JOIN catalogo_tipos_incidencia ti ON ti.idTipoIncidencia=t.idTipoIncidencia
+     JOIN catalogo_prioridades p ON p.idPrioridad=t.idPrioridad
+     JOIN catalogo_estados_ticket et ON et.idEstadoTicket=t.idEstadoTicket
+     LEFT JOIN usuarios u ON u.idUsuario=t.asignado_a
+     LEFT JOIN usuarios rep ON rep.idUsuario=t.reportado_por
+     WHERE et.es_final=0 {$where}
+     ORDER BY p.nivel DESC,t.creado_en ASC
+     LIMIT {$limit}",$params);
+ }
+
+ public function recentByReporter(int $user): array {
+   $this->closeExpiredTickets();
+   return $this->query("SELECT t.*,a.nombre alberca,ti.nombre tipo,p.nombre prioridad,p.nivel prioridad_nivel,et.nombre estado,et.es_final,COALESCE(u.nombre,'Sin asignar') tecnico
+     FROM tickets_mantenimiento t
+     JOIN albercas a ON a.idAlberca=t.idAlberca
+     JOIN catalogo_tipos_incidencia ti ON ti.idTipoIncidencia=t.idTipoIncidencia
+     JOIN catalogo_prioridades p ON p.idPrioridad=t.idPrioridad
+     JOIN catalogo_estados_ticket et ON et.idEstadoTicket=t.idEstadoTicket
+     LEFT JOIN usuarios u ON u.idUsuario=t.asignado_a
+     WHERE t.reportado_por=:u
+     ORDER BY t.creado_en DESC
+     LIMIT 20",['u'=>$user]);
+ }
+
+ public function history(?int $tech=null, int $limit=60): array {
+   $this->closeExpiredTickets();
+   $where = $tech ? "WHERE (t.asignado_a=:u OR t.asignado_a IS NULL)" : "";
+   $params = $tech ? ['u'=>$tech] : [];
+   $limit=max(1,min(120,$limit));
+   return $this->query("SELECT t.*,a.nombre alberca,ti.nombre tipo,p.nombre prioridad,p.nivel prioridad_nivel,et.nombre estado,et.es_final,COALESCE(rep.nombre,'Sistema') reportado_por_nombre,COALESCE(u.nombre,'Sin asignar') tecnico,
+       (SELECT COUNT(*) FROM ticket_seguimientos s WHERE s.idTicket=t.idTicket) seguimientos,
+       (SELECT MAX(s.creado_en) FROM ticket_seguimientos s WHERE s.idTicket=t.idTicket) ultimo_evento,
+       TIMESTAMPDIFF(MINUTE,t.creado_en,COALESCE(t.cerrado_en,t.ultimo_seguimiento_en,t.actualizado_en,NOW())) minutos_atencion
+     FROM tickets_mantenimiento t
+     JOIN albercas a ON a.idAlberca=t.idAlberca
+     JOIN catalogo_tipos_incidencia ti ON ti.idTipoIncidencia=t.idTipoIncidencia
+     JOIN catalogo_prioridades p ON p.idPrioridad=t.idPrioridad
+     JOIN catalogo_estados_ticket et ON et.idEstadoTicket=t.idEstadoTicket
+     LEFT JOIN usuarios rep ON rep.idUsuario=t.reportado_por
+     LEFT JOIN usuarios u ON u.idUsuario=t.asignado_a
+     {$where}
+     ORDER BY COALESCE(t.cerrado_en,t.actualizado_en,t.ultimo_seguimiento_en,t.creado_en) DESC,t.creado_en DESC
+     LIMIT {$limit}",$params);
+ }
+
+ public function assign(int $ticket,int $tech): bool {
+   if($ticket<=0 || $tech<=0) return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND idRol=4 AND estado='activo'",['u'=>$tech])) return false;
+   $ok = $this->transaction(function(PDO $db) use ($ticket,$tech){
+     $s=$db->prepare("UPDATE tickets_mantenimiento t
+       JOIN catalogo_estados_ticket e ON e.idEstadoTicket=t.idEstadoTicket
+       SET t.asignado_a=:u,t.idEstadoTicket=2,t.asignado_en=COALESCE(t.asignado_en,NOW()),t.actualizado_en=NOW()
+       WHERE t.idTicket=:t AND e.es_final=0 AND (t.asignado_a IS NULL OR t.asignado_a=:u2)");
+     $s->execute(['u'=>$tech,'t'=>$ticket,'u2'=>$tech]);
+     if($s->rowCount()<1) return false;
+     $seg=$db->prepare("INSERT INTO ticket_seguimientos(idTicket,idUsuario,comentario,creado_en) VALUES(:t,:u,'Ticket tomado por tecnico',NOW())");
+     $seg->execute(['t'=>$ticket,'u'=>$tech]);
+     $n=$db->prepare("INSERT INTO notificaciones(idUsuario,titulo,mensaje,creada_en) VALUES(:u,'Ticket asignado','Tomaste un ticket FIFO para seguimiento.',NOW())");
+     $n->execute(['u'=>$tech]);
+     return true;
+   });
+   if($ok) $this->audit($tech,'tickets','asignar',['idTicket'=>$ticket,'asignado_a'=>$tech]);
+   return $ok;
+ }
+
+ public function follow(int $ticket,int $user,string $comment,int $estado): bool {
+   $comment=mb_substr(trim($comment),0,2000);
+   if($ticket<=0 || $user<=0 || $estado<=0 || $comment==='') return false;
+   if(!$this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:u AND idRol=4 AND estado='activo'",['u'=>$user])) return false;
+   $ok = $this->transaction(function(PDO $db) use ($ticket,$user,$comment,$estado){
+     $state=$db->prepare("SELECT idEstadoTicket,es_final,nombre FROM catalogo_estados_ticket WHERE idEstadoTicket=:e LIMIT 1");
+     $state->execute(['e'=>$estado]);
+     $st=$state->fetch();
+     if(!$st) return false;
+     $own=$db->prepare("SELECT t.idTicket FROM tickets_mantenimiento t JOIN catalogo_estados_ticket et ON et.idEstadoTicket=t.idEstadoTicket WHERE t.idTicket=:t AND et.es_final=0 AND (t.asignado_a=:u OR t.asignado_a IS NULL) LIMIT 1");
+     $own->execute(['t'=>$ticket,'u'=>$user]);
+     if(!$own->fetch()) return false;
+     $s=$db->prepare("INSERT INTO ticket_seguimientos(idTicket,idUsuario,comentario,creado_en) VALUES(:t,:u,:c,NOW())");
+     $s->execute(['t'=>$ticket,'u'=>$user,'c'=>$comment]);
+     $final=(int)$st['es_final']===1;
+     $sql="UPDATE tickets_mantenimiento SET asignado_a=COALESCE(asignado_a,:u),idEstadoTicket=:e,ultimo_seguimiento_en=NOW(),actualizado_en=NOW()".
+       ($final ? ",cerrado_en=NOW(),cierre_motivo=:m" : "")." WHERE idTicket=:t";
+     $params=['u'=>$user,'e'=>$estado,'t'=>$ticket];
+     if($final) $params['m']=$comment;
+     $up=$db->prepare($sql);
+     $up->execute($params);
+     return $up->rowCount() > 0;
+   });
+   if($ok) $this->audit($user,'tickets','seguimiento',['idTicket'=>$ticket,'idEstadoTicket'=>$estado]);
+   return $ok;
+ }
+
+ public function metrics(): array {
+   $this->closeExpiredTickets();
+   $row=$this->row("SELECT COUNT(*) total,
+       COALESCE(SUM(et.es_final=0),0) abiertos,
+       COALESCE(SUM(p.nivel>=3 AND et.es_final=0),0) criticos
+     FROM tickets_mantenimiento t
+     JOIN catalogo_estados_ticket et ON et.idEstadoTicket=t.idEstadoTicket
+     JOIN catalogo_prioridades p ON p.idPrioridad=t.idPrioridad");
+   return ['total'=>(int)($row['total'] ?? 0),'abiertos'=>(int)($row['abiertos'] ?? 0),'criticos'=>(int)($row['criticos'] ?? 0)];
+ }
+
+ public function statusDistribution(): array {
+   $this->closeExpiredTickets();
+   return $this->query("SELECT et.nombre estado,COUNT(t.idTicket) total
+     FROM catalogo_estados_ticket et
+     LEFT JOIN tickets_mantenimiento t ON t.idEstadoTicket=et.idEstadoTicket
+     GROUP BY et.idEstadoTicket,et.nombre
+     ORDER BY et.idEstadoTicket");
+ }
+
+ public function priorityDistribution(): array {
+   $this->closeExpiredTickets();
+   return $this->query("SELECT p.nombre prioridad,p.nivel,COUNT(t.idTicket) total
+     FROM catalogo_prioridades p
+     LEFT JOIN tickets_mantenimiento t ON t.idPrioridad=p.idPrioridad AND t.idEstadoTicket IN (1,2,3)
+     GROUP BY p.idPrioridad,p.nombre,p.nivel
+     ORDER BY p.nivel DESC");
+ }
+}
+=====  models/UsuarioModel.php
+<?php
+declare(strict_types=1);
+
+final class UsuarioModel extends Model {
+ public function findByEmail(string $email): ?array {
+   return $this->row("SELECT u.*,r.nombre rol_nombre FROM usuarios u LEFT JOIN roles r ON r.idRol=u.idRol WHERE LOWER(u.email)=LOWER(:e) LIMIT 1",['e'=>trim($email)]);
+ }
+
+ public function createPending(string $n,string $e,string $p): bool {
+   $name = trim($n);
+   $email = strtolower(trim($e));
+   if($name==='' || !filter_var($email,FILTER_VALIDATE_EMAIL) || strlen($p)<8) return false;
+   $ok = $this->execSql("INSERT INTO usuarios(nombre,email,password_hash,idRol,estado,creado_en) VALUES(:n,:e,:p,NULL,'pendiente',NOW())",[
+     'n'=>$name,'e'=>$email,'p'=>password_hash($p,PASSWORD_BCRYPT,['cost'=>12])
+   ]);
+   if($ok) $this->audit(null,'usuarios','registro_pendiente',['email'=>$email]);
+   return $ok;
+ }
+
+ public function updateAccess(int $id): void {
+   $this->execSql("UPDATE usuarios SET ultimo_acceso=NOW() WHERE idUsuario=:id",['id'=>$id]);
+   $this->audit($id,'auth','login_ok',['idUsuario'=>$id]);
+ }
+
+ public function roles(): array {
+   return $this->query("SELECT idRol,nombre,descripcion,activo FROM roles WHERE activo=1 ORDER BY idRol");
+ }
+
+ public function users(): array {
+   return $this->query("SELECT u.idUsuario,u.nombre,u.email,u.idRol,COALESCE(r.nombre,'Sin Rol') rol,u.estado,u.ultimo_acceso,u.creado_en,u.actualizado_en
+     FROM usuarios u
+     LEFT JOIN roles r ON r.idRol=u.idRol
+     ORDER BY FIELD(u.estado,'pendiente','activo','inactivo'),u.creado_en DESC,u.nombre ASC");
+ }
+
+ public function assign(int $id,int $rol,string $estado, ?int $admin=null): bool {
+   $estado = in_array($estado,['pendiente','activo','inactivo'],true) ? $estado : 'pendiente';
+   $adminId = $admin ?? (int)($_SESSION['usuario_id'] ?? 0);
+   if($id<=0 || $rol<=0) return false;
+   $exists = $this->row("SELECT idRol FROM roles WHERE idRol=:r AND activo=1",['r'=>$rol]);
+   if(!$exists) return false;
+
+   $target = $this->row("SELECT idUsuario,idRol,estado FROM usuarios WHERE idUsuario=:id LIMIT 1",['id'=>$id]);
+   if(!$target) return false;
+
+   $wouldRemainAdmin = ($rol === 1 && $estado === 'activo');
+   $isActiveAdmin = ((int)($target['idRol'] ?? 0) === 1 && ($target['estado'] ?? '') === 'activo');
+
+   if($id === $adminId && !$wouldRemainAdmin) return false;
+
+   if($isActiveAdmin && !$wouldRemainAdmin){
+     $row = $this->row("SELECT COUNT(*) total FROM usuarios WHERE idRol=1 AND estado='activo'");
+     if((int)($row['total'] ?? 0) <= 1) return false;
+   }
+
+   $affected = $this->execAffected("UPDATE usuarios SET idRol=:r,estado=:e,actualizado_en=NOW() WHERE idUsuario=:id",['r'=>$rol,'e'=>$estado,'id'=>$id]);
+   $ok = $affected > 0 || ($affected === 0 && $this->row("SELECT idUsuario FROM usuarios WHERE idUsuario=:id AND idRol=:r AND estado=:e",['id'=>$id,'r'=>$rol,'e'=>$estado]));
+   if($ok) $this->audit($adminId,'usuarios','asignar_rol',['idUsuario'=>$id,'idRol'=>$rol,'estado'=>$estado]);
+   return (bool)$ok;
+ }
+
+ public function byRole(int $rol): array {
+   return $this->query("SELECT idUsuario,nombre,email FROM usuarios WHERE idRol=:r AND estado='activo' ORDER BY nombre",['r'=>$rol]);
+ }
+
+ public function queryForDiagnostics(): array {
+   return $this->query("SELECT idUsuario,nombre,email,password_hash,CHAR_LENGTH(password_hash) hash_len,idRol,estado,ultimo_acceso FROM usuarios ORDER BY idUsuario");
+ }
+
+ public function metrics(): array {
+   $row = $this->row("SELECT COUNT(*) total,COALESCE(SUM(estado='activo'),0) activos,COALESCE(SUM(estado='pendiente'),0) pendientes FROM usuarios");
+   return ['total'=>(int)($row['total'] ?? 0),'activos'=>(int)($row['activos'] ?? 0),'pendientes'=>(int)($row['pendientes'] ?? 0)];
+ }
+
+ public function securityMetrics(): array {
+   $row = $this->row("SELECT COUNT(*) total,
+       COALESCE(SUM(estado='activo'),0) activos,
+       COALESCE(SUM(estado='pendiente'),0) pendientes,
+       COALESCE(SUM(estado='inactivo'),0) inactivos,
+       COALESCE(SUM(idRol IS NULL),0) sin_rol,
+       COALESCE(SUM(ultimo_acceso IS NULL),0) sin_acceso,
+       COALESCE(SUM(idRol=1 AND estado='activo'),0) admins
+     FROM usuarios");
+   return [
+    'total'=>(int)($row['total'] ?? 0),'activos'=>(int)($row['activos'] ?? 0),'pendientes'=>(int)($row['pendientes'] ?? 0),
+    'inactivos'=>(int)($row['inactivos'] ?? 0),'sin_rol'=>(int)($row['sin_rol'] ?? 0),'sin_acceso'=>(int)($row['sin_acceso'] ?? 0),'admins'=>(int)($row['admins'] ?? 0),
+   ];
+ }
+
+ public function auditTrail(int $limit=12): array {
+   $limit = max(1,min(40,$limit));
+   return $this->query("SELECT a.entidad,a.accion,a.ip,a.creado_en,COALESCE(u.nombre,'Sistema') usuario
+     FROM auditoria_sistema a
+     LEFT JOIN usuarios u ON u.idUsuario=a.idUsuario
+     ORDER BY a.creado_en DESC
+     LIMIT {$limit}");
+ }
+
+ public function roleDistribution(): array {
+   return $this->query("SELECT COALESCE(r.nombre,'Sin Rol') rol,COUNT(*) total
+     FROM usuarios u
+     LEFT JOIN roles r ON r.idRol=u.idRol
+     GROUP BY COALESCE(r.nombre,'Sin Rol')
+     ORDER BY total DESC, rol ASC");
+ }
+}
+=====  auth/Seguridad.php
+<?php
+declare(strict_types=1);
+final class Seguridad {
+ public static function csrfToken(): string { if(empty($_SESSION['csrf_token'])) $_SESSION['csrf_token']=bin2hex(random_bytes(32)); return $_SESSION['csrf_token']; }
+ public static function verifyCsrfOrFail(string $t): void { if(empty($_SESSION['csrf_token'])||!hash_equals($_SESSION['csrf_token'],$t)){http_response_code(419); exit('Token CSRF inválido');} }
+ public static function activity(): void { $_SESSION['last_activity']=time(); }
+ public static function enforceIdle(): void {
+   if(empty($_SESSION['usuario_id']))return; $timeout=(int)system_setting('session_timeout_seconds', config('session_timeout',900)); $last=(int)($_SESSION['last_activity']??time());
+   if(time()-$last>$timeout){ self::destroy(); redirect(page_url('login',['error'=>'sesion_expirada'])); } self::activity();
+ }
+ public static function destroy(): void { $_SESSION=[]; if(ini_get('session.use_cookies')){$p=session_get_cookie_params(); setcookie(session_name(),'',time()-42000,$p['path'],$p['domain']??'',(bool)$p['secure'],(bool)$p['httponly']);} if(session_status()===PHP_SESSION_ACTIVE) session_destroy(); }
+ public static function securePassword(string $p): bool { return strlen($p)>=8 && preg_match('/[A-Z]/',$p) && preg_match('/[a-z]/',$p) && preg_match('/[0-9]/',$p); }
+}
+=====  app/core/Controller.php
+<?php
+declare(strict_types=1);
+abstract class Controller {
+ protected function render(string $view,array $data=[]): void {
+   $path=ALBERCAS_ROOT.'/views/'.$view.'.php'; if(!is_file($path)){http_response_code(500);exit('Vista no encontrada: '.e($view));}
+   extract($data,EXTR_SKIP); ob_start(); require $path; $content=ob_get_clean(); require ALBERCAS_ROOT.'/views/layouts/app.php';
+ }
+ protected function plain(string $view,array $data=[]): void { extract($data,EXTR_SKIP); require ALBERCAS_ROOT.'/views/'.$view.'.php'; }
+ protected function requirePost(): void { if(($_SERVER['REQUEST_METHOD']??'GET')!=='POST') exit('Método no permitido'); Seguridad::verifyCsrfOrFail($_POST['csrf_token']??''); }
+ protected function go(string $page,array $params=[]): never { redirect(page_url($page,$params)); }
+}
+=====  app/core/Database.php
+<?php
+declare(strict_types=1);
+
+final class Database {
+ private static ?PDO $pdo = null;
+ private static bool $done = false;
+ private static ?string $error = null;
+
+ public static function connection(): ?PDO {
+   if(self::$done) return self::$pdo;
+   self::$done = true;
+   $c = require ALBERCAS_ROOT.'/config/db.php';
+   try{
+     $host = (string)($c['host'] ?? '127.0.0.1');
+     $port = (string)($c['port'] ?? '3306');
+     $db = (string)($c['database'] ?? 'albercas');
+     $charset = (string)($c['charset'] ?? 'utf8mb4');
+     $dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
+     self::$pdo = new PDO($dsn,(string)($c['username'] ?? 'root'),(string)($c['password'] ?? ''),[
+       PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION,
+       PDO::ATTR_DEFAULT_FETCH_MODE=>PDO::FETCH_ASSOC,
+       PDO::ATTR_EMULATE_PREPARES=>false,
+     ]);
+     self::$pdo->exec("SET time_zone = '-06:00'");
+   }catch(Throwable $e){
+     self::$error = $e->getMessage();
+     @file_put_contents(ALBERCAS_ROOT.'/logs/db.log','['.date('c').'] '.self::$error.PHP_EOL,FILE_APPEND);
+     if(!empty($c['strict'])) exit('Error de conexión a la base de datos. Revisa config/db.php y el servicio MySQL.');
+   }
+   return self::$pdo;
+ }
+
+ public static function error(): ?string { return self::$error; }
+ public static function ok(): bool { return self::connection() instanceof PDO; }
+ public static function info(): array {
+   $c = require ALBERCAS_ROOT.'/config/db.php';
+   return [
+    'ok'=>self::ok(),
+    'error'=>self::$error,
+    'host'=>(string)($c['host'] ?? ''),
+    'port'=>(string)($c['port'] ?? ''),
+    'database'=>(string)($c['database'] ?? ''),
+   ];
+ }
+}
+=====  app/core/Model.php
+<?php
+declare(strict_types=1);
+
+abstract class Model {
+ protected ?PDO $db;
+ protected static ?string $lastError = null;
+
+ public function __construct(){
+   $this->db = Database::connection();
+ }
+
+ public static function lastError(): ?string { return self::$lastError; }
+ public static function clearLastError(): void { self::$lastError = null; }
+ protected function connected(): bool { return $this->db instanceof PDO; }
+
+ protected function query(string $sql, array $p=[]): array {
+   self::$lastError = null;
+   if(!$this->db){ self::$lastError = Database::error() ?: 'Sin conexion a la base de datos.'; return []; }
+   try{
+     $s = $this->db->prepare($sql);
+     foreach($p as $k=>$v){
+       $param = is_int($k) ? $k + 1 : ':'.ltrim((string)$k, ':');
+       $type = is_int($v) ? PDO::PARAM_INT : (is_bool($v) ? PDO::PARAM_BOOL : (is_null($v) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+       $s->bindValue($param, $v, $type);
+     }
+     $s->execute();
+     return $s->fetchAll();
+   }catch(Throwable $e){
+     $this->fail($e, $sql);
+     return [];
+   }
+ }
+
+ protected function row(string $sql,array $p=[]): ?array {
+   $r = $this->query($sql,$p);
+   return $r[0] ?? null;
+ }
+
+ protected function execSql(string $sql,array $p=[]): bool {
+   self::$lastError = null;
+   if(!$this->db){ self::$lastError = Database::error() ?: 'Sin conexion a la base de datos.'; return false; }
+   try{
+     $s = $this->db->prepare($sql);
+     foreach($p as $k=>$v){
+       $param = is_int($k) ? $k + 1 : ':'.ltrim((string)$k, ':');
+       $type = is_int($v) ? PDO::PARAM_INT : (is_bool($v) ? PDO::PARAM_BOOL : (is_null($v) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+       $s->bindValue($param, $v, $type);
+     }
+     return $s->execute();
+   }catch(Throwable $e){
+     $this->fail($e, $sql);
+     return false;
+   }
+ }
+
+
+ protected function execAffected(string $sql,array $p=[]): int {
+   self::$lastError = null;
+   if(!$this->db){ self::$lastError = Database::error() ?: 'Sin conexion a la base de datos.'; return -1; }
+   try{
+     $s = $this->db->prepare($sql);
+     foreach($p as $k=>$v){
+       $param = is_int($k) ? $k + 1 : ':'.ltrim((string)$k, ':');
+       $type = is_int($v) ? PDO::PARAM_INT : (is_bool($v) ? PDO::PARAM_BOOL : (is_null($v) ? PDO::PARAM_NULL : PDO::PARAM_STR));
+       $s->bindValue($param, $v, $type);
+     }
+     $s->execute();
+     return $s->rowCount();
+   }catch(Throwable $e){
+     $this->fail($e, $sql);
+     return -1;
+   }
+ }
+
+ protected function transaction(callable $callback): bool {
+   self::$lastError = null;
+   if(!$this->db){ self::$lastError = Database::error() ?: 'Sin conexion a la base de datos.'; return false; }
+   try{
+     $this->db->beginTransaction();
+     $ok = (bool)$callback($this->db);
+     if($ok){ $this->db->commit(); return true; }
+     $this->db->rollBack();
+     return false;
+   }catch(Throwable $e){
+     if($this->db->inTransaction()) $this->db->rollBack();
+     $this->fail($e, 'transaction');
+     return false;
+   }
+ }
+
+ protected function audit(?int $user, string $entity, string $action, array $detail=[]): void {
+   if(!$this->db) return;
+   try{
+     $stmt = $this->db->prepare("INSERT INTO auditoria_sistema(idUsuario,entidad,accion,detalle,ip,user_agent,creado_en) VALUES(:u,:e,:a,:d,:ip,:ua,NOW())");
+     $stmt->execute([
+       'u'=>$user ?: null,
+       'e'=>mb_substr($entity,0,80),
+       'a'=>mb_substr($action,0,80),
+       'd'=>json_encode($detail, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),
+       'ip'=>$_SERVER['REMOTE_ADDR'] ?? 'cli',
+       'ua'=>mb_substr($_SERVER['HTTP_USER_AGENT'] ?? 'cli',0,255),
+     ]);
+   }catch(Throwable $e){
+     @file_put_contents(ALBERCAS_ROOT.'/logs/audit.log','['.date('c').'] '.$e->getMessage().PHP_EOL,FILE_APPEND);
+   }
+ }
+
+ protected function fail(Throwable $e, string $sql=''): void {
+   self::$lastError = $e->getMessage();
+   @file_put_contents(ALBERCAS_ROOT.'/logs/sql.log','['.date('c').'] '.$e->getMessage().PHP_EOL.$sql.PHP_EOL,FILE_APPEND);
+ }
+}
+=====  app/helpers/functions.php
+<?php
+declare(strict_types=1);
+if (!function_exists('mb_strtolower')) { function mb_strtolower(string $s, ?string $enc=null): string { return strtolower($s); } }
+if (!function_exists('mb_strtoupper')) { function mb_strtoupper(string $s, ?string $enc=null): string { return strtoupper($s); } }
+if (!function_exists('mb_substr')) { function mb_substr(string $s, int $start, ?int $length=null, ?string $enc=null): string { return $length===null ? substr($s,$start) : substr($s,$start,$length); } }
+if (!function_exists('mb_strimwidth')) { function mb_strimwidth(string $s, int $start, int $width, string $trim_marker='', ?string $enc=null): string { $slice = substr($s, $start, $width); return strlen($s) > $start + $width ? rtrim($slice).$trim_marker : $slice; } }
+define('ALBERCAS_ROOT', dirname(__DIR__, 2));
+function config(string $key, mixed $default=null): mixed { static $c=null; $c ??= require ALBERCAS_ROOT.'/config/app.php'; return $c[$key] ?? $default; }
+
+function system_setting(string $key, mixed $default=null): mixed {
+  static $cache=[];
+  if(array_key_exists($key,$cache)) return $cache[$key];
+  $cache[$key]=$default;
+  if(!class_exists('Database')) return $cache[$key];
+  try{
+    $db=Database::connection();
+    if(!$db) return $cache[$key];
+    $stmt=$db->prepare("SELECT valor FROM configuraciones_sistema WHERE clave=:clave LIMIT 1");
+    $stmt->execute(['clave'=>$key]);
+    $value=$stmt->fetchColumn();
+    if($value!==false) $cache[$key]=$value;
+  }catch(Throwable $e){
+    $cache[$key]=$default;
+  }
+  return $cache[$key];
+}
+function e(mixed $v): string { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
+function url(string $path=''): string {
+  $base=config('base_url','');
+  if($base===''){ $dir=dirname($_SERVER['SCRIPT_NAME'] ?? '/'); $base=($dir==='/'||$dir==='\\'||$dir==='.')?'/':rtrim(str_replace('\\','/',$dir),'/').'/'; }
+  return rtrim($base,'/').'/'.ltrim($path,'/');
+}
+function asset(string $p): string { return url($p); }
+function asset_version(string $p): string { $f=ALBERCAS_ROOT.'/'.ltrim($p,'/'); return is_file($f)?(string)filemtime($f):(string)time(); }
+function page_url(string $page, array $params=[]): string { return 'index.php?'.http_build_query(array_merge(['page'=>$page],$params)); }
+function redirect(string $to): never { header('Location: '.$to); exit; }
+function default_route_for_role(?int $r): string { return match($r){1=>'admin-dashboard',2=>'encargado-dashboard',3=>'limpieza-dashboard',4=>'mantenimiento-dashboard',default=>'sin-rol'}; }
+function role_slug(?int $r): string { return match($r){1=>'admin',2=>'encargado',3=>'limpieza',4=>'mantenimiento',default=>'sin-rol'}; }
+function role_name(?int $r): string { return match($r){1=>'Administrador',2=>'Encargado de Alberca',3=>'Personal de Limpieza',4=>'Técnico de Mantenimiento',default=>'Sin Rol'}; }
+function current_user(): array { return ['id'=>$_SESSION['usuario_id']??null,'idRol'=>$_SESSION['idRol']??null,'nombre'=>$_SESSION['usuario_nombre']??'Empleado','email'=>$_SESSION['usuario_email']??'','rol'=>$_SESSION['rol_nombre']??role_name($_SESSION['idRol']??null)]; }
+function csrf_field(): string { return '<input type="hidden" name="csrf_token" value="'.e(Seguridad::csrfToken()).'">'; }
+function flash(string $type,string $message): void { $_SESSION['flash'][]=['type'=>$type,'message'=>$message]; }
+function flashes(): array { $f=$_SESSION['flash']??[]; unset($_SESSION['flash']); return $f; }
+function pct(int|float $v,int|float $m): int { return $m>0?max(0,min(100,(int)round($v/$m*100))):0; }
+function fdt(?string $d): string { if(!$d)return 'Sin fecha'; $t=strtotime($d); return $t?date('d/m/Y H:i',$t):$d; }
+function sev(string $v): string { $s=mb_strtolower($v); return str_contains($s,'alta')||str_contains($s,'crit')||str_contains($s,'cerr')?'danger':(str_contains($s,'media')||str_contains($s,'limpieza')||str_contains($s,'mant')?'warning':(str_contains($s,'baja')||str_contains($s,'disp')||str_contains($s,'concl')?'success':'info')); }
+
+function is_local_request(): bool { $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1'; return PHP_SAPI === 'cli' || in_array($ip, ['127.0.0.1','::1','localhost'], true); }

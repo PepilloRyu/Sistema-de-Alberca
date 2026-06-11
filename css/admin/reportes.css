@@ -1,0 +1,374 @@
+/* Admin reportes */
+/* =========================================================
+   v22 - Admin reportes SaaS ejecutivo
+   ========================================================= */
+body.role-admin .reports-saas-page.reports-v22{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 354px;
+  grid-template-rows:74px minmax(0,1fr);
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .reports-kpi-row{
+  grid-column:1/3;
+  grid-row:1/2;
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+}
+body.role-admin .reports-kpi{
+  min-width:0;
+  height:74px;
+  display:grid;
+  grid-template-columns:43px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  padding:9px 12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.84);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(18px);
+  overflow:hidden;
+}
+body.role-admin .reports-kpi i{
+  width:43px;height:43px;border-radius:16px;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));
+  font-size:15px;
+}
+body.role-admin .reports-kpi-blue i{background:linear-gradient(135deg,var(--sky),#2563EB);}
+body.role-admin .reports-kpi-violet i{background:linear-gradient(135deg,var(--violet),#60A5FA);}
+body.role-admin .reports-kpi-coral i{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-admin .reports-kpi-amber i{background:linear-gradient(135deg,var(--amber),#F59E0B);color:#3B2C08;}
+body.role-admin .reports-kpi-mint i{background:linear-gradient(135deg,#34D399,var(--lagoon));}
+body.role-admin .reports-kpi span,
+body.role-admin .reports-kpi b,
+body.role-admin .reports-kpi small{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05;}
+body.role-admin .reports-kpi span{font-size:9.5px;font-weight:950;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);}
+body.role-admin .reports-kpi b{font-size:24px;font-weight:950;color:var(--ink);letter-spacing:-.05em;margin-top:2px;}
+body.role-admin .reports-kpi small{font-size:9.4px;font-weight:850;color:var(--muted);margin-top:4px;}
+body.role-admin .reports-main-grid{
+  grid-column:1/2;
+  grid-row:2/3;
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);
+  grid-template-rows:minmax(0,1fr) 190px;
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .reports-side-grid{
+  grid-column:2/3;
+  grid-row:2/3;
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-rows:178px minmax(0,1fr) 154px;
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .reports-v22 .report-card{
+  min-width:0;
+  min-height:0;
+  padding:14px 16px;
+  border-radius:22px;
+  overflow:hidden;
+}
+body.role-admin .reports-v22 .report-headline{margin-bottom:8px;align-items:flex-start;}
+body.role-admin .reports-v22 .report-headline h3{font-size:16px;line-height:1.05;margin:0 0 5px;font-weight:950;letter-spacing:-.04em;}
+body.role-admin .reports-v22 .report-headline span{font-size:9.5px;line-height:1.05;font-weight:850;color:var(--muted);}
+body.role-admin .report-pill,
+body.role-admin .reports-v22 .mini-counter{
+  flex:0 0 auto;
+  min-width:42px;
+  height:31px;
+  padding:0 11px;
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  background:rgba(221,248,246,.9);
+  color:#008E85!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  white-space:nowrap;
+}
+body.role-admin .report-pill.strong{font-family:"JetBrains Mono",monospace;font-size:11px!important;}
+body.role-admin .report-occupancy-layout{
+  height:calc(100% - 41px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,.96fr) minmax(0,1.04fr);
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .report-pool-bars{
+  min-height:0;
+  display:grid;
+  grid-template-rows:repeat(5,1fr);
+  gap:6px;
+  overflow:hidden;
+}
+body.role-admin .report-pool-row{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(86px,.68fr) minmax(0,1fr) 40px;
+  gap:8px;
+  align-items:center;
+  padding:7px 8px;
+  border-radius:16px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.78);
+  box-shadow:inset 3px 0 0 var(--lagoon);
+}
+body.role-admin .report-pool-row.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .report-pool-row.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .report-pool-row b,
+body.role-admin .report-pool-row small{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05;}
+body.role-admin .report-pool-row b{font-size:10.4px;font-weight:950;text-transform:lowercase;}
+body.role-admin .report-pool-row small{font-size:7.8px;font-weight:850;color:var(--muted);margin-top:4px;}
+body.role-admin .report-pool-row strong{font-size:13px;font-weight:950;text-align:right;}
+body.role-admin .report-progress{height:9px;}
+body.role-admin .report-chart-box{
+  min-width:0;
+  min-height:0;
+  height:100%;
+  border-radius:18px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.68);
+  padding:8px;
+}
+body.role-admin .report-flow-chart{
+  height:calc(100% - 95px);
+  min-height:0;
+  border-radius:18px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.60);
+  padding:8px 8px 2px;
+}
+body.role-admin .report-flow-strip{
+  height:43px;
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+body.role-admin .report-flow-strip div,
+body.role-admin .report-readiness div{
+  min-width:0;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.78);
+  border-radius:15px;
+  padding:7px 9px;
+}
+body.role-admin .report-flow-strip span,
+body.role-admin .report-readiness span{
+  display:block;font-size:7.4px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:950;line-height:1;
+}
+body.role-admin .report-flow-strip b,
+body.role-admin .report-readiness b{
+  display:block;font-size:18px;line-height:1;font-weight:950;color:var(--ink);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.role-admin .report-water-card,
+body.role-admin .report-ticket-card{grid-row:2/3;}
+body.role-admin .report-water-grid{
+  height:calc(100% - 39px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;
+  overflow:hidden;
+}
+body.role-admin .report-water-tile{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-rows:24px repeat(3,1fr);
+  gap:5px;
+  padding:9px 10px;
+  border-radius:17px;
+  border:1px solid rgba(18,56,95,.11);
+  background:rgba(245,250,255,.78);
+  box-shadow:inset 3px 0 0 var(--lagoon);
+}
+body.role-admin .report-water-tile.warn{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .report-water-tile.empty{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .report-water-tile header{min-width:0;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+body.role-admin .report-water-tile header b{font-size:10px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:lowercase;}
+body.role-admin .report-water-tile header span{font-size:6.8px;font-weight:950;white-space:nowrap;color:#008E85;background:rgba(0,184,169,.12);border-radius:999px;padding:4px 6px;}
+body.role-admin .report-water-tile.warn header span{color:#9A6A00;background:rgba(255,209,102,.22);}
+body.role-admin .report-water-tile.empty header span{color:#C34242;background:rgba(255,107,107,.14);}
+body.role-admin .report-water-tile div:not(header){display:grid;grid-template-columns:23px 30px minmax(0,1fr);align-items:center;gap:5px;}
+body.role-admin .report-water-tile small{font-size:7.4px;font-weight:950;color:var(--muted);}
+body.role-admin .report-water-tile strong{font-size:10px;font-weight:950;font-family:"JetBrains Mono",monospace;}
+body.role-admin .report-water-tile em{display:block;height:7px;border-radius:99px;background:#E4EEF7;overflow:hidden;position:relative;}
+body.role-admin .report-water-tile em:before{content:"";position:absolute;inset:0;width:inherit;max-width:100%;border-radius:99px;background:linear-gradient(90deg,var(--lagoon),var(--sky));}
+body.role-admin .report-ticket-layout{
+  height:calc(100% - 39px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:132px minmax(0,1fr);
+  gap:8px;
+  overflow:hidden;
+}
+body.role-admin .report-priority-bars{display:grid;gap:5px;min-height:0;overflow:hidden;}
+body.role-admin .priority-line{
+  min-width:0;
+  display:grid;
+  grid-template-columns:48px minmax(0,1fr) 16px;
+  gap:5px;
+  align-items:center;
+  border-radius:13px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.78);
+  padding:5px 7px;
+}
+body.role-admin .priority-line span,
+body.role-admin .priority-line b{font-size:7.5px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-admin .priority-line b{text-align:right;font-size:10px;}
+body.role-admin .priority-line.danger .progress span{background:linear-gradient(90deg,var(--coral),#FB923C);}
+body.role-admin .priority-line.warning .progress span{background:linear-gradient(90deg,var(--amber),#F59E0B);}
+body.role-admin .report-ticket-table-wrap{min-width:0;min-height:0;overflow:hidden;border:1px solid rgba(18,56,95,.10);border-radius:16px;background:rgba(245,250,255,.68);}
+body.role-admin .report-ticket-table{width:100%;border-collapse:collapse;table-layout:fixed;}
+body.role-admin .report-ticket-table th{height:24px;font-size:7.3px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:950;padding:4px 7px;border-bottom:1px solid rgba(18,56,95,.10);}
+body.role-admin .report-ticket-table td{height:30px;font-size:8.4px;font-weight:900;color:var(--ink);padding:4px 7px;border-bottom:1px solid rgba(18,56,95,.07);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-admin .report-ticket-table tr:last-child td{border-bottom:0;}
+body.role-admin .report-ticket-table th:nth-child(1),
+body.role-admin .report-ticket-table td:nth-child(1){width:52%;}
+body.role-admin .report-ticket-table th:nth-child(2),
+body.role-admin .report-ticket-table td:nth-child(2){width:26%;}
+body.role-admin .report-ticket-table th:nth-child(3),
+body.role-admin .report-ticket-table td:nth-child(3){width:22%;text-align:right;}
+body.role-admin .report-ticket-table b,
+body.role-admin .report-ticket-table small{display:block;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-admin .report-ticket-table b{font-size:8.3px;font-weight:950;}
+body.role-admin .report-ticket-table small{font-size:6.8px;color:var(--muted);font-weight:850;margin-top:1px;}
+body.role-admin .report-mini-badge{display:inline-flex;align-items:center;height:20px;border-radius:999px;padding:0 7px;font-size:7.1px;font-weight:950;}
+body.role-admin .report-mini-badge.danger{background:rgba(255,107,107,.15);color:#D83535;}
+body.role-admin .report-mini-badge.warning{background:rgba(255,209,102,.23);color:#8A6200;}
+body.role-admin .report-mini-badge.info{background:rgba(56,189,248,.15);color:#0A7FA3;}
+body.role-admin .report-mini-badge.success{background:rgba(0,184,169,.12);color:#008E85;}
+body.role-admin .report-filter-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px;}
+body.role-admin .report-filter-grid label{min-width:0;display:grid;gap:4px;margin:0;}
+body.role-admin .report-filter-grid span{font-size:7.5px;text-transform:uppercase;letter-spacing:.08em;font-weight:950;color:var(--muted);}
+body.role-admin .report-filter-grid .form-select{height:31px;min-height:31px;border-radius:13px;font-size:8.5px;font-weight:850;padding:4px 26px 4px 9px;}
+body.role-admin .export-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+body.role-admin .export-actions .btn{height:31px;border-radius:13px;font-size:8.6px;font-weight:950;display:flex;align-items:center;justify-content:center;}
+body.role-admin .report-readiness{height:42px;margin-top:8px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+body.role-admin .report-readiness div{padding:6px 8px;}
+body.role-admin .report-readiness b{font-size:13px;}
+body.role-admin .report-readiness span{font-size:6.8px;}
+body.role-admin .report-insight-list{
+  height:calc(100% - 108px);
+  min-height:0;
+  display:grid;
+  gap:7px;
+  overflow:hidden;
+}
+body.role-admin .insight-line{
+  min-width:0;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  padding:7px 8px;
+  border-radius:15px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.78);
+}
+body.role-admin .insight-line i{width:34px;height:34px;border-radius:13px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--lagoon),var(--sky));font-size:12px;}
+body.role-admin .insight-line span,
+body.role-admin .insight-line b{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05;}
+body.role-admin .insight-line span{font-size:7.5px;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.06em;}
+body.role-admin .insight-line b{font-size:9.2px;font-weight:950;margin-top:4px;}
+body.role-admin .report-role-chart{height:64px;margin-top:7px;border-radius:16px;border:1px solid rgba(18,56,95,.10);background:rgba(245,250,255,.68);padding:5px;}
+body.role-admin .report-alert-list{height:calc(100% - 41px);min-height:0;display:grid;gap:7px;overflow:hidden;}
+body.role-admin .report-alert-line{min-width:0;display:grid;grid-template-columns:34px minmax(0,1fr);gap:8px;align-items:center;padding:7px 8px;border-radius:15px;border:1px solid rgba(18,56,95,.10);background:rgba(245,250,255,.80);}
+body.role-admin .report-alert-line i{width:34px;height:34px;border-radius:13px;display:grid;place-items:center;color:#fff;background:var(--sky);font-size:12px;}
+body.role-admin .report-alert-line.danger i{background:var(--coral);}
+body.role-admin .report-alert-line.warning i{background:var(--amber);color:#3B2C08;}
+body.role-admin .report-alert-line.success i{background:var(--lagoon);}
+body.role-admin .report-alert-line b,
+body.role-admin .report-alert-line small{display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05;}
+body.role-admin .report-alert-line b{font-size:9.5px;font-weight:950;}
+body.role-admin .report-alert-line small{font-size:7.5px;font-weight:850;color:var(--muted);margin-top:4px;}
+
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-saas-page.reports-v22{
+      grid-template-columns:minmax(0,1fr) 326px;
+      grid-template-rows:66px minmax(0,1fr);
+      gap:8px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi-row{gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi{height:66px;padding:8px 9px;grid-template-columns:36px minmax(0,1fr);gap:8px;border-radius:19px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi i{width:36px;height:36px;border-radius:14px;font-size:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi span{font-size:7.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi b{font-size:19px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-kpi small{font-size:7.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-main-grid{grid-template-rows:minmax(0,1fr) 176px;gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-side-grid{grid-template-rows:168px minmax(0,1fr) 142px;gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-v22 .report-card{padding:12px;border-radius:20px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-v22 .report-headline h3{font-size:13.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .reports-v22 .report-headline span{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-pill{height:28px;font-size:7.8px!important;padding:0 9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-occupancy-layout{grid-template-columns:1fr;gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-chart-box{display:none;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-pool-row{grid-template-columns:86px minmax(0,1fr) 35px;padding:6px 7px;gap:6px;border-radius:14px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-pool-row b{font-size:8.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-pool-row small{font-size:6.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-pool-row strong{font-size:10.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-flow-chart{height:calc(100% - 86px);padding:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-flow-strip{height:38px;gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-flow-strip b{font-size:13px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-flow-strip span{font-size:6.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-grid{gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile{padding:7px 8px;border-radius:14px;gap:4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile header b{font-size:8.2px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile header span{font-size:5.8px;padding:3px 4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile div:not(header){grid-template-columns:17px 24px minmax(0,1fr);gap:4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile small{font-size:6.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-water-tile strong{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-ticket-layout{grid-template-columns:1fr;gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-priority-bars{display:none;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-ticket-table td{height:27px;font-size:7.5px;padding:3px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-ticket-table th{height:22px;font-size:6.5px;padding:3px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-filter-grid{gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-filter-grid .form-select{height:28px;min-height:28px;font-size:7.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .export-actions .btn{height:28px;font-size:7.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-readiness{height:36px;gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-readiness b{font-size:10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .insight-line{grid-template-columns:28px minmax(0,1fr);padding:6px;gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .insight-line i{width:28px;height:28px;border-radius:11px;font-size:10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .insight-line span{font-size:6.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .insight-line b{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-role-chart{height:52px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-alert-line{grid-template-columns:28px minmax(0,1fr);padding:6px;gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-alert-line i{width:28px;height:28px;border-radius:11px;font-size:10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-alert-line b{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .report-alert-line small{font-size:6.7px;}
+  }
+}
+
+@media(max-width:1280px){
+  body.role-admin .reports-saas-page.reports-v22{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto;}
+  body.role-admin .reports-kpi-row,
+  body.role-admin .reports-main-grid,
+  body.role-admin .reports-side-grid{grid-column:auto;grid-row:auto;}
+  body.role-admin .reports-kpi-row{grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .reports-main-grid{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;}
+  body.role-admin .reports-side-grid{grid-template-rows:auto;overflow:visible;}
+  body.role-admin .report-occupancy-layout{height:auto;grid-template-columns:1fr;}
+  body.role-admin .report-chart-box,.report-flow-chart{height:220px!important;}
+  body.role-admin .report-water-grid{height:auto;grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .report-ticket-layout{height:auto;grid-template-columns:1fr;}
+  body.role-admin .report-ticket-table{min-width:500px;}
+  body.role-admin .report-ticket-table-wrap{overflow-x:auto;}
+}

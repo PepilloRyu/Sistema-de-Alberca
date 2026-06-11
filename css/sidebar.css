@@ -1,0 +1,304 @@
+/* =========================================================
+   SIDEBAR GLOBAL
+   ========================================================= */
+:root{
+  --sidebar-expanded:268px;
+  --sidebar-collapsed:84px;
+}
+.app-shell{
+  padding:10px;
+  gap:12px;
+}
+@media (hover:hover) and (pointer:fine){
+  .sidebar{
+    width:var(--sidebar-collapsed);
+    min-width:var(--sidebar-collapsed);
+    max-width:var(--sidebar-collapsed);
+    padding:14px 10px;
+    border-radius:24px;
+    transition:width .22s ease,min-width .22s ease,max-width .22s ease,padding .22s ease,box-shadow .22s ease;
+    z-index:25;
+  }
+  .sidebar:hover{
+    width:var(--sidebar-expanded);
+    min-width:var(--sidebar-expanded);
+    max-width:var(--sidebar-expanded);
+    padding:16px;
+    box-shadow:0 28px 70px rgba(11,31,58,.18);
+  }
+  .sidebar:after{opacity:.72;transition:.22s ease;}
+  .sidebar:not(:hover):after{right:-115px;bottom:-115px;opacity:.28;}
+  .brand{justify-content:center;gap:0;padding:8px 0 14px;}
+  .sidebar:hover .brand{justify-content:flex-start;gap:12px;padding:8px 8px 16px;}
+  .brand-mark{width:44px;min-width:44px;height:44px;border-radius:16px;}
+  .brand span:not(.brand-mark),
+  .sidebar-section,
+  .nav-link span,
+  .sidebar-footer span{
+    opacity:0;
+    width:0;
+    max-width:0;
+    overflow:hidden;
+    white-space:nowrap;
+    pointer-events:none;
+    transition:opacity .14s ease,max-width .22s ease,width .22s ease;
+  }
+  .sidebar:hover .brand span:not(.brand-mark),
+  .sidebar:hover .sidebar-section,
+  .sidebar:hover .nav-link span,
+  .sidebar:hover .sidebar-footer span{
+    opacity:1;
+    width:auto;
+    max-width:190px;
+    pointer-events:auto;
+  }
+  .sidebar-section{
+    height:16px;
+    margin:4px 0 8px;
+    text-align:left;
+  }
+  .sidebar:hover .sidebar-section{margin:6px 8px 8px;}
+  .nav-menu{gap:7px;}
+  .nav-link{
+    justify-content:center;
+    gap:0;
+    padding:12px 0;
+    min-height:46px;
+    border-radius:17px;
+    transform:none!important;
+  }
+  .sidebar:hover .nav-link{
+    justify-content:flex-start;
+    gap:12px;
+    padding:12px 13px;
+  }
+  .nav-link i{width:22px;min-width:22px;font-size:15px;}
+  .sidebar-footer{justify-content:center;margin-top:auto;padding:10px 0;}
+  .sidebar:hover .sidebar-footer{justify-content:flex-start;padding:10px 8px;}
+  .status-dot{min-width:9px;}
+}
+/* =========================================================
+   v13 - Sidebar push/compress + admin usuarios adaptable
+   ========================================================= */
+@media (hover:hover) and (pointer:fine){
+  .app-shell{
+    position:static !important;
+    height:100vh;
+    padding:10px !important;
+    gap:12px !important;
+    display:flex;
+    align-items:stretch;
+    overflow:hidden;
+  }
+  .sidebar{
+    position:relative !important;
+    left:auto !important;
+    top:auto !important;
+    bottom:auto !important;
+    height:auto !important;
+    flex:0 0 var(--sidebar-collapsed) !important;
+    width:var(--sidebar-collapsed) !important;
+    min-width:var(--sidebar-collapsed) !important;
+    max-width:var(--sidebar-collapsed) !important;
+  }
+  .sidebar:hover{
+    flex-basis:var(--sidebar-expanded) !important;
+    width:var(--sidebar-expanded) !important;
+    min-width:var(--sidebar-expanded) !important;
+    max-width:var(--sidebar-expanded) !important;
+  }
+  .workspace{
+    flex:1 1 auto !important;
+    width:auto !important;
+    min-width:0 !important;
+    max-width:none !important;
+    transition:min-width .22s ease;
+  }
+}
+
+body.role-admin .users-command-page{
+  min-width:0;
+}
+body.role-admin .users-main-grid{
+  grid-template-columns:minmax(0,1fr) 286px;
+  min-width:0;
+}
+body.role-admin .users-directory-card,
+body.role-admin .users-side-panel,
+body.role-admin .users-table-wrap{
+  min-width:0;
+}
+body.role-admin .users-side-panel{
+  min-width:0;
+}
+body.role-admin .users-toolbar{
+  grid-template-columns:minmax(180px,1fr) minmax(235px,auto) 96px;
+}
+body.role-admin .users-count{
+  min-width:0;
+  white-space:nowrap;
+}
+body.role-admin .users-count span{
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .users-filters{
+  display:grid;
+  grid-template-columns:minmax(112px,1fr) minmax(112px,1fr);
+  gap:8px;
+}
+body.role-admin .users-filters .form-select{
+  min-width:0;
+  width:100%;
+  font-size:10px;
+  padding-left:.65rem;
+  padding-right:1.7rem;
+}
+body.role-admin .users-table-wrap{
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+body.role-admin .users-table{
+  width:100%;
+  min-width:0 !important;
+  table-layout:fixed !important;
+}
+body.role-admin .users-table th,
+body.role-admin .users-table td{
+  min-width:0 !important;
+  overflow:hidden;
+}
+body.role-admin .users-table th:nth-child(1),
+body.role-admin .users-table td:nth-child(1){width:25%;}
+body.role-admin .users-table th:nth-child(2),
+body.role-admin .users-table td:nth-child(2){width:16%;}
+body.role-admin .users-table th:nth-child(3),
+body.role-admin .users-table td:nth-child(3){width:10%;}
+body.role-admin .users-table th:nth-child(4),
+body.role-admin .users-table td:nth-child(4){width:15%;}
+body.role-admin .users-table th:nth-child(5),
+body.role-admin .users-table td:nth-child(5){width:34%;}
+body.role-admin .user-identity,
+body.role-admin .activity-cell,
+body.role-admin .role-pill,
+body.role-admin .status-pill{
+  min-width:0;
+  max-width:100%;
+}
+body.role-admin .user-identity b,
+body.role-admin .user-identity small,
+body.role-admin .activity-cell b,
+body.role-admin .activity-cell small{
+  display:block;
+  min-width:0;
+  max-width:100%;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .role-pill{
+  display:inline-flex;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .user-action-form{
+  min-width:0 !important;
+  width:100%;
+  grid-template-columns:minmax(82px,1fr) minmax(72px,.8fr) 34px;
+  gap:6px;
+}
+body.role-admin .user-action-form .form-select{
+  min-width:0;
+  width:100%;
+  height:34px;
+  font-size:9.5px;
+  padding-left:.55rem;
+  padding-right:1.55rem;
+}
+body.role-admin .user-action-form .btn{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  padding:0;
+}
+
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-admin .app-shell:has(.sidebar:hover) .users-main-grid{
+      grid-template-columns:minmax(0,1fr) 260px;
+      gap:10px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-directory-card{
+      padding:13px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-headline h3{
+      font-size:17px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-headline span{
+      font-size:10px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-toolbar{
+      grid-template-columns:minmax(160px,1fr) minmax(220px,auto) 88px;
+      gap:8px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-count{
+      padding:0 10px;
+      font-size:10px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th,
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td{
+      padding-left:7px;
+      padding-right:7px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th:nth-child(1),
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td:nth-child(1){width:24%;}
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th:nth-child(2),
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td:nth-child(2){width:15%;}
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th:nth-child(3),
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td:nth-child(3){width:9%;}
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th:nth-child(4),
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td:nth-child(4){width:14%;}
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table th:nth-child(5),
+    body.role-admin .app-shell:has(.sidebar:hover) .users-table td:nth-child(5){width:38%;}
+    body.role-admin .app-shell:has(.sidebar:hover) .user-avatar-sm{
+      width:34px;
+      height:34px;
+      min-width:34px;
+      border-radius:12px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .role-pill,
+    body.role-admin .app-shell:has(.sidebar:hover) .status-pill{
+      font-size:9px;
+      padding:6px 8px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .user-action-form{
+      grid-template-columns:minmax(78px,1fr) minmax(68px,.78fr) 32px;
+      gap:5px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .user-action-form .form-select{
+      height:32px;
+      font-size:9px;
+      padding-left:.5rem;
+      padding-right:1.45rem;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .user-action-form .btn{
+      width:32px;
+      height:32px;
+      min-width:32px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .users-side-panel .glass-card{
+      padding:13px;
+    }
+  }
+}
+
+@media (max-width:1280px){
+  body.role-admin .users-main-grid{grid-template-columns:1fr;overflow:auto;}
+  body.role-admin .users-side-panel{display:none;}
+  body.role-admin .users-table-wrap{overflow-x:auto;}
+  body.role-admin .users-table{min-width:820px !important;table-layout:auto !important;}
+}
+@media (max-width:860px){
+  body.role-admin .users-table{min-width:0 !important;}
+}

@@ -5,7 +5,8 @@ $tickets = is_array($tickets ?? null) ? $tickets : [];
 $queue = is_array($queue ?? null) ? $queue : [];
 $check = is_array($check ?? null) ? $check : [];
 
-$poolNames = ['Alberca principal','Alberca familiar','Alberca infantil','Alberca vista al mar','Alberca deportiva'];
+$poolNames = array_map(fn($pool)=>(string)($pool['nombre'] ?? ''), $pools ?? $p ?? []);
+$poolNames = array_values(array_filter($poolNames));
 $poolStats = [];
 foreach($poolNames as $name){ $poolStats[$name] = ['total'=>0,'critical'=>0,'open'=>0]; }
 $open = 0; $critical = 0; $inProcess = 0; $closed = 0; $lastTicket = null;
@@ -30,7 +31,7 @@ $pendingChecklist = 0;
 foreach($check as $task){ if((int)($task['completado'] ?? 0) === 0){ $pendingChecklist++; } }
 $firstFifo = $queue[0] ?? null;
 $lastLabel = $lastTicket ? fdt((string)($lastTicket['creado_en'] ?? '')) : 'Sin reportes';
-$riskLabel = $critical > 0 ? 'Escalar ahora' : ($open > 0 ? 'Seguimiento activo' : 'Sin bloqueo');
+$riskLabel = $critical > 0 ? 'Atención prioritaria' : ($open > 0 ? 'Seguimiento activo' : 'Sin bloqueo');
 $riskClass = $critical > 0 ? 'danger' : ($open > 0 ? 'warning' : 'success');
 $poolLabels = array_keys($poolStats);
 $poolTotals = array_map(fn($x)=>(int)$x['total'], array_values($poolStats));
@@ -154,7 +155,7 @@ $priorityValues = array_values($priorityCounts);
   </section>
 
   <section class="glass-card clean-inc-side-card">
-    <div class="clean-inc-head compact"><div><h3>Prioridad y protocolo</h3><span>Cuándo reportar y cómo escalar.</span></div></div>
+    <div class="clean-inc-head compact"><div><h3>Prioridad y protocolo</h3><span>Cuándo reportar y cómo dar seguimiento.</span></div></div>
     <div class="clean-inc-chart"><canvas id="cleanIncPriorityChart"></canvas></div>
     <div class="clean-inc-protocol">
       <div class="danger"><i class="fa-solid fa-ban"></i><div><b>Cerrar paso</b><small>Si existe vidrio, químico, cableado, fuga o piso resbaloso.</small></div></div>

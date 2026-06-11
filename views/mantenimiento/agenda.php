@@ -40,11 +40,11 @@ arsort($poolLoad);
 arsort($typeLoad);
 $next = $events[0] ?? null;
 $agendaRows = array_slice($events,0,8);
-$maxPool = max(1, ...array_values($poolLoad ?: ['x'=>1]));
+$maxPool = max(1, ...array_values($poolLoad ?: [0]));
 $labels = array_map(fn($d)=>$d['label'], array_values($week));
 $counts = array_map(fn($d)=>count($d['events']), array_values($week));
-$typeLabels = array_keys($typeLoad ?: ['Preventivo'=>1,'Correctivo'=>1]);
-$typeCounts = array_values($typeLoad ?: ['Preventivo'=>1,'Correctivo'=>1]);
+$typeLabels = array_keys($typeLoad);
+$typeCounts = array_values($typeLoad);
 $formatTime = fn($t)=>$t ? substr((string)$t,0,5) : '--:--';
 $eventTone = function($type,$estado='') {
   $type = mb_strtolower((string)$type); $estado = mb_strtolower((string)$estado);
@@ -81,7 +81,7 @@ $eventTone = function($type,$estado='') {
   <section class="glass-card mant-calendar-card-v38">
     <div class="mant-agenda-head-v38">
       <div><span>Calendario técnico</span><h3>Agenda semanal de mantenimientos</h3></div>
-      <b><i class="fa-regular fa-clock"></i> 07:00 - 21:00</b>
+      <b><i class="fa-regular fa-clock"></i> Horario según alberca</b>
     </div>
     <div class="mant-calendar-grid-v38">
       <?php foreach ($week as $dateKey=>$day): ?>
@@ -135,7 +135,7 @@ $eventTone = function($type,$estado='') {
     <section class="glass-card mant-load-card-v38">
       <div class="mant-agenda-head-v38 compact"><div><span>Carga por alberca</span><h3>Presión técnica</h3></div></div>
       <div class="mant-load-list-v38">
-        <?php foreach (array_slice($poolLoad ?: ['Alberca principal'=>0,'Alberca familiar'=>0,'Alberca infantil'=>0,'Alberca vista al mar'=>0,'Alberca deportiva'=>0],0,5) as $pool=>$count): $pct=(int)round(($count/$maxPool)*100); ?>
+        <?php foreach (array_slice($poolLoad,0,5) as $pool=>$count): $pct=(int)round(($count/$maxPool)*100); ?>
           <div class="mant-load-row-v38"><b><?= e($pool) ?></b><span><i style="width:<?= $pct ?>%"></i></span><strong><?= (int)$count ?></strong></div>
         <?php endforeach; ?>
       </div>
@@ -173,7 +173,7 @@ $eventTone = function($type,$estado='') {
     <div class="mant-type-body-v38">
       <canvas id="agendaTypeChart"></canvas>
       <div class="mant-type-legend-v38">
-        <?php foreach ($typeLoad ?: ['Preventivo'=>1,'Correctivo'=>1] as $label=>$count): ?>
+        <?php foreach ($typeLoad as $label=>$count): ?>
           <div><span><?= e($label) ?></span><b><?= (int)$count ?></b></div>
         <?php endforeach; ?>
       </div>

@@ -10,23 +10,23 @@ require ALBERCAS_ROOT.'/app/core/Model.php';
 require ALBERCAS_ROOT.'/models/UsuarioModel.php';
 
 $c = require ALBERCAS_ROOT.'/config/db.php';
-echo "Diagnostico backend - Sistema de Albercas\n";
+echo "Diagnóstico backend - Sistema de Albercas\n";
 echo "Fecha: ".date('Y-m-d H:i:s')."\n\n";
 echo "Base configurada:\n";
 echo "host={$c['host']}\nport={$c['port']}\ndatabase={$c['database']}\nusername={$c['username']}\n\n";
 
 $pdo = Database::connection();
 if (!$pdo) {
-  echo "ERROR: No hay conexion con MySQL.\n";
+  echo "ERROR: No hay conexión con MySQL.\n";
   echo "Detalle: ".(Database::error() ?: 'sin detalle')."\n\n";
-  echo "Que revisar:\n";
-  echo "1) Que MySQL este encendido en XAMPP.\n";
+  echo "Qué revisar:\n";
+  echo "1) Que MySQL esté encendido en XAMPP.\n";
   echo "2) Que config/db.php tenga el puerto correcto: 3306 o 3307.\n";
   echo "3) Que exista la base albercas y hayas importado database/schema.sql.\n";
-  exit;
+  exit(1);
 }
 
-echo "OK: conexion a MySQL establecida.\n\n";
+echo "OK: conexión a MySQL establecida.\n\n";
 $tables = ['usuarios','roles','albercas','aforo_movimientos','calidad_agua_registros','tickets_mantenimiento','ticket_seguimientos','turnos_limpieza','checklist_limpieza','mantenimientos_programados','equipos_alberca','equipo_revisiones','auditoria_sistema','notificaciones'];
 echo "Tablas clave:\n";
 foreach($tables as $table){
@@ -39,15 +39,18 @@ foreach($tables as $table){
   }
 }
 
-echo "\nUsuarios demo y verificacion contra Admin123!:\n";
+echo "\nUsuarios reales registrados:\n";
 $usuarios = (new UsuarioModel())->queryForDiagnostics();
 if (!$usuarios) {
-  echo "ERROR: No pude leer usuarios o la tabla esta vacia.\n";
-  echo "Detalle: ".(Model::lastError() ?: 'sin detalle')."\n";
-  exit;
+  echo "\n- No hay usuarios. Crea el primer administrador con: php tools/crear_admin_inicial.php\n";
+  exit(0);
 }
+$admins = 0;
 foreach ($usuarios as $u) {
-  $ok = password_verify('Admin123!', (string)$u['password_hash']) ? 'OK' : 'FALLA';
   $rol = $u['idRol'] ?? 'NULL';
-  echo "- {$u['email']} | idRol={$rol} | estado={$u['estado']} | hash_len={$u['hash_len']} | verify={$ok}\n";
+  $estado = (string)($u['estado'] ?? '');
+  if ((int)($u['idRol'] ?? 0) === 1 && $estado === 'activo') $admins++;
+  echo "\n- {$u['email']} | idRol={$rol} | estado={$estado} | hash_len={$u['hash_len']}";
 }
+echo "\n\nAdministradores activos: {$admins}\n";
+if ($admins < 1) echo "ACCIÓN: crea o activa un administrador real antes de operar el sistema.\n";

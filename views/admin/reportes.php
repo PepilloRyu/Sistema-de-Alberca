@@ -7,7 +7,7 @@ $alerts = $alerts ?? [];
 $tickets = $tickets ?? [];
 $ticketStatus = $ticketStatus ?? [];
 $ticketPriority = $ticketPriority ?? [];
-$limpiezaMetrics = $limpiezaMetrics ?? ['total'=>0,'completas'=>0,'vencidas'=>0];
+$limpiezaMetrics = $limpiezaMetrics ?? ['total'=>0,'completas'=>0,'pendientes'=>0];
 $checklist = $checklist ?? [];
 $turnos = $turnos ?? [];
 $mantMetrics = $mantMetrics ?? ['total'=>0,'hoy'=>0,'activos'=>0];
@@ -57,7 +57,7 @@ $criticalTickets = count(array_filter($tickets, fn($x) => (int)($x['prioridad_ni
 $cleanTotal = (int)($limpiezaMetrics['total'] ?? count($checklist));
 $cleanDone = (int)($limpiezaMetrics['completas'] ?? 0);
 $cleanPct = rep22_pct($cleanDone, $cleanTotal);
-$cleanLate = (int)($limpiezaMetrics['vencidas'] ?? 0);
+$cleanPending = max(0, (int)($limpiezaMetrics['total'] ?? 0) - (int)($limpiezaMetrics['completas'] ?? 0));
 $equipTotal = count($equipment);
 $equipRisk = count(array_filter($equipment, fn($x) => in_array((string)($x['estado'] ?? ''), ['revision','critico','fuera_servicio'], true)));
 $equipOkPct = $equipTotal ? rep22_pct($equipTotal - $equipRisk, $equipTotal) : 100;
@@ -77,10 +77,10 @@ foreach ($p as $pool) {
   $cl = $row ? (float)($row['cloro_ppm'] ?? 0) : 0;
   $ph = $row ? (float)($row['ph'] ?? 0) : 0;
   $temp = $row ? (float)($row['temperatura_c'] ?? 0) : 0;
-  $ok = $cl >= 1.0 && $cl <= 3.0 && $ph >= 7.2 && $ph <= 7.8 && $temp >= 24 && $temp <= 30;
+  $ok = true;
   $waterRows[] = ['pool'=>$pool,'quality'=>$row,'cl'=>$cl,'ph'=>$ph,'temp'=>$temp,'ok'=>$ok];
 }
-$waterOk = count(array_filter($waterRows, fn($x) => $x['ok']));
+$waterOk = count(array_filter($waterRows, fn($x) => (bool)$x['quality']));
 $nextJob = $schedule[0] ?? null;
 $nextJobText = $nextJob ? rep22_pool_label((string)($nextJob['alberca'] ?? 'Alberca')).' · '.rep22_time($nextJob['hora_inicio'] ?? null) : 'Sin agenda';
 
@@ -90,9 +90,9 @@ $roleChart = array_map(fn($x) => ['n'=>(string)($x['rol'] ?? 'Rol'), 'v'=>(int)(
 
 $kpis = [
   ['label'=>'Ocupación','value'=>$occupancyPct.'%','sub'=>$totalOccupancy.'/'.$totalCapacity.' personas','icon'=>'fa-chart-pie','tone'=>'aqua'],
-  ['label'=>'Agua OK','value'=>$waterOk.'/'.count($waterRows),'sub'=>'química en rango','icon'=>'fa-flask-vial','tone'=>$waterOk===count($waterRows)?'mint':'coral'],
+  ['label'=>'Lecturas agua','value'=>$waterOk.'/'.count($waterRows),'sub'=>'con registro válido','icon'=>'fa-flask-vial','tone'=>$waterOk===count($waterRows)?'mint':'coral'],
   ['label'=>'Tickets','value'=>$openTickets,'sub'=>$criticalTickets.' críticos/alta','icon'=>'fa-ticket','tone'=>$criticalTickets>0?'coral':'blue'],
-  ['label'=>'Limpieza','value'=>$cleanPct.'%','sub'=>$cleanLate.' vencidas','icon'=>'fa-broom','tone'=>$cleanLate>0?'amber':'mint'],
+  ['label'=>'Limpieza','value'=>$cleanPct.'%','sub'=>$cleanPending.' pendientes','icon'=>'fa-broom','tone'=>$cleanPending>0?'amber':'mint'],
   ['label'=>'Mantto.','value'=>(int)($mantMetrics['hoy'] ?? 0),'sub'=>$equipOkPct.'% salud técnica','icon'=>'fa-screwdriver-wrench','tone'=>$equipRisk>0?'amber':'violet'],
 ];
 ?>
@@ -169,8 +169,8 @@ $kpis = [
           $ok = $w['ok'];
           $has = (bool)$w['quality'];
         ?>
-          <div class="report-water-tile <?= $ok?'ok':($has?'warn':'empty') ?>">
-            <header><b><?= e(rep22_pool_label((string)($pool['nombre'] ?? 'Alberca'))) ?></b><span><?= $ok?'OK':($has?'Revisar':'Sin registro') ?></span></header>
+          <div class="report-water-tile <?= $has?'ok':'empty' ?>">
+            <header><b><?= e(rep22_pool_label((string)($pool['nombre'] ?? 'Alberca'))) ?></b><span><?= $has?'Registrada':'Sin registro' ?></span></header>
             <div><small>CL</small><strong><?= $has ? e((string)$w['cl']) : '--' ?></strong><em style="width:<?= e((string)rep22_pct($w['cl'],3)) ?>%"></em></div>
             <div><small>PH</small><strong><?= $has ? e((string)$w['ph']) : '--' ?></strong><em style="width:<?= e((string)rep22_pct($w['ph'],8)) ?>%"></em></div>
             <div><small>°C</small><strong><?= $has ? e((string)$w['temp']) : '--' ?></strong><em style="width:<?= e((string)rep22_pct($w['temp'],35)) ?>%"></em></div>
@@ -225,17 +225,9 @@ $kpis = [
       <div class="section-head tight report-headline">
         <div>
           <h3>Centro de reportes</h3>
-          <span>Consulta ejecutiva y preparación de exportación.</span>
+          <span>Consulta en pantalla de pH/cloro, incidencias, limpieza y mantenimiento.</span>
         </div>
         <i class="side-badge fa-solid fa-file-lines"></i>
-      </div>
-      <div class="report-filter-grid">
-        <label><span>Periodo</span><select class="form-select"><option>Hoy</option><option>Últimos 7 días</option><option>Mes actual</option></select></label>
-        <label><span>Módulo</span><select class="form-select"><option>Operación completa</option><option>Aforo</option><option>Mantenimiento</option><option>Limpieza</option><option>Agua</option></select></label>
-      </div>
-      <div class="export-actions">
-        <a href="#" class="btn btn-aqua"><i class="fa-solid fa-file-export me-1"></i> Exportar PDF</a>
-        <a href="#" class="btn btn-outline-aqua"><i class="fa-solid fa-table me-1"></i> Exportar Excel</a>
       </div>
       <div class="report-readiness">
         <div><b><?= e((string)$occupancyPct) ?>%</b><span>aforo</span></div>

@@ -1,0 +1,1020 @@
+/* Admin mantenimiento */
+/* =========================================================
+   v19 - Admin mantenimiento SaaS
+   ========================================================= */
+body.role-admin .maint-saas-page{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  grid-template-rows:72px minmax(0,1fr);
+  gap:12px;
+  overflow:hidden;
+}
+body.role-admin .maint-kpi-row{
+  grid-column:1/3;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  min-height:0;
+}
+body.role-admin .maint-kpi{
+  height:72px;
+  padding:10px 13px;
+  border-radius:23px;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:var(--shadow);
+  display:grid;
+  grid-template-columns:40px minmax(0,1fr);
+  gap:11px;
+  align-items:center;
+  overflow:hidden;
+}
+body.role-admin .maint-kpi i{
+  width:40px;height:40px;border-radius:15px;
+  display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));
+  box-shadow:0 14px 26px rgba(0,184,169,.18);
+}
+body.role-admin .maint-kpi-violet i{background:linear-gradient(135deg,var(--violet),#60A5FA);}
+body.role-admin .maint-kpi-coral i{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-admin .maint-kpi-amber i{background:linear-gradient(135deg,var(--amber),#F59E0B);color:#3B2C08;}
+body.role-admin .maint-kpi-blue i{background:linear-gradient(135deg,#38BDF8,#3B82F6);}
+body.role-admin .maint-kpi-mint i{background:linear-gradient(135deg,#10B981,#6EE7B7);}
+body.role-admin .maint-kpi span,
+body.role-admin .maint-kpi small{
+  display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:var(--muted);font-weight:900;
+}
+body.role-admin .maint-kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.08em;line-height:1;}
+body.role-admin .maint-kpi b{display:block;font-size:23px;line-height:.98;font-weight:950;letter-spacing:-.05em;color:var(--ink);}
+body.role-admin .maint-kpi small{font-size:9.6px;line-height:1.1;}
+body.role-admin .maint-main-grid{
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1.04fr) minmax(0,.96fr);
+  grid-template-rows:minmax(0,1fr) 172px;
+  gap:12px;
+  overflow:hidden;
+}
+body.role-admin .maint-side-grid{
+  min-height:0;
+  display:grid;
+  grid-template-rows:minmax(0,1fr) 170px;
+  gap:12px;
+  overflow:hidden;
+}
+body.role-admin .maint-agenda-card,
+body.role-admin .maint-fifo-card,
+body.role-admin .maint-equipment-card,
+body.role-admin .maint-form-card,
+body.role-admin .maint-health-card{
+  padding:14px 16px;
+  border-radius:25px;
+  overflow:hidden;
+  min-height:0;
+}
+body.role-admin .maint-equipment-card{grid-column:1/3;}
+body.role-admin .maint-headline{margin-bottom:8px;align-items:flex-start;}
+body.role-admin .maint-headline h3{font-size:16px;line-height:1.05;margin:0;font-weight:950;letter-spacing:-.04em;}
+body.role-admin .maint-headline span{font-size:9.8px;line-height:1.15;font-weight:850;color:var(--muted);}
+body.role-admin .mini-counter{
+  min-width:36px;height:36px;padding:0 10px;border-radius:15px;
+  display:grid;place-items:center;background:rgba(0,184,169,.12);color:#008E85;
+  font-weight:950;font-family:"JetBrains Mono",monospace;font-size:12px;
+}
+body.role-admin .side-badge{
+  width:36px;height:36px;border-radius:15px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));color:#fff;font-size:15px;
+}
+body.role-admin .mini-action{
+  height:32px;padding:0 12px;border-radius:15px;background:rgba(0,184,169,.12);
+  color:#00A99B;display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:950;
+  white-space:nowrap;
+}
+body.role-admin .maint-agenda-list,
+body.role-admin .maint-ticket-list{
+  height:calc(100% - 44px);
+  min-height:0;
+  display:grid;
+  gap:7px;
+  overflow:hidden;
+}
+body.role-admin .maint-agenda-list{grid-auto-rows:minmax(48px,1fr);}
+body.role-admin .maint-agenda-line{
+  min-height:0;
+  display:grid;
+  grid-template-columns:58px minmax(0,1fr) 104px;
+  gap:10px;align-items:center;
+  border:1px solid rgba(18,56,95,.12);
+  background:linear-gradient(135deg,rgba(245,250,255,.92),rgba(255,255,255,.74));
+  border-radius:17px;padding:8px 10px;overflow:hidden;
+}
+body.role-admin .maint-agenda-line.current{box-shadow:inset 4px 0 0 var(--lagoon);background:linear-gradient(135deg,rgba(0,184,169,.12),rgba(56,189,248,.08));}
+body.role-admin .maint-date{
+  height:42px;border-radius:14px;background:#fff;border:1px solid rgba(18,56,95,.1);
+  display:grid;place-items:center;text-align:center;line-height:1;
+}
+body.role-admin .maint-date b{font-size:13px;font-weight:950;font-family:"JetBrains Mono",monospace;}
+body.role-admin .maint-date small{font-size:8.5px;color:var(--muted);font-weight:900;}
+body.role-admin .maint-copy,
+body.role-admin .maint-meta,
+body.role-admin .maint-ticket-line div,
+body.role-admin .maint-equipment-mini div{min-width:0;}
+body.role-admin .maint-copy b,
+body.role-admin .maint-copy small,
+body.role-admin .maint-meta small,
+body.role-admin .maint-ticket-line b,
+body.role-admin .maint-ticket-line small,
+body.role-admin .maint-ticket-line span,
+body.role-admin .maint-equipment-mini b,
+body.role-admin .maint-equipment-mini small,
+body.role-admin .maint-equipment-mini span,
+body.role-admin .maint-equipment-mini em,
+body.role-admin .tech-load-line b,
+body.role-admin .tech-load-line small{
+  display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body.role-admin .maint-copy b{font-size:12.3px;font-weight:950;line-height:1.05;}
+body.role-admin .maint-copy small{font-size:9px;color:var(--muted);font-weight:850;line-height:1.1;margin-top:2px;}
+body.role-admin .maint-meta{text-align:right;display:grid;gap:3px;justify-items:end;}
+body.role-admin .maint-meta .badge-soft{font-size:8.5px;padding:4px 7px;border-radius:99px;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-admin .maint-meta small{font-size:8.5px;color:var(--muted);font-weight:900;max-width:100%;}
+body.role-admin .maint-ticket-list{grid-auto-rows:minmax(48px,1fr);}
+body.role-admin .maint-ticket-line{
+  display:grid;grid-template-columns:36px minmax(0,1fr) 84px;gap:9px;align-items:center;
+  border-radius:17px;border:1px solid rgba(18,56,95,.12);background:#F5FAFF;
+  padding:8px 10px;overflow:hidden;box-shadow:inset 3px 0 0 var(--sky);
+}
+body.role-admin .maint-ticket-line.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .maint-ticket-line.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .maint-ticket-line i{width:36px;height:36px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lagoon),var(--sky));color:#fff;}
+body.role-admin .maint-ticket-line.warning i{background:linear-gradient(135deg,var(--amber),#F59E0B);color:#3B2C08;}
+body.role-admin .maint-ticket-line.danger i{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-admin .maint-ticket-line b{font-size:11.8px;font-weight:950;line-height:1.05;}
+body.role-admin .maint-ticket-line small{font-size:8.8px;color:var(--muted);font-weight:850;line-height:1.05;margin-top:2px;}
+body.role-admin .maint-ticket-line span{font-size:8.6px;text-align:right;color:var(--muted);font-weight:900;}
+body.role-admin .maint-equipment-grid{
+  height:calc(100% - 42px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  overflow:hidden;
+}
+body.role-admin .maint-equipment-mini{
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 72px;
+  grid-template-rows:minmax(0,1fr) auto;
+  gap:3px 8px;
+  padding:9px 10px;border-radius:16px;background:#F5FAFF;border:1px solid rgba(18,56,95,.12);
+  box-shadow:inset 3px 0 0 var(--lagoon);overflow:hidden;
+}
+body.role-admin .maint-equipment-mini.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .maint-equipment-mini.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .maint-equipment-mini b{font-size:11px;font-weight:950;line-height:1.05;}
+body.role-admin .maint-equipment-mini small{font-size:8.4px;color:var(--muted);font-weight:850;line-height:1.05;margin-top:2px;}
+body.role-admin .maint-equipment-mini span{font-size:8.5px;font-weight:950;color:#008E85;text-align:right;text-transform:capitalize;}
+body.role-admin .maint-equipment-mini.warning span{color:#9A6A00;}
+body.role-admin .maint-equipment-mini.danger span{color:#D83535;}
+body.role-admin .maint-equipment-mini em{grid-column:1/3;font-style:normal;font-size:8.5px;color:var(--muted);font-weight:900;}
+body.role-admin .maint-form{display:grid;gap:7px;height:calc(100% - 42px);min-height:0;}
+body.role-admin .maint-form label{font-size:8.8px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:950;margin:0;line-height:1;}
+body.role-admin .maint-form .form-control,
+body.role-admin .maint-form .form-select{height:34px;border-radius:14px;border-color:rgba(18,56,95,.14);font-size:10.5px;font-weight:850;background-color:rgba(245,250,255,.82);}
+body.role-admin .maint-form textarea.form-control{height:50px;resize:none;padding-top:8px;}
+body.role-admin .maint-form .btn{height:34px;border-radius:14px;font-size:10.5px;font-weight:950;margin-top:1px;}
+body.role-admin .two-field{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+body.role-admin .maint-health-layout{height:calc(100% - 42px);display:grid;grid-template-columns:94px minmax(0,1fr);gap:10px;align-items:center;min-height:0;}
+body.role-admin .maint-donut-wrap{position:relative;height:94px;min-height:0;}
+body.role-admin .maint-tech-list{display:grid;gap:6px;min-height:0;overflow:hidden;}
+body.role-admin .tech-load-line{display:grid;grid-template-columns:88px minmax(0,1fr);gap:8px;align-items:center;border-radius:14px;padding:6px 8px;background:#F5FAFF;border:1px solid rgba(18,56,95,.1);}
+body.role-admin .tech-load-line b{font-size:9.8px;font-weight:950;line-height:1.05;}
+body.role-admin .tech-load-line small{font-size:8px;color:var(--muted);font-weight:850;}
+
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-page{grid-template-columns:minmax(0,1fr) 300px;grid-template-rows:68px minmax(0,1fr);gap:9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi-row{gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi{height:68px;padding:9px 10px;grid-template-columns:35px minmax(0,1fr);gap:9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi i{width:35px;height:35px;border-radius:13px;font-size:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi span{font-size:9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi b{font-size:21px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-kpi small{font-size:9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-main-grid{gap:9px;grid-template-columns:minmax(0,1fr) minmax(0,.9fr);grid-template-rows:minmax(0,1fr) 162px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-side-grid{gap:9px;grid-template-rows:minmax(0,1fr) 160px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-agenda-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-fifo-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-equipment-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-health-card{padding:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-headline h3{font-size:14.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-headline span{font-size:9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-agenda-line{grid-template-columns:48px minmax(0,1fr) 82px;padding:7px 8px;gap:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-date{height:36px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-copy b{font-size:10.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-copy small{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-ticket-line{grid-template-columns:32px minmax(0,1fr) 68px;padding:7px 8px;gap:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-ticket-line i{width:32px;height:32px;border-radius:12px;font-size:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-equipment-grid{gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-equipment-mini{grid-template-columns:minmax(0,1fr) 58px;padding:7px 8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-equipment-mini b{font-size:9.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-equipment-mini small{font-size:7.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form{gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form label{font-size:7.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form .form-control,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form .form-select{height:29px;font-size:9px;border-radius:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form textarea.form-control{height:42px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form .btn{height:31px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-health-layout{grid-template-columns:76px minmax(0,1fr);gap:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-donut-wrap{height:76px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .tech-load-line{grid-template-columns:70px minmax(0,1fr);padding:5px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .tech-load-line b{font-size:8.5px;}
+  }
+}
+@media(max-width:1280px){
+  body.role-admin .maint-saas-page{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto;}
+  body.role-admin .maint-kpi-row{grid-column:auto;grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .maint-main-grid{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-equipment-card{grid-column:auto;}
+  body.role-admin .maint-side-grid{grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-agenda-card,
+  body.role-admin .maint-fifo-card,
+  body.role-admin .maint-equipment-card,
+  body.role-admin .maint-form-card,
+  body.role-admin .maint-health-card{height:auto;}
+  body.role-admin .maint-agenda-list,
+  body.role-admin .maint-ticket-list,
+  body.role-admin .maint-equipment-grid{height:auto;}
+}
+@media(max-width:760px){
+  body.role-admin .maint-kpi-row{grid-template-columns:1fr;}
+  body.role-admin .maint-equipment-grid{grid-template-columns:1fr;}
+  body.role-admin .maint-health-layout{grid-template-columns:1fr;}
+  body.role-admin .two-field{grid-template-columns:1fr;}
+}
+
+/* =========================================================
+   v20 - Admin mantenimiento calendario + FIFO tabla + formulario sin cortes
+   ========================================================= */
+body.role-admin .maint-saas-page.maint-saas-v20{
+  grid-template-columns:minmax(0,1fr) 340px;
+  grid-template-rows:68px minmax(0,1fr);
+  gap:10px;
+}
+body.role-admin .maint-saas-v20 .maint-kpi{height:68px;padding:9px 12px;grid-template-columns:38px minmax(0,1fr);gap:10px;border-radius:22px;}
+body.role-admin .maint-saas-v20 .maint-kpi i{width:38px;height:38px;border-radius:14px;font-size:13px;}
+body.role-admin .maint-saas-v20 .maint-kpi span{font-size:9.5px;}
+body.role-admin .maint-saas-v20 .maint-kpi b{font-size:22px;}
+body.role-admin .maint-saas-v20 .maint-kpi small{font-size:9px;}
+body.role-admin .maint-saas-v20 .maint-main-grid{
+  grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr);
+  grid-template-rows:minmax(0,1fr) 165px;
+  gap:10px;
+}
+body.role-admin .maint-saas-v20 .maint-side-grid{
+  grid-template-rows:minmax(365px, .72fr) minmax(145px, .28fr);
+  gap:10px;
+}
+body.role-admin .maint-saas-v20 .maint-agenda-card,
+body.role-admin .maint-saas-v20 .maint-fifo-card,
+body.role-admin .maint-saas-v20 .maint-equipment-card,
+body.role-admin .maint-saas-v20 .maint-form-card,
+body.role-admin .maint-saas-v20 .maint-health-card{padding:13px 15px;border-radius:24px;}
+body.role-admin .maint-saas-v20 .maint-headline{margin-bottom:7px;}
+body.role-admin .maint-saas-v20 .maint-headline h3{font-size:15.5px;}
+body.role-admin .maint-saas-v20 .maint-headline span{font-size:9.2px;}
+body.role-admin .maint-saas-v20 .mini-counter,
+body.role-admin .maint-saas-v20 .side-badge{width:34px;min-width:34px;height:34px;border-radius:14px;font-size:11px;}
+body.role-admin .maint-calendar-grid{
+  height:calc(100% - 41px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:7px;
+  overflow:hidden;
+}
+body.role-admin .maint-calendar-day{
+  min-height:0;
+  border-radius:18px;
+  border:1px solid rgba(18,56,95,.12);
+  background:linear-gradient(145deg,rgba(245,250,255,.94),rgba(255,255,255,.72));
+  overflow:hidden;
+  display:grid;
+  grid-template-rows:44px minmax(0,1fr);
+}
+body.role-admin .maint-calendar-day.today{
+  box-shadow:inset 0 4px 0 var(--lagoon), 0 12px 30px rgba(0,184,169,.08);
+  background:linear-gradient(145deg,rgba(225,250,248,.95),rgba(255,255,255,.76));
+}
+body.role-admin .maint-calendar-day header{
+  padding:8px 9px;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:6px;
+  border-bottom:1px solid rgba(18,56,95,.08);
+}
+body.role-admin .maint-calendar-day header b{font-size:11px;font-weight:950;color:var(--ink);line-height:1;}
+body.role-admin .maint-calendar-day header span{font-size:9px;color:var(--muted);font-weight:900;font-family:"JetBrains Mono",monospace;}
+body.role-admin .maint-calendar-events{
+  min-height:0;
+  padding:7px;
+  display:grid;
+  align-content:start;
+  gap:6px;
+  overflow:hidden;
+}
+body.role-admin .maint-calendar-events em{
+  display:grid;
+  place-items:center;
+  height:46px;
+  border-radius:14px;
+  background:rgba(226,238,248,.45);
+  color:#8AA0B7;
+  font-style:normal;
+  font-weight:900;
+  font-size:10px;
+}
+body.role-admin .calendar-job{
+  min-width:0;
+  padding:7px 8px;
+  border-radius:14px;
+  background:#fff;
+  border:1px solid rgba(18,56,95,.1);
+  box-shadow:inset 3px 0 0 var(--sky);
+  display:grid;
+  gap:2px;
+  overflow:hidden;
+}
+body.role-admin .calendar-job.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .calendar-job.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .calendar-job.success{box-shadow:inset 3px 0 0 var(--lagoon);}
+body.role-admin .calendar-job strong,
+body.role-admin .calendar-job span,
+body.role-admin .calendar-job small,
+body.role-admin .calendar-more{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .calendar-job strong{font-size:10.5px;font-weight:950;color:var(--ink);font-family:"JetBrains Mono",monospace;line-height:1;}
+body.role-admin .calendar-job span{font-size:9px;font-weight:950;color:var(--ink);line-height:1.05;}
+body.role-admin .calendar-job small{font-size:8px;font-weight:850;color:var(--muted);line-height:1;}
+body.role-admin .calendar-more{
+  padding:5px 7px;
+  border-radius:12px;
+  background:rgba(0,184,169,.11);
+  color:#008E85;
+  font-weight:950;
+  font-size:9px;
+  text-align:center;
+}
+body.role-admin .fifo-table-wrap{
+  height:calc(100% - 41px);
+  min-height:0;
+  overflow:hidden;
+  border:1px solid rgba(18,56,95,.1);
+  border-radius:18px;
+  background:rgba(245,250,255,.72);
+}
+body.role-admin .fifo-table{
+  width:100%;
+  height:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:fixed;
+}
+body.role-admin .fifo-table th,
+body.role-admin .fifo-table td{
+  padding:8px 8px;
+  border-bottom:1px solid rgba(18,56,95,.08);
+  vertical-align:middle;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+body.role-admin .fifo-table th{
+  height:30px;
+  font-size:8.5px;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  color:var(--muted);
+  font-weight:950;
+  background:rgba(255,255,255,.64);
+}
+body.role-admin .fifo-table td{font-size:9.8px;font-weight:850;color:var(--ink);}
+body.role-admin .fifo-table td:nth-child(1),
+body.role-admin .fifo-table th:nth-child(1){width:36px;text-align:center;}
+body.role-admin .fifo-table td:nth-child(2),
+body.role-admin .fifo-table th:nth-child(2){width:34%;}
+body.role-admin .fifo-table td:nth-child(3),
+body.role-admin .fifo-table th:nth-child(3){width:84px;}
+body.role-admin .fifo-table td:nth-child(4),
+body.role-admin .fifo-table th:nth-child(4){width:74px;}
+body.role-admin .fifo-table td:nth-child(5),
+body.role-admin .fifo-table th:nth-child(5){width:56px;}
+body.role-admin .fifo-table td:nth-child(6),
+body.role-admin .fifo-table th:nth-child(6){width:86px;}
+body.role-admin .fifo-table tbody tr:last-child td{border-bottom:0;}
+body.role-admin .fifo-table b,
+body.role-admin .fifo-table small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+body.role-admin .fifo-table b{font-size:10px;font-weight:950;line-height:1.05;}
+body.role-admin .fifo-table small{font-size:8px;font-weight:850;color:var(--muted);line-height:1.05;margin-top:1px;}
+body.role-admin .fifo-index{
+  width:22px;height:22px;border-radius:9px;
+  display:inline-grid;place-items:center;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));
+  color:#fff;font-weight:950;font-size:10px;
+}
+body.role-admin .fifo-pill{
+  max-width:100%;
+  height:22px;
+  padding:0 8px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  background:rgba(56,189,248,.12);
+  color:#0C88B6;
+  font-size:8.5px;
+  font-weight:950;
+}
+body.role-admin .fifo-pill.warning{background:rgba(255,209,102,.22);color:#9A6A00;}
+body.role-admin .fifo-pill.danger{background:rgba(255,107,107,.16);color:#D83535;}
+body.role-admin .fifo-pill.success{background:rgba(0,184,169,.14);color:#008E85;}
+body.role-admin .fifo-empty{
+  text-align:center !important;
+  color:var(--muted) !important;
+  font-weight:950 !important;
+  height:100%;
+}
+body.role-admin .maint-saas-v20 .maint-form-card{overflow:hidden;}
+body.role-admin .maint-form-compact{
+  height:calc(100% - 40px);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-auto-rows:min-content;
+  gap:6px 8px;
+  min-height:0;
+  overflow:hidden;
+}
+body.role-admin .maint-form-compact .form-block{min-width:0;display:grid;gap:4px;}
+body.role-admin .maint-form-compact .form-block.full,
+body.role-admin .maint-form-compact button{grid-column:1/3;}
+body.role-admin .maint-form-compact label{font-size:8px;line-height:1;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:950;margin:0;}
+body.role-admin .maint-form-compact .form-control,
+body.role-admin .maint-form-compact .form-select{
+  height:30px;
+  min-height:30px;
+  border-radius:13px;
+  font-size:9.5px;
+  font-weight:850;
+  padding:5px 12px;
+  background-color:rgba(245,250,255,.86);
+}
+body.role-admin .maint-form-compact textarea.form-control{height:42px;min-height:42px;resize:none;padding-top:8px;line-height:1.15;}
+body.role-admin .maint-form-compact button{height:31px;border-radius:13px;font-size:9.7px;font-weight:950;margin-top:0;}
+body.role-admin .maint-saas-v20 .maint-health-layout{height:calc(100% - 40px);grid-template-columns:82px minmax(0,1fr);gap:8px;}
+body.role-admin .maint-saas-v20 .maint-donut-wrap{height:82px;}
+body.role-admin .maint-saas-v20 .tech-load-line{grid-template-columns:75px minmax(0,1fr);padding:5px 7px;}
+body.role-admin .maint-saas-v20 .maint-equipment-grid{height:calc(100% - 41px);grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;}
+body.role-admin .maint-saas-v20 .maint-equipment-mini{padding:8px 9px;border-radius:15px;}
+
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-page.maint-saas-v20{grid-template-columns:minmax(0,1fr) 318px;grid-template-rows:65px minmax(0,1fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-kpi{height:65px;padding:8px 9px;grid-template-columns:34px minmax(0,1fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-kpi i{width:34px;height:34px;border-radius:13px;font-size:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-kpi span{font-size:8.7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-kpi b{font-size:20px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-kpi small{font-size:8.3px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-main-grid{grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);grid-template-rows:minmax(0,1fr) 154px;gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-side-grid{grid-template-rows:minmax(352px,.74fr) minmax(135px,.26fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-agenda-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-fifo-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-equipment-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-form-card,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-health-card{padding:11px;border-radius:21px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-headline h3{font-size:14px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-headline span{font-size:8.4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-grid{gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-day{grid-template-rows:38px minmax(0,1fr);border-radius:15px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-day header{padding:7px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-day header b{font-size:9.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-day header span{font-size:7.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-events{padding:5px;gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .calendar-job{padding:6px;border-radius:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .calendar-job strong{font-size:9.3px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .calendar-job span{font-size:7.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .calendar-job small{font-size:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th,
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td{padding:7px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td:nth-child(3),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th:nth-child(3){width:68px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td:nth-child(4),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th:nth-child(4){width:62px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td:nth-child(5),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th:nth-child(5){width:48px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td:nth-child(6),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th:nth-child(6){width:68px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table th{font-size:7.4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table td{font-size:8.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table b{font-size:8.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table small{font-size:7.2px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-pill{height:20px;padding:0 6px;font-size:7.4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact{gap:5px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact label{font-size:7.3px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact .form-control,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact .form-select{height:28px;min-height:28px;border-radius:12px;font-size:8.6px;padding:4px 10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact textarea.form-control{height:38px;min-height:38px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-compact button{height:29px;font-size:8.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-health-layout{grid-template-columns:68px minmax(0,1fr);}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v20 .maint-donut-wrap{height:68px;}
+  }
+}
+
+@media(max-width:1280px){
+  body.role-admin .maint-saas-page.maint-saas-v20{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto;}
+  body.role-admin .maint-saas-v20 .maint-kpi-row{grid-column:auto;grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .maint-saas-v20 .maint-main-grid{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-saas-v20 .maint-side-grid{grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-calendar-grid{grid-template-columns:repeat(2,minmax(0,1fr));height:auto;}
+  body.role-admin .fifo-table-wrap{height:auto;overflow-x:auto;}
+  body.role-admin .fifo-table{min-width:680px;height:auto;}
+  body.role-admin .maint-form-compact{height:auto;}
+}
+
+/* =========================================================
+   v21 - Admin mantenimiento rediseñado: calendario compacto + FIFO útil
+   ========================================================= */
+body.role-admin .maint-saas-page.maint-saas-v21{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 318px;
+  grid-template-rows:64px minmax(0,1fr);
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .maint-saas-v21 .maint-kpi-row{
+  grid-column:1/3;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:10px;
+  min-width:0;
+}
+body.role-admin .maint-saas-v21 .maint-kpi{
+  height:64px;
+  padding:8px 12px;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:10px;
+  border-radius:22px;
+}
+body.role-admin .maint-saas-v21 .maint-kpi i{width:38px;height:38px;border-radius:15px;font-size:13px;}
+body.role-admin .maint-saas-v21 .maint-kpi span{font-size:9px;}
+body.role-admin .maint-saas-v21 .maint-kpi b{font-size:22px;line-height:.92;}
+body.role-admin .maint-saas-v21 .maint-kpi small{font-size:8.8px;}
+body.role-admin .maint-main-grid-v21{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,.97fr) minmax(0,1.03fr);
+  grid-template-rows:minmax(242px,.56fr) minmax(170px,.44fr);
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .maint-side-grid-v21{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-rows:minmax(330px,.66fr) minmax(155px,.34fr);
+  gap:10px;
+  overflow:hidden;
+}
+body.role-admin .maint-saas-v21 .glass-card{
+  padding:13px 14px;
+  border-radius:24px;
+  min-width:0;
+  min-height:0;
+  overflow:hidden;
+}
+body.role-admin .maint-saas-v21 .maint-equipment-card{grid-column:1/3;}
+body.role-admin .maint-saas-v21 .maint-headline{margin-bottom:8px;align-items:flex-start;}
+body.role-admin .maint-saas-v21 .maint-headline h3{font-size:15.5px;line-height:1.05;margin:0;}
+body.role-admin .maint-saas-v21 .maint-headline span{font-size:9.2px;line-height:1.15;}
+body.role-admin .maint-saas-v21 .mini-counter,
+body.role-admin .maint-saas-v21 .side-badge{width:34px;min-width:34px;height:34px;border-radius:14px;font-size:11px;}
+body.role-admin .maint-saas-v21 .mini-action{height:30px;padding:0 10px;border-radius:14px;font-size:9.2px;}
+
+body.role-admin .maint-calendar-board{
+  height:calc(100% - 88px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:6px;
+}
+body.role-admin .maint-day-card{
+  min-width:0;
+  min-height:0;
+  border:1px solid rgba(18,56,95,.12);
+  background:linear-gradient(180deg,rgba(245,250,255,.92),rgba(255,255,255,.64));
+  border-radius:17px;
+  display:grid;
+  grid-template-rows:38px minmax(0,1fr);
+  overflow:hidden;
+}
+body.role-admin .maint-day-card.today{
+  background:linear-gradient(180deg,rgba(0,184,169,.16),rgba(255,255,255,.72));
+  box-shadow:inset 3px 0 0 var(--lagoon);
+}
+body.role-admin .maint-day-card header{
+  padding:7px 8px;
+  border-bottom:1px solid rgba(18,56,95,.08);
+  display:flex;
+  justify-content:space-between;
+  gap:5px;
+  align-items:center;
+  min-width:0;
+}
+body.role-admin .maint-day-card header strong,
+body.role-admin .maint-day-card header span{
+  display:block;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .maint-day-card header strong{font-size:10px;font-weight:950;color:var(--ink);}
+body.role-admin .maint-day-card header span{font-family:"JetBrains Mono",monospace;font-size:8.4px;font-weight:900;color:var(--muted);}
+body.role-admin .day-events{
+  min-height:0;
+  padding:6px;
+  display:grid;
+  align-content:start;
+  gap:5px;
+  overflow:hidden;
+}
+body.role-admin .day-events em{
+  min-height:54px;
+  border-radius:14px;
+  background:rgba(233,242,250,.58);
+  color:#8EA0B5;
+  font-size:10px;
+  font-style:normal;
+  font-weight:950;
+  display:grid;
+  place-items:center;
+}
+body.role-admin .day-chip{
+  min-width:0;
+  padding:6px 6px;
+  border-radius:13px;
+  background:#fff;
+  border:1px solid rgba(18,56,95,.10);
+  box-shadow:inset 3px 0 0 var(--sky);
+}
+body.role-admin .day-chip.success{box-shadow:inset 3px 0 0 var(--lagoon);}
+body.role-admin .day-chip.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .day-chip.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .day-chip.info{box-shadow:inset 3px 0 0 var(--sky);}
+body.role-admin .day-chip b,
+body.role-admin .day-chip span,
+body.role-admin .day-chip small{
+  display:block;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1.06;
+}
+body.role-admin .day-chip b{font-family:"JetBrains Mono",monospace;font-size:9.5px;font-weight:950;color:var(--ink);}
+body.role-admin .day-chip span{font-size:8.5px;font-weight:950;color:var(--ink);margin-top:3px;}
+body.role-admin .day-chip small{font-size:7.5px;font-weight:850;color:var(--muted);margin-top:2px;}
+body.role-admin .agenda-insights{
+  height:44px;
+  margin-top:8px;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+body.role-admin .agenda-insights div{
+  min-width:0;
+  border-radius:15px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.82);
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr);
+  grid-template-rows:1fr 1fr;
+  align-items:center;
+  padding:6px 8px;
+  gap:0 7px;
+}
+body.role-admin .agenda-insights i{
+  grid-row:1/3;
+  width:28px;height:28px;border-radius:11px;display:grid;place-items:center;
+  color:#fff;background:linear-gradient(135deg,var(--lagoon),var(--sky));font-size:11px;
+}
+body.role-admin .agenda-insights span,
+body.role-admin .agenda-insights b{
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  line-height:1;
+}
+body.role-admin .agenda-insights span{font-size:7.8px;text-transform:uppercase;letter-spacing:.06em;font-weight:950;color:var(--muted);}
+body.role-admin .agenda-insights b{font-size:9.8px;font-weight:950;color:var(--ink);}
+
+body.role-admin .fifo-table-v21-wrap{
+  height:calc(100% - 82px);
+  min-height:0;
+  overflow:hidden;
+  border-radius:18px;
+  border:1px solid rgba(18,56,95,.12);
+  background:rgba(245,250,255,.76);
+}
+body.role-admin .fifo-table-v21{
+  width:100%;
+  table-layout:fixed;
+  border-collapse:separate;
+  border-spacing:0;
+}
+body.role-admin .fifo-table-v21 th,
+body.role-admin .fifo-table-v21 td{
+  padding:7px 7px;
+  border-bottom:1px solid rgba(18,56,95,.08);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  vertical-align:middle;
+}
+body.role-admin .fifo-table-v21 th{
+  height:29px;
+  background:rgba(255,255,255,.72);
+  color:var(--muted);
+  font-size:7.9px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+body.role-admin .fifo-table-v21 td{height:43px;font-size:9.2px;font-weight:900;color:var(--ink);}
+body.role-admin .fifo-table-v21 th:nth-child(1),
+body.role-admin .fifo-table-v21 td:nth-child(1){width:48px;text-align:center;}
+body.role-admin .fifo-table-v21 th:nth-child(2),
+body.role-admin .fifo-table-v21 td:nth-child(2){width:27%;}
+body.role-admin .fifo-table-v21 th:nth-child(3),
+body.role-admin .fifo-table-v21 td:nth-child(3){width:16%;}
+body.role-admin .fifo-table-v21 th:nth-child(4),
+body.role-admin .fifo-table-v21 td:nth-child(4){width:74px;}
+body.role-admin .fifo-table-v21 th:nth-child(5),
+body.role-admin .fifo-table-v21 td:nth-child(5){width:78px;}
+body.role-admin .fifo-table-v21 th:nth-child(6),
+body.role-admin .fifo-table-v21 td:nth-child(6){width:58px;}
+body.role-admin .fifo-table-v21 th:nth-child(7),
+body.role-admin .fifo-table-v21 td:nth-child(7){width:86px;}
+body.role-admin .fifo-table-v21 tbody tr:last-child td{border-bottom:0;}
+body.role-admin .fifo-table-v21 b,
+body.role-admin .fifo-table-v21 small{
+  display:block;
+  min-width:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+body.role-admin .fifo-table-v21 b{font-size:9.5px;line-height:1.05;font-weight:950;}
+body.role-admin .fifo-table-v21 small{font-size:7.5px;line-height:1.05;font-weight:850;color:var(--muted);margin-top:1px;}
+body.role-admin .fifo-table-v21 strong{font-family:"JetBrains Mono",monospace;font-size:9px;font-weight:950;}
+body.role-admin .maint-saas-v21 .fifo-index{width:22px;height:22px;border-radius:9px;font-size:9px;}
+body.role-admin .maint-saas-v21 .fifo-pill{height:21px;padding:0 7px;font-size:7.8px;}
+body.role-admin .fifo-summary-strip{
+  height:36px;
+  margin-top:7px;
+  display:grid;
+  grid-template-columns:1.3fr .75fr 1fr;
+  gap:7px;
+}
+body.role-admin .fifo-summary-strip div{
+  min-width:0;
+  border-radius:14px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.82);
+  padding:6px 9px;
+}
+body.role-admin .fifo-summary-strip span,
+body.role-admin .fifo-summary-strip b{
+  display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;
+}
+body.role-admin .fifo-summary-strip span{font-size:7.6px;text-transform:uppercase;letter-spacing:.06em;font-weight:950;color:var(--muted);}
+body.role-admin .fifo-summary-strip b{font-size:9.5px;font-weight:950;color:var(--ink);margin-top:4px;}
+
+body.role-admin .equipment-board-v21{
+  height:calc(100% - 42px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  overflow:hidden;
+}
+body.role-admin .equipment-tile{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr) 76px;
+  grid-template-rows:1fr auto;
+  gap:2px 8px;
+  align-items:center;
+  padding:8px 10px;
+  border-radius:16px;
+  border:1px solid rgba(18,56,95,.12);
+  background:rgba(245,250,255,.82);
+  box-shadow:inset 3px 0 0 var(--lagoon);
+}
+body.role-admin .equipment-tile.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-admin .equipment-tile.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-admin .eq-icon{grid-row:1/3;width:34px;height:34px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--lagoon),var(--sky));color:#fff;font-size:12px;}
+body.role-admin .equipment-tile.warning .eq-icon{background:linear-gradient(135deg,var(--amber),#F59E0B);color:#3B2C08;}
+body.role-admin .equipment-tile.danger .eq-icon{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-admin .eq-main{min-width:0;}
+body.role-admin .equipment-tile b,
+body.role-admin .equipment-tile small,
+body.role-admin .equipment-tile span,
+body.role-admin .equipment-tile em{
+  display:block;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.08;
+}
+body.role-admin .equipment-tile b{font-size:10.2px;font-weight:950;color:var(--ink);}
+body.role-admin .equipment-tile small{font-size:7.8px;font-weight:850;color:var(--muted);margin-top:2px;}
+body.role-admin .equipment-tile span{font-size:7.8px;font-weight:950;text-transform:capitalize;text-align:right;color:#008E85;}
+body.role-admin .equipment-tile.warning span{color:#9A6A00;}
+body.role-admin .equipment-tile.danger span{color:#D83535;}
+body.role-admin .equipment-tile em{grid-column:2/4;font-style:normal;font-size:7.8px;font-weight:900;color:var(--muted);}
+
+body.role-admin .maint-form-v21{
+  height:calc(100% - 41px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px 8px;
+  align-content:start;
+  overflow:hidden;
+}
+body.role-admin .maint-form-v21 .form-line{
+  min-width:0;
+  margin:0;
+  display:grid;
+  gap:4px;
+}
+body.role-admin .maint-form-v21 .form-line.full,
+body.role-admin .maint-form-v21 button{grid-column:1/3;}
+body.role-admin .maint-form-v21 span{
+  font-size:7.8px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--muted);
+  font-weight:950;
+  line-height:1;
+}
+body.role-admin .maint-form-v21 .form-control,
+body.role-admin .maint-form-v21 .form-select{
+  width:100%;
+  min-width:0;
+  height:29px;
+  min-height:29px;
+  border-radius:13px;
+  font-size:9px;
+  font-weight:850;
+  padding:4px 10px;
+  background-color:rgba(245,250,255,.86);
+  border-color:rgba(18,56,95,.13);
+}
+body.role-admin .maint-form-v21 textarea.form-control{
+  height:40px;
+  min-height:40px;
+  resize:none;
+  line-height:1.15;
+  padding-top:8px;
+}
+body.role-admin .maint-form-v21 button{
+  height:31px;
+  border-radius:14px;
+  font-size:9.2px;
+  font-weight:950;
+  margin-top:1px;
+}
+body.role-admin .maint-health-layout-v21{
+  height:calc(100% - 41px);
+  min-height:0;
+  display:grid;
+  grid-template-columns:84px minmax(0,1fr);
+  gap:9px;
+  align-items:center;
+}
+body.role-admin .maint-health-v21 .maint-donut-wrap{height:84px;}
+body.role-admin .maint-tech-list-v21{min-height:0;display:grid;gap:6px;overflow:hidden;}
+body.role-admin .tech-load-line-v21{
+  min-width:0;
+  display:grid;
+  grid-template-columns:74px minmax(0,1fr);
+  gap:7px;
+  align-items:center;
+  border-radius:14px;
+  border:1px solid rgba(18,56,95,.10);
+  background:rgba(245,250,255,.82);
+  padding:6px 7px;
+}
+body.role-admin .tech-load-line-v21 b,
+body.role-admin .tech-load-line-v21 small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.05;}
+body.role-admin .tech-load-line-v21 b{font-size:9px;font-weight:950;}
+body.role-admin .tech-load-line-v21 small{font-size:7.5px;font-weight:850;color:var(--muted);margin-top:2px;}
+
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-page.maint-saas-v21{
+      grid-template-columns:minmax(0,1fr) 300px;
+      grid-template-rows:60px minmax(0,1fr);
+      gap:8px;
+    }
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-kpi{height:60px;padding:7px 9px;grid-template-columns:34px minmax(0,1fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-kpi i{width:34px;height:34px;border-radius:13px;font-size:12px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-kpi span{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-kpi b{font-size:19px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-kpi small{font-size:7.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-main-grid-v21{grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);grid-template-rows:minmax(230px,.56fr) minmax(158px,.44fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-side-grid-v21{grid-template-rows:minmax(318px,.67fr) minmax(142px,.33fr);gap:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .glass-card{padding:11px;border-radius:21px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-headline h3{font-size:13.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-saas-v21 .maint-headline span{font-size:8.2px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-calendar-board{gap:5px;height:calc(100% - 82px);}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-day-card{border-radius:14px;grid-template-rows:34px minmax(0,1fr);}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-day-card header{padding:6px 5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-day-card header strong{font-size:8.7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-day-card header span{font-size:7.2px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .day-events{padding:5px;gap:4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .day-chip{padding:5px;border-radius:11px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .day-chip b{font-size:8.3px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .day-chip span{font-size:7.4px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .day-chip small{font-size:6.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .agenda-insights{height:40px;gap:5px;margin-top:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .agenda-insights div{grid-template-columns:24px minmax(0,1fr);padding:5px 6px;gap:0 5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .agenda-insights i{width:24px;height:24px;border-radius:10px;font-size:10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .agenda-insights span{font-size:6.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .agenda-insights b{font-size:8.3px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th,
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td{padding:6px 5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th{font-size:6.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td{height:38px;font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th:nth-child(1),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td:nth-child(1){width:38px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th:nth-child(4),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td:nth-child(4){width:58px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th:nth-child(5),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td:nth-child(5){width:58px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th:nth-child(6),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td:nth-child(6){width:44px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 th:nth-child(7),
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 td:nth-child(7){width:58px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 b{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-table-v21 small{font-size:6.6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-summary-strip{height:34px;gap:5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-summary-strip span{font-size:6.5px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .fifo-summary-strip b{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-board-v21{gap:6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-tile{grid-template-columns:30px minmax(0,1fr) 58px;padding:7px 8px;gap:2px 6px;border-radius:14px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .eq-icon{width:30px;height:30px;border-radius:12px;font-size:10px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-tile b{font-size:8.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-tile small,
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-tile span,
+    body.role-admin .app-shell:has(.sidebar:hover) .equipment-tile em{font-size:6.8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21{gap:5px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21 span{font-size:6.9px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21 .form-control,
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21 .form-select{height:27px;min-height:27px;font-size:8px;border-radius:12px;padding:4px 8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21 textarea.form-control{height:36px;min-height:36px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-form-v21 button{height:28px;font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-health-layout-v21{grid-template-columns:68px minmax(0,1fr);gap:7px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .maint-health-v21 .maint-donut-wrap{height:68px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .tech-load-line-v21{grid-template-columns:58px minmax(0,1fr);padding:5px 6px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .tech-load-line-v21 b{font-size:8px;}
+    body.role-admin .app-shell:has(.sidebar:hover) .tech-load-line-v21 small{font-size:6.8px;}
+  }
+}
+
+@media(max-width:1280px){
+  body.role-admin .maint-saas-page.maint-saas-v21{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto;}
+  body.role-admin .maint-saas-v21 .maint-kpi-row{grid-column:auto;grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .maint-main-grid-v21{grid-template-columns:1fr;grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-side-grid-v21{grid-template-rows:auto;overflow:visible;}
+  body.role-admin .maint-saas-v21 .maint-equipment-card{grid-column:auto;}
+  body.role-admin .maint-calendar-board{height:auto;grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-admin .agenda-insights{height:auto;grid-template-columns:1fr;}
+  body.role-admin .fifo-table-v21-wrap{height:auto;overflow-x:auto;}
+  body.role-admin .fifo-table-v21{min-width:740px;}
+  body.role-admin .equipment-board-v21{height:auto;grid-template-columns:1fr;}
+  body.role-admin .maint-form-v21{height:auto;}
+}

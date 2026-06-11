@@ -23,8 +23,6 @@ foreach ($tickets as $ticket) {
   $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
   $poolCounts[$pool] = ($poolCounts[$pool] ?? 0) + 1;
 }
-if (!$priorityCounts) $priorityCounts = ['Alta'=>1,'Media'=>1,'Baja'=>0];
-if (!$statusCounts) $statusCounts = ['Nuevo'=>1,'Asignado'=>1,'En proceso'=>0];
 $weekly = [];
 for ($i=0; $i<7; $i++) {
   $date = date('Y-m-d', strtotime('+'.$i.' day'));
@@ -158,7 +156,7 @@ $recommendation = $criticalTickets > 0 ? 'Atender primero los tickets críticos 
   <section class="glass-card mant-pool-pressure-v36">
     <div class="mant-section-head-v36 compact"><div><span>Origen de tickets</span><h3>Presión por alberca</h3></div></div>
     <div class="mant-pool-list-v36">
-      <?php $maxPool=max(1, ...array_values($poolCounts ?: ['Sin datos'=>1])); foreach(($poolCounts ?: ['Sin datos'=>0]) as $pool=>$count): $pct = (int)round(($count/$maxPool)*100); ?>
+      <?php $maxPool=max(1, ...array_values($poolCounts ?: [0])); foreach($poolCounts as $pool=>$count): $pct = (int)round(($count/$maxPool)*100); ?>
         <div>
           <b><?= e($pool) ?></b>
           <i><em style="width:<?= e((string)$pct) ?>%"></em></i>
@@ -174,7 +172,6 @@ $recommendation = $criticalTickets > 0 ? 'Atender primero los tickets críticos 
       <a href="<?= e(page_url('mantenimiento-tickets')) ?>"><i class="fa-solid fa-hand"></i><b>Tomar ticket</b><small>FIFO</small></a>
       <a href="<?= e(page_url('mantenimiento-agenda')) ?>"><i class="fa-solid fa-calendar-check"></i><b>Ver agenda</b><small>Preventivos</small></a>
       <a href="<?= e(page_url('mantenimiento-equipos')) ?>"><i class="fa-solid fa-gears"></i><b>Equipos</b><small>Revisiones</small></a>
-      <a href="<?= e(page_url('mantenimiento-historial')) ?>"><i class="fa-solid fa-clock-rotate-left"></i><b>Historial</b><small>Bitácora</small></a>
     </div>
   </section>
 </div>

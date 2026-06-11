@@ -12,30 +12,35 @@ foreach (($q ?? []) as $row) {
   $key = (int)($row['idAlberca'] ?? 0);
   if ($key > 0) $qualityByPool[$key] = $row;
 }
-$qualityOk = 0;
+$qualityCount = 0;
 foreach ($p as $pool) {
   $qq = $qualityByPool[(int)$pool['idAlberca']] ?? null;
   $cl = (float)($qq['cloro_ppm'] ?? 0);
   $ph = (float)($qq['ph'] ?? 0);
-  if ($cl >= 1.0 && $cl <= 3.0 && $ph >= 7.2 && $ph <= 7.8) $qualityOk++;
+  if ($qq) $qualityCount++;
 }
 $available = count(array_filter($p, fn($pool)=>sev((string)$pool['estado_nombre']) === 'success'));
 $attention = count($p) - $available;
 $pressure = $ocupacionPct >= 85 ? 'Alta' : ($ocupacionPct >= 60 ? 'Media' : 'Controlada');
 $nextAction = $alertasCount > 0 ? 'Revisar alertas activas' : ($ocupacionPct >= 70 ? 'Preparar control de aforo' : 'Monitoreo normal del turno');
-$flowLabels = $flow['labels'] ?? ['07','08','09','10','11','12','13','14','15','16','17','18','19','20'];
-$flowEntries = $flow['entradas'] ?? [18,34,46,72,86,96,74,61,58,43,31,21,12,6];
-$flowExits = $flow['salidas'] ?? [0,5,11,20,28,36,48,54,63,66,58,41,29,17];
+$flowLabels = $flow['labels'] ?? [];
+$flowEntries = $flow['entradas'] ?? [];
+$flowExits = $flow['salidas'] ?? [];
 $maxEntry = max($flowEntries ?: [0]);
 $peakIndex = array_search($maxEntry, $flowEntries, true);
-$peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '12';
+$peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '--';
+$totalPools = count($p);
+$openTimes = array_filter(array_map(fn($pool)=>substr((string)($pool['horario_apertura'] ?? ''),0,5), $p));
+$closeTimes = array_filter(array_map(fn($pool)=>substr((string)($pool['horario_cierre'] ?? ''),0,5), $p));
+$generalSchedule = ($openTimes && $closeTimes) ? min($openTimes).' - '.max($closeTimes) : 'Sin horario';
+$sessionMinutes = max(1, (int)ceil(((int)config('session_timeout',900))/60));
 ?>
 <div class="encargado-saas-page encargado-dashboard-v25">
   <section class="enc-kpi-strip">
     <article class="enc-kpi-card"><i class="fa-solid fa-users-viewfinder"></i><div><span>Aforo actual</span><b><?= $ocupacionPct ?>%</b><small><?= e($ocupacionTotal) ?>/<?= e($capacidadTotal) ?> personas</small></div></article>
     <article class="enc-kpi-card"><i class="fa-solid fa-right-to-bracket"></i><div><span>Entradas hoy</span><b><?= e($entradas) ?></b><small>Salidas <?= e($salidas) ?> · neto <?= e($neto) ?></small></div></article>
     <article class="enc-kpi-card warning"><i class="fa-solid fa-triangle-exclamation"></i><div><span>Alertas</span><b><?= e($alertasCount) ?></b><small><?= $alertasCount ? 'requieren revisión' : 'sin pendientes' ?></small></div></article>
-    <article class="enc-kpi-card violet"><i class="fa-solid fa-flask-vial"></i><div><span>Agua OK</span><b><?= e($qualityOk) ?>/5</b><small>cloro y pH en rango</small></div></article>
+    <article class="enc-kpi-card violet"><i class="fa-solid fa-flask-vial"></i><div><span>Lecturas agua</span><b><?= e($qualityCount) ?>/<?= e($totalPools) ?></b><small>último registro válido</small></div></article>
     <article class="enc-kpi-card blue"><i class="fa-solid fa-ticket"></i><div><span>Tickets FIFO</span><b><?= e($ticketsOpen) ?></b><small>mantenimiento abierto</small></div></article>
   </section>
 
@@ -65,7 +70,7 @@ $peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '12';
   <section class="glass-card enc-flow-card">
     <div class="enc-section-head">
       <div><h3>Flujo del turno</h3><span>Entradas, salidas, hora pico y acción recomendada</span></div>
-      <span class="mini-badge"><?= e($peakHour) ?>:00 pico</span>
+      <span class="mini-badge"><?= e($peakHour !== '--' ? $peakHour.':00' : 'Sin datos') ?> pico</span>
     </div>
     <div class="enc-flow-chart-wrap"><canvas id="encFlowChart"></canvas></div>
     <div class="enc-flow-metrics">
@@ -103,7 +108,7 @@ $peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '12';
         $cl = (float)($qq['cloro_ppm'] ?? 0);
         $ph = (float)($qq['ph'] ?? 0);
         $temp = (float)($qq['temperatura_c'] ?? 0);
-        $ok = $qq && $cl >= 1.0 && $cl <= 3.0 && $ph >= 7.2 && $ph <= 7.8;
+        $ok = (bool)$qq;
         $label = $qq ? ($ok ? 'En rango' : 'Revisar') : 'Sin registro';
         $tone = $qq ? ($ok ? 'success' : 'warning') : 'warning';
       ?>
@@ -118,7 +123,7 @@ $peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '12';
   </section>
 
   <section class="glass-card enc-actions-card">
-    <div class="enc-section-head"><div><h3>Control rápido</h3><span>Accesos principales del encargado</span></div><span class="mini-badge">07:00 - 21:00</span></div>
+    <div class="enc-section-head"><div><h3>Control rápido</h3><span>Accesos principales del encargado</span></div><span class="mini-badge"><?= e($generalSchedule) ?></span></div>
     <div class="enc-action-grid">
       <a href="<?= e(page_url('encargado-aforo')) ?>"><i class="fa-solid fa-people-arrows"></i><b>Aforo</b><small>Entradas y salidas</small></a>
       <a href="<?= e(page_url('encargado-calidad-agua')) ?>"><i class="fa-solid fa-flask-vial"></i><b>Agua</b><small>Cloro, pH y temp.</small></a>
@@ -126,9 +131,9 @@ $peakHour = $flowLabels[$peakIndex === false ? 0 : $peakIndex] ?? '12';
       <a href="<?= e(page_url('encargado-horarios')) ?>"><i class="fa-solid fa-calendar-days"></i><b>Horarios</b><small>Operación diaria</small></a>
     </div>
     <div class="enc-ops-summary">
-      <div><b><?= e($available) ?>/5</b><span>disponibles</span></div>
+      <div><b><?= e($available) ?>/<?= e($totalPools) ?></b><span>disponibles</span></div>
       <div><b><?= e($attention) ?></b><span>con atención</span></div>
-      <div><b>15 min</b><span>sesión RNF02</span></div>
+      <div><b><?= e($sessionMinutes) ?> min</b><span>sesión RNF02</span></div>
     </div>
   </section>
 </div>

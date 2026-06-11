@@ -25,7 +25,7 @@ final class Database {
    }catch(Throwable $e){
      self::$error = $e->getMessage();
      @file_put_contents(ALBERCAS_ROOT.'/logs/db.log','['.date('c').'] '.self::$error.PHP_EOL,FILE_APPEND);
-     if(!empty($c['strict'])) exit('Error de conexion BD. Revisa config/db.php: '.htmlspecialchars(self::$error,ENT_QUOTES,'UTF-8'));
+     if(!empty($c['strict'])) exit('Error de conexión a la base de datos. Revisa config/db.php y el servicio MySQL.');
    }
    return self::$pdo;
  }

@@ -1,0 +1,223 @@
+/* Limpieza checklist */
+/* =========================================================
+   v33 - Limpieza checklist SaaS operativo
+   ========================================================= */
+body.role-limpieza .clean-check-saas-v33{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr) 310px;
+  grid-template-rows:72px minmax(0,1fr) 172px;
+  gap:10px;
+  overflow:hidden;
+}
+body.role-limpieza .clean-check-kpis{
+  grid-column:1/4;
+  display:grid;
+  grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:9px;
+  min-height:0;
+}
+body.role-limpieza .clean-check-kpi{
+  min-width:0;
+  height:72px;
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border-radius:22px;
+  background:rgba(255,255,255,.82);
+  border:1px solid rgba(255,255,255,.86);
+  box-shadow:0 16px 40px rgba(11,31,58,.09);
+  overflow:hidden;
+}
+body.role-limpieza .clean-check-kpi i{
+  width:38px;height:38px;border-radius:15px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));
+  box-shadow:0 12px 24px rgba(0,184,169,.18);
+}
+body.role-limpieza .clean-check-kpi.success i{background:linear-gradient(135deg,#10B981,var(--mint));}
+body.role-limpieza .clean-check-kpi.warning i{background:linear-gradient(135deg,#F59E0B,var(--amber));color:#3B2C08;}
+body.role-limpieza .clean-check-kpi.coral i{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-limpieza .clean-check-kpi.violet i{background:linear-gradient(135deg,var(--violet),#60A5FA);}
+body.role-limpieza .clean-check-kpi span,
+body.role-limpieza .clean-check-kpi small,
+body.role-limpieza .clean-check-kpi b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-check-kpi span{font-size:9.4px;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.08em;}
+body.role-limpieza .clean-check-kpi b{font-size:23px;line-height:1;font-weight:950;letter-spacing:-.05em;}
+body.role-limpieza .clean-check-kpi small{font-size:9.2px;color:#6A7B92;font-weight:850;}
+body.role-limpieza .clean-check-board{grid-column:1/3;grid-row:2/3;display:flex;flex-direction:column;min-height:0;padding:14px 16px;border-radius:25px;}
+body.role-limpieza .clean-check-progress-card{grid-column:3/4;grid-row:2/3;display:flex;flex-direction:column;min-height:0;padding:14px 16px;border-radius:25px;}
+body.role-limpieza .clean-pool-coverage-card{grid-column:1/2;grid-row:3/4;min-height:0;padding:13px 15px;border-radius:24px;}
+body.role-limpieza .clean-critical-card{grid-column:2/3;grid-row:3/4;min-height:0;padding:13px 15px;border-radius:24px;}
+body.role-limpieza .clean-close-card{grid-column:3/4;grid-row:3/4;min-height:0;padding:13px 15px;border-radius:24px;}
+body.role-limpieza .clean-check-head{
+  min-height:40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:9px;
+}
+body.role-limpieza .clean-check-head.compact{min-height:32px;margin-bottom:7px;}
+body.role-limpieza .clean-check-head h3{margin:0;font-size:16px;line-height:1.05;font-weight:950;letter-spacing:-.04em;}
+body.role-limpieza .clean-check-head span{display:block;font-size:9.8px;line-height:1.12;color:var(--muted);font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-check-head>div{min-width:0;}
+body.role-limpieza .clean-check-head>i{
+  width:32px;height:32px;min-width:32px;border-radius:14px;display:grid;place-items:center;color:#fff;
+  background:linear-gradient(135deg,var(--lagoon),var(--sky));
+}
+body.role-limpieza .clean-check-tools{display:flex;gap:6px;align-items:center;min-width:max-content;}
+body.role-limpieza .clean-check-tools button{
+  height:30px;border:0;border-radius:14px;padding:0 9px;background:#EEF7FF;color:var(--muted);
+  font-size:9px;font-weight:950;text-transform:uppercase;letter-spacing:.04em;
+}
+body.role-limpieza .clean-check-tools button.active{color:#fff;background:linear-gradient(135deg,var(--lagoon),var(--sky));box-shadow:0 12px 24px rgba(0,184,169,.18);}
+body.role-limpieza .clean-check-table-wrap{flex:1;min-height:0;overflow:auto;border-radius:20px;}
+body.role-limpieza .clean-check-table{width:100%;border-collapse:separate;border-spacing:0 7px;}
+body.role-limpieza .clean-check-table th{font-size:8.6px;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.08em;padding:0 9px;white-space:nowrap;}
+body.role-limpieza .clean-check-table td{padding:8px 9px;background:rgba(255,255,255,.78);border-top:1px solid rgba(255,255,255,.85);border-bottom:1px solid rgba(11,31,58,.06);font-size:10.4px;font-weight:850;vertical-align:middle;white-space:nowrap;}
+body.role-limpieza .clean-check-table tr.row-risk td{background:linear-gradient(135deg,rgba(255,107,107,.12),rgba(255,255,255,.82));}
+body.role-limpieza .clean-check-table td:first-child{border-radius:16px 0 0 16px;min-width:230px;}
+body.role-limpieza .clean-check-table td:last-child{border-radius:0 16px 16px 0;min-width:212px;}
+body.role-limpieza .clean-check-table td b,
+body.role-limpieza .clean-check-table td small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-check-table td small{font-size:8.6px;color:var(--muted);font-weight:820;max-width:230px;}
+body.role-limpieza .clean-task-title{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:8px;min-width:0;}
+body.role-limpieza .clean-task-title i{width:28px;height:28px;border-radius:12px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--lagoon),var(--sky));font-size:11px;}
+body.role-limpieza .row-risk .clean-task-title i{background:linear-gradient(135deg,var(--coral),#FB923C);}
+body.role-limpieza .clean-time{display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:54px;border-radius:13px;background:#EEF7FF;color:var(--ocean);font:900 10px/1 "JetBrains Mono",monospace;}
+body.role-limpieza .clean-time.danger{background:rgba(255,107,107,.14);color:#D83535;}
+body.role-limpieza .clean-complete-form{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:6px;align-items:center;}
+body.role-limpieza .clean-complete-form .form-control{height:32px;border-radius:13px;font-size:9.5px;font-weight:850;padding:.35rem .55rem;background:#F5FAFF;}
+body.role-limpieza .clean-complete-form .btn{height:32px;width:34px;border-radius:13px;padding:0;display:grid;place-items:center;}
+body.role-limpieza .clean-locked{display:inline-flex;align-items:center;gap:6px;color:#00A99B;background:rgba(0,184,169,.11);border-radius:999px;padding:7px 9px;font-size:9px;font-weight:950;}
+body.role-limpieza .clean-status-pill{height:28px;min-width:max-content;padding:0 9px;border-radius:999px;display:inline-flex;align-items:center;font-size:8.5px;font-style:normal;font-weight:950;text-transform:uppercase;letter-spacing:.04em;}
+body.role-limpieza .clean-status-pill.success{background:rgba(0,184,169,.13);color:#008E85;}
+body.role-limpieza .clean-status-pill.warning{background:rgba(255,209,102,.23);color:#9A6A00;}
+body.role-limpieza .clean-status-pill.danger{background:rgba(255,107,107,.14);color:#D83535;}
+body.role-limpieza .clean-check-progress-layout{display:grid;grid-template-columns:124px minmax(0,1fr);gap:10px;align-items:center;min-height:0;}
+body.role-limpieza .clean-ring{
+  width:118px;height:118px;border-radius:34px;display:grid;place-content:center;text-align:center;color:var(--ocean);
+  background:conic-gradient(var(--lagoon) calc(var(--p)*1%),#E5EFF7 0);position:relative;box-shadow:inset 0 0 0 1px rgba(18,56,95,.08);
+}
+body.role-limpieza .clean-ring:after{content:"";position:absolute;inset:12px;border-radius:26px;background:rgba(255,255,255,.92);}
+body.role-limpieza .clean-ring b,.clean-ring span{position:relative;z-index:1;display:block;}
+body.role-limpieza .clean-ring b{font-size:27px;line-height:1;font-weight:950;letter-spacing:-.05em;}
+body.role-limpieza .clean-ring span{font-size:9px;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.08em;}
+body.role-limpieza .clean-progress-facts{display:grid;gap:7px;min-width:0;}
+body.role-limpieza .clean-progress-facts div{padding:8px 9px;border-radius:15px;background:#F5FAFF;border:1px solid var(--line);min-width:0;}
+body.role-limpieza .clean-progress-facts b,.clean-progress-facts span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-progress-facts b{font-size:17px;line-height:1;font-weight:950;}
+body.role-limpieza .clean-progress-facts span{font-size:8px;color:var(--muted);font-weight:950;text-transform:uppercase;letter-spacing:.05em;margin-top:2px;}
+body.role-limpieza .clean-area-chart{flex:1;min-height:0;height:150px;margin-top:10px;}
+body.role-limpieza .clean-pool-coverage-list{height:calc(100% - 40px);display:grid;grid-template-rows:repeat(5,minmax(0,1fr));gap:5px;min-height:0;}
+body.role-limpieza .clean-pool-coverage-line{min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(82px,.6fr) 42px;gap:8px;align-items:center;padding:6px 8px;border-radius:15px;background:#F5FAFF;border:1px solid var(--line);box-shadow:inset 3px 0 0 var(--lagoon);overflow:hidden;}
+body.role-limpieza .clean-pool-coverage-line.warning{box-shadow:inset 3px 0 0 var(--amber);}
+body.role-limpieza .clean-pool-coverage-line.danger{box-shadow:inset 3px 0 0 var(--coral);}
+body.role-limpieza .clean-pool-coverage-line b,.clean-pool-coverage-line small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-pool-coverage-line b{font-size:10.5px;font-weight:950;line-height:1.05;}
+body.role-limpieza .clean-pool-coverage-line small{font-size:7.8px;color:var(--muted);font-weight:850;line-height:1.05;margin-top:1px;}
+body.role-limpieza .clean-mini-bar{height:7px;border-radius:99px;background:#E5EFF7;overflow:hidden;}
+body.role-limpieza .clean-mini-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--lagoon),var(--sky));}
+body.role-limpieza .clean-pool-coverage-line.warning .clean-mini-bar span{background:linear-gradient(90deg,#F59E0B,var(--amber));}
+body.role-limpieza .clean-pool-coverage-line.danger .clean-mini-bar span{background:linear-gradient(90deg,var(--coral),#FB923C);}
+body.role-limpieza .clean-pool-coverage-line strong{font-size:11px;font-weight:950;text-align:right;}
+body.role-limpieza .clean-critical-list{height:calc(100% - 40px);display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:6px;min-height:0;}
+body.role-limpieza .clean-critical-line{display:grid;grid-template-columns:28px minmax(0,1fr) 44px;gap:7px;align-items:center;padding:7px 8px;border-radius:15px;background:#F5FAFF;border:1px solid var(--line);overflow:hidden;}
+body.role-limpieza .clean-critical-line.danger{background:linear-gradient(135deg,rgba(255,107,107,.13),rgba(245,250,255,.88));}
+body.role-limpieza .clean-critical-line span{width:28px;height:28px;border-radius:12px;display:grid;place-items:center;background:#fff;color:var(--ocean);font:950 10px/1 "JetBrains Mono",monospace;border:1px solid var(--line);}
+body.role-limpieza .clean-critical-line b,
+body.role-limpieza .clean-critical-line small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .clean-critical-line b{font-size:10.5px;font-weight:950;line-height:1.05;}
+body.role-limpieza .clean-critical-line small{font-size:8px;color:var(--muted);font-weight:850;line-height:1.05;}
+body.role-limpieza .clean-critical-line em{font-style:normal;font:950 9.5px/1 "JetBrains Mono",monospace;color:var(--muted);text-align:right;}
+body.role-limpieza .clean-done-message{height:100%;border-radius:18px;display:grid;place-content:center;text-align:center;background:linear-gradient(135deg,rgba(0,184,169,.13),rgba(56,189,248,.10));color:var(--ocean);}
+body.role-limpieza .clean-done-message i{font-size:22px;color:var(--lagoon);margin-bottom:4px;}
+body.role-limpieza .clean-done-message b{font-size:14px;font-weight:950;}
+body.role-limpieza .clean-done-message span{font-size:9px;color:var(--muted);font-weight:850;}
+body.role-limpieza .clean-close-stack{height:calc(100% - 40px);display:grid;grid-template-rows:minmax(0,1fr) 42px;gap:8px;min-height:0;}
+body.role-limpieza .clean-recommendation{min-height:0;border-radius:17px;padding:10px;display:flex;gap:8px;align-items:flex-start;font-size:9.6px;line-height:1.23;font-weight:850;background:rgba(0,184,169,.10);color:var(--ocean);overflow:hidden;}
+body.role-limpieza .clean-recommendation.warning{background:rgba(255,209,102,.20);}
+body.role-limpieza .clean-recommendation.danger{background:rgba(255,107,107,.13);}
+body.role-limpieza .clean-recommendation i{color:var(--lagoon);margin-top:1px;}
+body.role-limpieza .clean-quick-links{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+body.role-limpieza .clean-quick-links a{min-width:0;height:42px;border-radius:15px;display:flex;align-items:center;justify-content:center;gap:6px;background:#F5FAFF;border:1px solid var(--line);color:var(--ocean);font-size:8.4px;font-weight:950;}
+body.role-limpieza .clean-quick-links span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+body.role-limpieza .empty-state{padding:24px;text-align:center;color:var(--muted);font-weight:900;}
+@supports selector(.app-shell:has(.sidebar:hover)){
+  @media (hover:hover) and (pointer:fine){
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-saas-v33{grid-template-columns:minmax(0,1.05fr) minmax(0,.9fr) 286px;grid-template-rows:68px minmax(0,1fr) 164px;gap:9px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpis{gap:8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpi{height:68px;grid-template-columns:34px minmax(0,1fr);gap:8px;padding:9px 10px;border-radius:20px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpi i{width:34px;height:34px;border-radius:13px;font-size:12px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpi span{font-size:8.2px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpi b{font-size:20px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-kpi small{font-size:8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-board,
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-progress-card,
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-pool-coverage-card,
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-critical-card,
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-close-card{padding:12px;border-radius:22px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-head{min-height:34px;margin-bottom:6px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-head h3{font-size:13.2px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-head span{font-size:8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-tools button{height:26px;padding:0 7px;font-size:7.5px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table{border-spacing:0 5px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table th{font-size:7px;padding:0 6px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table td{font-size:8.5px;padding:6px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table td:first-child{min-width:190px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table td:last-child{min-width:176px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-task-title{grid-template-columns:24px minmax(0,1fr);gap:6px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-task-title i{width:24px;height:24px;border-radius:10px;font-size:9px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-table td small{font-size:7px;max-width:190px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .badge-soft{font-size:7px;padding:5px 7px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-time{height:24px;min-width:44px;font-size:8px;border-radius:10px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-complete-form{grid-template-columns:minmax(0,1fr) 28px;gap:4px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-complete-form .form-control,
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-complete-form .btn{height:28px;border-radius:10px;font-size:7.8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-complete-form .btn{width:28px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-ring{width:92px;height:92px;border-radius:27px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-ring:after{inset:9px;border-radius:20px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-ring b{font-size:22px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-check-progress-layout{grid-template-columns:96px minmax(0,1fr);}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-progress-facts div{padding:6px 7px;border-radius:12px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-progress-facts b{font-size:13px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-progress-facts span{font-size:6.4px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-area-chart{height:126px;margin-top:7px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-pool-coverage-line{grid-template-columns:minmax(0,1fr) 60px 34px;padding:5px 6px;gap:6px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-pool-coverage-line b{font-size:8.8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-pool-coverage-line small{font-size:6.5px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-critical-line{grid-template-columns:24px minmax(0,1fr) 36px;padding:5px 6px;gap:5px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-critical-line span{width:24px;height:24px;border-radius:10px;font-size:8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-critical-line b{font-size:8.8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-critical-line small{font-size:6.7px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-recommendation{padding:7px;font-size:7.8px;}
+    body.role-limpieza .app-shell:has(.sidebar:hover) .clean-quick-links a{height:34px;font-size:7px;}
+  }
+}
+@media(max-width:1320px){
+  body.role-limpieza .clean-check-saas-v33{height:auto;overflow:auto;grid-template-columns:1fr;grid-template-rows:auto;}
+  body.role-limpieza .clean-check-kpis,
+  body.role-limpieza .clean-check-board,
+  body.role-limpieza .clean-check-progress-card,
+  body.role-limpieza .clean-pool-coverage-card,
+  body.role-limpieza .clean-critical-card,
+  body.role-limpieza .clean-close-card{grid-column:auto;grid-row:auto;}
+  body.role-limpieza .clean-check-kpis{grid-template-columns:repeat(2,minmax(0,1fr));}
+  body.role-limpieza .clean-check-board{min-height:430px;}
+  body.role-limpieza .clean-check-progress-card{min-height:340px;}
+  body.role-limpieza .clean-pool-coverage-card,
+  body.role-limpieza .clean-critical-card,
+  body.role-limpieza .clean-close-card{min-height:190px;}
+}
+@media(max-width:760px){
+  body.role-limpieza .clean-check-kpis,
+  body.role-limpieza .clean-check-progress-layout,
+  body.role-limpieza .clean-quick-links{grid-template-columns:1fr;}
+  body.role-limpieza .clean-check-head{flex-direction:column;}
+  body.role-limpieza .clean-check-table-wrap{overflow:auto;}
+  body.role-limpieza .clean-check-table{min-width:820px;}
+  body.role-limpieza .clean-pool-coverage-line{grid-template-columns:1fr;}
+}

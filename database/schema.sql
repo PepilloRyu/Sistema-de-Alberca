@@ -1,4 +1,4 @@
--- Sistema de Albercas B2E - estructura completa MySQL
+
 CREATE DATABASE IF NOT EXISTS albercas CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE albercas;
 
@@ -36,12 +36,7 @@ CREATE TABLE usuarios (
  CONSTRAINT fk_usuarios_roles FOREIGN KEY (idRol) REFERENCES roles(idRol)
 ) ENGINE=InnoDB;
 
-INSERT INTO usuarios (nombre,email,password_hash,idRol,estado) VALUES
-('Administrador General','admin@albercas.com','$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S',1,'activo'),
-('Encargado Demo','encargado@albercas.com','$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S',2,'activo'),
-('Limpieza Demo','limpieza@albercas.com','$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S',3,'activo'),
-('Técnico Demo','tecnico@albercas.com','$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S',4,'activo'),
-('Empleado Pendiente','pendiente@albercas.com','$2y$12$jhLN2PrZLKuNOenP5uCAKu64pcC4EIES5nyARnBqyHxXMSELrL01S',NULL,'pendiente');
+-- Sin usuarios demo: crea el primer administrador con tools/crear_admin_inicial.php.
 
 CREATE TABLE catalogo_estados_alberca (
  idEstadoAlberca TINYINT UNSIGNED PRIMARY KEY,
@@ -195,7 +190,9 @@ CREATE TABLE catalogo_tipos_mantenimiento (
  idTipoMantenimiento TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  nombre VARCHAR(80) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
-INSERT INTO catalogo_tipos_mantenimiento (nombre) VALUES ('Preventivo'),('Correctivo'),('Inspección'),('Emergencia');
+
+INSERT INTO catalogo_tipos_mantenimiento (nombre) VALUES
+('Preventivo'),('Correctivo'),('Inspección'),('Emergencia');
 
 CREATE TABLE mantenimientos_programados (
  idMantenimiento BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -248,13 +245,16 @@ CREATE TABLE catalogo_areas_limpieza (
  idAreaLimpieza TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  nombre VARCHAR(90) NOT NULL UNIQUE
 ) ENGINE=InnoDB;
-INSERT INTO catalogo_areas_limpieza (nombre) VALUES ('Perímetro'),('Área común'),('Sanitarios'),('Camastros'),('Regaderas'),('Accesos');
+
+INSERT INTO catalogo_areas_limpieza (nombre) VALUES
+('Perímetro'),('Área común'),('Sanitarios'),('Camastros'),('Regaderas'),('Accesos');
 
 CREATE TABLE catalogo_tareas_limpieza (
  idTareaLimpieza TINYINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  nombre VARCHAR(120) NOT NULL UNIQUE,
  descripcion VARCHAR(255)
 ) ENGINE=InnoDB;
+
 INSERT INTO catalogo_tareas_limpieza (nombre,descripcion) VALUES
 ('Retirar residuos visibles','Limpieza superficial de zona asignada'),
 ('Desinfección de barandales','Aplicar solución desinfectante'),
@@ -306,6 +306,7 @@ CREATE TABLE configuraciones_sistema (
  valor VARCHAR(255) NOT NULL,
  descripcion VARCHAR(255)
 ) ENGINE=InnoDB;
+
 INSERT INTO configuraciones_sistema VALUES
 ('session_timeout_seconds','900','Cierre automático por inactividad'),
 ('horario_apertura','07:00:00','Inicio operativo general'),
@@ -334,95 +335,6 @@ CREATE TABLE auditoria_sistema (
  CONSTRAINT fk_audit_usuario FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
 ) ENGINE=InnoDB;
 
-INSERT INTO calidad_agua_registros (idAlberca,cloro_ppm,ph,temperatura_c,observaciones,registrado_por) VALUES
-(1,1.80,7.30,27.0,'Dentro de rango',2),
-(2,1.60,7.40,28.0,'Dentro de rango',2),
-(3,1.90,7.20,26.0,'Lista para operación',2),
-(4,1.70,7.50,28.0,'Monitorear tarde',2),
-(5,0.70,7.90,25.0,'Fuera de rango por mantenimiento',2);
-
-INSERT INTO aforo_movimientos (idAlberca,tipo_movimiento,cantidad,registrado_por,registrado_en) VALUES
-(1,'entrada',126,2,NOW()),(2,'entrada',112,2,NOW()),(4,'entrada',54,2,NOW()),(1,'salida',22,2,NOW());
-
-INSERT INTO alertas_alberca (idAlberca,titulo,descripcion,nivel,creada_por) VALUES
-(5,'Filtro principal en revisión','Equipo técnico revisando presión de bomba','alta',2),
-(3,'Limpieza profunda en proceso','Personal de limpieza trabajando zona infantil','media',2),
-(2,'Aforo arriba del 70%','Monitorear entradas antes del máximo','media',2);
-
-INSERT INTO equipos_alberca (idAlberca,nombre,tipo,numero_serie,estado,ultima_revision,proxima_revision) VALUES
-(1,'Filtro arena PR-01','Filtro','FLT-PR-001','operativo',CURDATE(),DATE_ADD(CURDATE(),INTERVAL 30 DAY)),
-(1,'Bomba principal PR-01','Bomba','BMP-PR-001','operativo',CURDATE(),DATE_ADD(CURDATE(),INTERVAL 30 DAY)),
-(1,'Clorador PR-01','Dosificador','DOS-PR-001','operativo',DATE_SUB(CURDATE(),INTERVAL 1 DAY),DATE_ADD(CURDATE(),INTERVAL 14 DAY)),
-(2,'Bomba familiar FM-01','Bomba','BMP-FM-001','operativo',CURDATE(),DATE_ADD(CURDATE(),INTERVAL 30 DAY)),
-(2,'Filtro familiar FM-01','Filtro','FLT-FM-001','operativo',DATE_SUB(CURDATE(),INTERVAL 3 DAY),DATE_ADD(CURDATE(),INTERVAL 21 DAY)),
-(3,'Clorador infantil INF-01','Dosificador','DOS-INF-001','revision',DATE_SUB(CURDATE(),INTERVAL 6 DAY),DATE_ADD(CURDATE(),INTERVAL 4 DAY)),
-(3,'Bomba infantil INF-01','Bomba','BMP-INF-001','operativo',DATE_SUB(CURDATE(),INTERVAL 2 DAY),DATE_ADD(CURDATE(),INTERVAL 20 DAY)),
-(4,'Filtro vista mar VM-01','Filtro','FLT-VM-001','operativo',CURDATE(),DATE_ADD(CURDATE(),INTERVAL 30 DAY)),
-(4,'Sistema calefacción VM-01','Calefacción','CAL-VM-001','revision',DATE_SUB(CURDATE(),INTERVAL 10 DAY),DATE_ADD(CURDATE(),INTERVAL 6 DAY)),
-(5,'Bomba deportiva DPT-01','Bomba','BMP-DPT-001','critico',DATE_SUB(CURDATE(),INTERVAL 5 DAY),DATE_ADD(CURDATE(),INTERVAL 1 DAY)),
-(5,'Filtro deportivo DPT-01','Filtro','FLT-DPT-001','operativo',DATE_SUB(CURDATE(),INTERVAL 4 DAY),DATE_ADD(CURDATE(),INTERVAL 18 DAY));
-
-INSERT INTO equipo_revisiones (idEquipo,estado,ultima_revision,proxima_revision,comentario,revisado_por)
-SELECT idEquipo,estado,COALESCE(ultima_revision,CURDATE()),COALESCE(proxima_revision,DATE_ADD(CURDATE(),INTERVAL 30 DAY)),'Carga inicial de inventario tecnico',4 FROM equipos_alberca;
-
-INSERT INTO turnos_limpieza (idUsuario,idAlberca,idAreaLimpieza,fecha,hora_inicio,hora_fin,creado_por) VALUES
-(3,1,1,CURDATE(),'07:00:00','13:00:00',1),(3,3,2,CURDATE(),'13:00:00','21:00:00',1);
-
-INSERT INTO checklist_limpieza (fecha,idAlberca,idAreaLimpieza,idTareaLimpieza,asignado_a,hora_limite,completado,observaciones) VALUES
-(CURDATE(),1,1,1,3,'10:00:00',1,'Completo'),
-(CURDATE(),3,2,2,3,'12:30:00',0,'Pendiente de cierre'),
-(CURDATE(),4,3,3,3,'13:00:00',0,'Insumos al 50%'),
-(CURDATE(),2,4,4,3,'15:00:00',1,'Completado');
-
-INSERT INTO mantenimientos_programados (idAlberca,idTipoMantenimiento,asignado_a,fecha_programada,hora_inicio,hora_fin,descripcion,creado_por) VALUES
-(5,2,4,CURDATE(),'11:00:00','13:00:00','Revisión de bomba secundaria',1),
-(1,1,4,DATE_ADD(CURDATE(),INTERVAL 1 DAY),'08:00:00','09:30:00','Inspección de filtros',1);
-
-INSERT INTO mantenimientos_programados (idAlberca,idTipoMantenimiento,asignado_a,fecha_programada,hora_inicio,hora_fin,estado,descripcion,creado_por) VALUES
-(5,2,4,DATE_SUB(CURDATE(),INTERVAL 1 DAY),'10:00:00','12:00:00','concluido','Reparación de bomba secundaria y prueba de caudal',1),
-(1,1,4,DATE_SUB(CURDATE(),INTERVAL 2 DAY),'08:00:00','09:30:00','concluido','Retrolavado de filtro e inspección de válvulas',1),
-(4,3,4,DATE_SUB(CURDATE(),INTERVAL 3 DAY),'13:00:00','14:00:00','concluido','Revisión de calefacción y tablero eléctrico',1),
-(3,1,4,DATE_SUB(CURDATE(),INTERVAL 4 DAY),'09:00:00','10:00:00','concluido','Calibración de dosificador infantil',1);
-
-INSERT INTO tickets_mantenimiento (folio,idTipoIncidencia,idAlberca,descripcion,idPrioridad,idEstadoTicket,reportado_por,asignado_a,creado_en) VALUES
-('TK-20260609-0001',1,5,'Ruido inusual en bomba secundaria',3,1,2,NULL,DATE_SUB(NOW(),INTERVAL 55 MINUTE)),
-('TK-20260609-0002',2,2,'Revisar rejilla lateral',2,3,2,4,DATE_SUB(NOW(),INTERVAL 38 MINUTE));
-
-INSERT INTO tickets_mantenimiento (folio,idTipoIncidencia,idAlberca,descripcion,idPrioridad,idEstadoTicket,reportado_por,asignado_a,creado_en,asignado_en,ultimo_seguimiento_en,cerrado_en,cierre_motivo) VALUES
-('TK-20260608-AX401',1,5,'Cambio de sello y prueba de presión en bomba DPT-01',4,4,2,4,DATE_SUB(NOW(),INTERVAL 29 HOUR),DATE_SUB(NOW(),INTERVAL 28 HOUR),DATE_SUB(NOW(),INTERVAL 26 HOUR),DATE_SUB(NOW(),INTERVAL 25 HOUR),'Reparación concluida y validada'),
-('TK-20260608-BF210',3,1,'Ajuste de dosificador de cloro y recalibración química',3,4,2,4,DATE_SUB(NOW(),INTERVAL 51 HOUR),DATE_SUB(NOW(),INTERVAL 50 HOUR),DATE_SUB(NOW(),INTERVAL 49 HOUR),DATE_SUB(NOW(),INTERVAL 48 HOUR),'Lecturas en rango'),
-('TK-20260607-CM090',2,2,'Rejilla lateral ajustada y asegurada',2,4,3,4,DATE_SUB(NOW(),INTERVAL 74 HOUR),DATE_SUB(NOW(),INTERVAL 73 HOUR),DATE_SUB(NOW(),INTERVAL 72 HOUR),DATE_SUB(NOW(),INTERVAL 71 HOUR),'Zona segura'),
-('TK-20260606-VM311',4,4,'Reemplazo de luminaria perimetral',2,4,2,4,DATE_SUB(NOW(),INTERVAL 96 HOUR),DATE_SUB(NOW(),INTERVAL 95 HOUR),DATE_SUB(NOW(),INTERVAL 94 HOUR),DATE_SUB(NOW(),INTERVAL 93 HOUR),'Iluminación operativa'),
-('TK-20260605-INF77',5,3,'Ajuste de señalética y revisión de acceso infantil',1,4,3,4,DATE_SUB(NOW(),INTERVAL 121 HOUR),DATE_SUB(NOW(),INTERVAL 120 HOUR),DATE_SUB(NOW(),INTERVAL 119 HOUR),DATE_SUB(NOW(),INTERVAL 118 HOUR),'Acceso liberado');
-
-INSERT INTO ticket_seguimientos (idTicket,idUsuario,comentario,creado_en)
-SELECT idTicket,4,'Diagnóstico inicial y aislamiento de área.',DATE_ADD(creado_en,INTERVAL 25 MINUTE) FROM tickets_mantenimiento WHERE folio IN ('TK-20260608-AX401','TK-20260608-BF210','TK-20260607-CM090','TK-20260606-VM311','TK-20260605-INF77');
-INSERT INTO ticket_seguimientos (idTicket,idUsuario,comentario,creado_en)
-SELECT idTicket,4,'Corrección aplicada y prueba operativa final.',COALESCE(cerrado_en,DATE_ADD(creado_en,INTERVAL 90 MINUTE)) FROM tickets_mantenimiento WHERE folio IN ('TK-20260608-AX401','TK-20260608-BF210','TK-20260607-CM090','TK-20260606-VM311','TK-20260605-INF77');
-
--- Cierre automático de tickets:
--- La aplicación ejecuta esta regla desde TicketModel cada vez que se consulta la cola,
--- para no depender de permisos EVENT ni de event_scheduler en XAMPP/hosting.
--- Si quieres usar un evento MySQL adicional, puedes crear uno equivalente manualmente.
-
-INSERT INTO auditoria_sistema (idUsuario,entidad,accion,detalle,ip,user_agent) VALUES
-(1,'database','seed_inicial',JSON_OBJECT('version','backend_db_real_v1'),'127.0.0.1','schema.sql');
-
-CREATE TABLE IF NOT EXISTS equipo_revisiones (
- idRevision BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
- idEquipo BIGINT UNSIGNED NOT NULL,
- estado ENUM('operativo','revision','critico','fuera_servicio') NOT NULL,
- ultima_revision DATE NOT NULL,
- proxima_revision DATE NOT NULL,
- comentario VARCHAR(500),
- revisado_por INT UNSIGNED NULL,
- revisado_en DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
- CONSTRAINT fk_revision_equipo FOREIGN KEY (idEquipo) REFERENCES equipos_alberca(idEquipo) ON DELETE CASCADE,
- CONSTRAINT fk_revision_usuario FOREIGN KEY (revisado_por) REFERENCES usuarios(idUsuario),
- INDEX idx_revision_equipo_fecha (idEquipo, revisado_en)
-) ENGINE=InnoDB;
-
-INSERT INTO equipo_revisiones (idEquipo,estado,ultima_revision,proxima_revision,comentario,revisado_por)
-SELECT e.idEquipo,e.estado,COALESCE(e.ultima_revision,CURDATE()),COALESCE(e.proxima_revision,DATE_ADD(CURDATE(),INTERVAL 30 DAY)),'Migracion: revision inicial generada',4
-FROM equipos_alberca e
-WHERE NOT EXISTS (SELECT 1 FROM equipo_revisiones r WHERE r.idEquipo=e.idEquipo);
+-- Sin usuarios demo ni contraseñas predefinidas.
+-- Crea el primer administrador real con:
+--   php tools/crear_admin_inicial.php

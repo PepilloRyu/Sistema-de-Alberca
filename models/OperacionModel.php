@@ -99,16 +99,6 @@ final class OperacionModel extends Model {
    $ok = $this->transaction(function(PDO $db) use ($pool,$cloro,$ph,$temp,$obs,$u){
      $s=$db->prepare("INSERT INTO calidad_agua_registros(idAlberca,cloro_ppm,ph,temperatura_c,observaciones,registrado_por,registrado_en) VALUES(:a,:c,:p,:t,:o,:u,NOW())");
      $s->execute(['a'=>$pool,'c'=>$cloro,'p'=>$ph,'t'=>$temp,'o'=>$obs,'u'=>$u]);
-     $fuera = ($cloro < 1.0 || $cloro > 3.0 || $ph < 7.0 || $ph > 7.8 || $temp < 20 || $temp > 34);
-     if($fuera){
-       $exists=$db->prepare("SELECT idAlerta FROM alertas_alberca WHERE idAlberca=:a AND estado='abierta' AND titulo='Calidad de agua fuera de rango' LIMIT 1");
-       $exists->execute(['a'=>$pool]);
-       if(!$exists->fetch()){
-         $msg='Cloro '.$cloro.' ppm, pH '.$ph.', temperatura '.$temp.' C';
-         $al=$db->prepare("INSERT INTO alertas_alberca(idAlberca,titulo,descripcion,nivel,estado,creada_por,creada_en) VALUES(:a,'Calidad de agua fuera de rango',:d,'alta','abierta',:u,NOW())");
-         $al->execute(['a'=>$pool,'d'=>$msg,'u'=>$u]);
-       }
-     }
      return true;
    });
    if($ok) $this->audit($u,'calidad_agua','registrar_lectura',['idAlberca'=>$pool,'cloro'=>$cloro,'ph'=>$ph,'temperatura'=>$temp]);

@@ -9,7 +9,8 @@ final class LimpiezaController extends Controller {
   $check=$m->checklist($uid);
   $turnos=$m->shifts($uid);
   $alerts=(new OperacionModel())->alerts();
-  $this->render('limpieza/dashboard',compact('metrics','check','turnos','alerts')+['pageTitle'=>'Limpieza | Dashboard','routeType'=>'limpieza','activePage'=>'limpieza-dashboard']);
+  $pools=(new AlbercaModel())->all();
+  $this->render('limpieza/dashboard',compact('metrics','check','turnos','alerts','pools')+['pageTitle'=>'Limpieza | Dashboard','routeType'=>'limpieza','activePage'=>'limpieza-dashboard']);
  }
 
  public function turnos(): void {
@@ -27,7 +28,8 @@ final class LimpiezaController extends Controller {
    $this->go('limpieza-checklist');
   }
   $check=$m->checklist($uid);
-  $this->render('limpieza/checklist',compact('check')+['pageTitle'=>'Limpieza | Checklist diario','routeType'=>'limpieza','activePage'=>'limpieza-checklist']);
+  $pools=(new AlbercaModel())->all();
+  $this->render('limpieza/checklist',compact('check','pools')+['pageTitle'=>'Limpieza | Checklist diario','routeType'=>'limpieza','activePage'=>'limpieza-checklist']);
  }
 
  public function incidencias(): void {
@@ -40,22 +42,12 @@ final class LimpiezaController extends Controller {
    $this->go('limpieza-incidencias');
   }
   $p=(new AlbercaModel())->all();
+  $pools=$p;
   $cats=$t->cats();
   $tickets=$t->recentByReporter($uid);
   $queue=$t->queue();
   $check=(new LimpiezaModel())->checklist($uid);
-  $this->render('limpieza/incidencias',compact('p','cats','tickets','queue','check')+['pageTitle'=>'Limpieza | Incidencias','routeType'=>'limpieza','activePage'=>'limpieza-incidencias']);
+  $this->render('limpieza/incidencias',compact('p','pools','cats','tickets','queue','check')+['pageTitle'=>'Limpieza | Incidencias','routeType'=>'limpieza','activePage'=>'limpieza-incidencias']);
  }
 
- public function historial(): void {
-  $uid=(int)$_SESSION['usuario_id'];
-  $m=new LimpiezaModel();
-  $history=$m->history($uid,30);
-  $metrics=$m->historyMetrics($uid,30);
-  $byPool=$m->historyByPool($uid,30);
-  $byArea=$m->historyByArea($uid,30);
-  $turnos=$m->shifts($uid);
-  $tickets=(new TicketModel())->recentByReporter($uid);
-  $this->render('limpieza/historial',compact('history','metrics','byPool','byArea','turnos','tickets')+['pageTitle'=>'Limpieza | Historial','routeType'=>'limpieza','activePage'=>'limpieza-historial']);
- }
 }

@@ -1,0 +1,71 @@
+/* =========================================================
+   TOPBAR GLOBAL
+   ========================================================= */
+.workspace{
+  gap:10px;
+}
+.topbar{
+  height:64px;
+  min-height:64px;
+  border-radius:22px;
+  padding:10px 16px;
+}
+.topbar h1{font-size:20px;}
+.session-pill{height:38px;border-radius:14px;padding:0 12px;font-size:12px;}
+.user-chip{padding:5px 10px 5px 5px;border-radius:16px;}
+.avatar{width:34px;height:34px;border-radius:13px;}
+.content-frame{
+  flex:1 1 auto;
+  height:auto;
+  min-height:0;
+  overflow:hidden;
+}
+/* =========================================================
+   v24 - Botón de cerrar sesión global
+   ========================================================= */
+.topbar-title{min-width:0;}
+.topbar-title h1,.topbar-title .eyebrow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.logout-topbar{
+  height:40px;
+  min-width:40px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:0 14px;
+  border-radius:15px;
+  color:#fff;
+  font-weight:950;
+  background:linear-gradient(135deg,var(--coral),#FF9F7A);
+  box-shadow:0 14px 28px rgba(255,107,107,.22);
+  border:1px solid rgba(255,255,255,.70);
+  transition:transform .16s ease,filter .16s ease,box-shadow .16s ease;
+  white-space:nowrap;
+}
+.logout-topbar:hover{color:#fff;filter:brightness(.98);transform:translateY(-1px);box-shadow:0 18px 34px rgba(255,107,107,.28);}
+.logout-topbar i{font-size:14px;}
+.logout-sidebar{
+  margin-top:auto;
+  background:rgba(255,107,107,.13)!important;
+  color:#FFD1D1!important;
+  border:1px solid rgba(255,255,255,.08);
+}
+.logout-sidebar:hover{
+  color:#fff!important;
+  background:linear-gradient(135deg,var(--coral),#FF9F7A)!important;
+  box-shadow:0 12px 24px rgba(255,107,107,.18);
+}
+.sidebar-footer{margin-top:10px!important;}
+@media (hover:hover) and (pointer:fine){
+  .sidebar:not(:hover) .logout-sidebar{margin-top:auto;}
+}
+@media(max-width:1180px){
+  .logout-topbar span{display:none;}
+  .logout-topbar{padding:0;width:40px;}
+  .topbar-actions{gap:8px;}
+}
+@media(max-width:760px){
+  .session-pill{display:none;}
+  .user-chip small{display:none;}
+  .user-chip strong{max-width:105px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+}

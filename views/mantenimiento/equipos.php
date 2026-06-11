@@ -22,7 +22,7 @@ $fmtDate = function($date) {
   return $t ? date('d/m/Y',$t) : (string)$date;
 };
 $total = count($equipos);
-$operativos = $revision = $criticos = $fuera = $vencidos = $proximos = 0;
+$operativos = $revision = $criticos = $fuera = $proximos = 0;
 $porTipo = [];
 $porAlberca = [];
 foreach ($equipos as $eq) {
@@ -32,7 +32,6 @@ foreach ($equipos as $eq) {
   elseif (str_contains($estado,'crit')) $criticos++;
   elseif (str_contains($estado,'fuera')) $fuera++;
   $dias = $daysTo($eq['proxima_revision'] ?? null);
-  if ($dias !== null && $dias < 0) $vencidos++;
   if ($dias !== null && $dias >= 0 && $dias <= 7) $proximos++;
   $tipo = (string)($eq['tipo'] ?? 'Equipo');
   $porTipo[$tipo] = ($porTipo[$tipo] ?? 0) + 1;
@@ -44,11 +43,11 @@ foreach ($equipos as $eq) {
   else $porAlberca[$pool]['ok']++;
 }
 $salud = $total ? (int)round(($operativos / $total) * 100) : 0;
-$alertas = $criticos + $fuera + $vencidos;
-$poolValues = array_values(array_map(fn($x)=>(int)($x['total'] ?? 0), $porAlberca ?: [['total'=>1]]));
+$alertas = $criticos + $fuera + $revision;
+$poolValues = array_values(array_map(fn($x)=>(int)($x['total'] ?? 0), $porAlberca));
 $poolMax = max(array_merge([1], $poolValues));
-$tipoLabels = array_keys($porTipo ?: ['Bomba'=>1,'Filtro'=>1,'Dosificador'=>1]);
-$tipoCounts = array_values($porTipo ?: ['Bomba'=>1,'Filtro'=>1,'Dosificador'=>1]);
+$tipoLabels = array_keys($porTipo);
+$tipoCounts = array_values($porTipo);
 $stateLabels = ['Operativos','Revisión','Críticos','Fuera'];
 $stateCounts = [$operativos,$revision,$criticos,$fuera];
 $nextReview = $equipos;
@@ -60,7 +59,7 @@ $next = $nextReview[0] ?? null;
     <article class="mant-eq-kpi-v39 primary"><i class="fa-solid fa-gears"></i><span>Inventario</span><b><?= (int)$total ?></b><small>equipos registrados</small></article>
     <article class="mant-eq-kpi-v39 success"><i class="fa-solid fa-circle-check"></i><span>Operativos</span><b><?= (int)$operativos ?></b><small><?= (int)$salud ?>% salud técnica</small></article>
     <article class="mant-eq-kpi-v39 warning"><i class="fa-solid fa-screwdriver-wrench"></i><span>En revisión</span><b><?= (int)$revision ?></b><small>requieren seguimiento</small></article>
-    <article class="mant-eq-kpi-v39 danger"><i class="fa-solid fa-triangle-exclamation"></i><span>Alertas</span><b><?= (int)$alertas ?></b><small>críticos/vencidos</small></article>
+    <article class="mant-eq-kpi-v39 danger"><i class="fa-solid fa-triangle-exclamation"></i><span>Alertas</span><b><?= (int)$alertas ?></b><small>críticos/revisión</small></article>
     <article class="mant-eq-kpi-v39 violet"><i class="fa-solid fa-calendar-day"></i><span>Próx. 7 días</span><b><?= (int)$proximos ?></b><small>revisiones próximas</small></article>
   </section>
 
@@ -80,7 +79,7 @@ $next = $nextReview[0] ?? null;
               <td><span class="mant-eq-type-v39"><?= e($eq['tipo'] ?? 'Equipo') ?></span></td>
               <td><span class="mant-eq-state-v39 <?= e($tone) ?>"><?= e($stateLabel($eq['estado'] ?? 'operativo')) ?></span></td>
               <td><span class="mant-eq-date-v39"><?= e($fmtDate($eq['ultima_revision'] ?? null)) ?></span></td>
-              <td><span class="mant-eq-date-v39 <?= ($dias !== null && $dias <= 7) ? 'due' : '' ?>"><?= e($fmtDate($eq['proxima_revision'] ?? null)) ?></span><small class="mant-eq-days-v39"><?= $dias===null?'Sin fecha':($dias<0?'Vencida hace '.abs($dias).'d':($dias===0?'Hoy':'En '.$dias.'d')) ?></small></td>
+              <td><span class="mant-eq-date-v39 <?= ($dias !== null && $dias <= 7) ? 'due' : '' ?>"><?= e($fmtDate($eq['proxima_revision'] ?? null)) ?></span><small class="mant-eq-days-v39"><?= $dias===null?'Sin fecha':($dias<0?'Pendiente hace '.abs($dias).'d':($dias===0?'Hoy':'En '.$dias.'d')) ?></small></td>
               <td><button type="button" class="mant-eq-select-v39" data-eq-id="<?= e($eq['idEquipo'] ?? '') ?>" data-eq-name="<?= e($eq['nombre'] ?? 'Equipo') ?>" data-eq-state="<?= e($eq['estado'] ?? 'operativo') ?>" data-eq-next="<?= e($eq['proxima_revision'] ?? '') ?>"><i class="fa-solid fa-pen-to-square"></i> Revisar</button></td>
             </tr>
           <?php endforeach; ?>
@@ -107,7 +106,7 @@ $next = $nextReview[0] ?? null;
       <span>Siguiente prioridad</span>
       <?php if($next): $dias=$daysTo($next['proxima_revision'] ?? null); ?>
         <b><?= e($next['nombre'] ?? 'Equipo') ?></b>
-        <small><?= e($next['alberca'] ?? '') ?> · <?= $dias===null?'sin fecha':($dias<0?'vencida':'en '.$dias.' días') ?></small>
+        <small><?= e($next['alberca'] ?? '') ?> · <?= $dias===null?'sin fecha':($dias<0?'pendiente':'en '.$dias.' días') ?></small>
       <?php else: ?>
         <b>Sin equipos</b><small>No hay revisión pendiente.</small>
       <?php endif; ?>
@@ -117,7 +116,7 @@ $next = $nextReview[0] ?? null;
   <section class="glass-card mant-eq-pools-v39">
     <div class="mant-eq-head-v39 compact"><div><span>Cobertura</span><h3>Presión técnica por alberca</h3></div></div>
     <div class="mant-eq-pool-list-v39">
-      <?php foreach (($porAlberca ?: ['Alberca principal'=>['total'=>0,'ok'=>0,'revision'=>0,'alerta'=>0],'Alberca familiar'=>['total'=>0,'ok'=>0,'revision'=>0,'alerta'=>0],'Alberca infantil'=>['total'=>0,'ok'=>0,'revision'=>0,'alerta'=>0],'Alberca vista al mar'=>['total'=>0,'ok'=>0,'revision'=>0,'alerta'=>0],'Alberca deportiva'=>['total'=>0,'ok'=>0,'revision'=>0,'alerta'=>0]]) as $pool=>$row): $pct=(int)round(((int)$row['total']/$poolMax)*100); ?>
+      <?php foreach ($porAlberca as $pool=>$row): $pct=(int)round(((int)$row['total']/$poolMax)*100); ?>
         <div class="mant-eq-pool-row-v39"><b><?= e($pool) ?></b><span><i style="width:<?= $pct ?>%"></i></span><em><?= (int)$row['ok'] ?> ok</em><strong><?= (int)$row['alerta'] + (int)$row['revision'] ?></strong></div>
       <?php endforeach; ?>
     </div>
@@ -131,9 +130,9 @@ $next = $nextReview[0] ?? null;
   <section class="glass-card mant-eq-protocol-v39">
     <div class="mant-eq-head-v39 compact"><div><span>Protocolo</span><h3>Regla técnica</h3></div></div>
     <div class="mant-eq-rules-v39">
-      <div><i class="fa-solid fa-1"></i><b>Críticos primero</b><small>Equipo fuera/critico bloquea operación de la alberca.</small></div>
+      <div><i class="fa-solid fa-1"></i><b>Críticos primero</b><small>Equipo fuera/crítico requiere revisión técnica.</small></div>
       <div><i class="fa-solid fa-2"></i><b>Registrar evidencia</b><small>Cada revisión debe actualizar fecha y estado.</small></div>
-      <div><i class="fa-solid fa-3"></i><b>Escalar a ticket</b><small>Si no se resuelve, abrir seguimiento FIFO.</small></div>
+      <div><i class="fa-solid fa-3"></i><b>Crear ticket</b><small>Si no se resuelve, abrir seguimiento FIFO.</small></div>
     </div>
   </section>
 </div>

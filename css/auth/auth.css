@@ -1,0 +1,6 @@
+/* Auth login / registro */
+.auth-body{overflow:auto;min-height:100vh;}
+.auth-card,.auth-form,.auth-visual{min-width:0;}
+.auth-card{max-width:min(1040px,calc(100vw - 28px));}
+.auth-form label,.auth-form h2,.auth-form p,.auth-link{min-width:0;overflow-wrap:break-word;}
+@media(max-width:760px){.auth-card{grid-template-columns:1fr!important;margin:14px auto;}.auth-visual{min-height:220px;}.auth-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}}

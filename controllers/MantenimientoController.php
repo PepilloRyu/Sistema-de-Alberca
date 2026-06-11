@@ -56,13 +56,4 @@ final class MantenimientoController extends Controller {
    $this->render('mantenimiento/equipos',compact('equipment')+['pageTitle'=>'Mantenimiento | Equipos','routeType'=>'mantenimiento','activePage'=>'mantenimiento-equipos']);
  }
 
- public function historial(): void {
-   $t=new TicketModel();
-   $m=new MantenimientoModel();
-   $tech=(int)($_SESSION['usuario_id']??0);
-   $tickets=$t->history($tech);
-   $schedule=$m->history($tech);
-   $equipment=$m->equipment();
-   $this->render('mantenimiento/historial',compact('tickets','schedule','equipment')+['pageTitle'=>'Mantenimiento | Historial','routeType'=>'mantenimiento','activePage'=>'mantenimiento-historial']);
- }
 }

@@ -25,8 +25,8 @@ $permRows = [
 ];
 $roleCounts=[];
 foreach($users as $u){ $rn = $u['rol'] ?? 'Sin Rol'; $roleCounts[$rn]=($roleCounts[$rn]??0)+1; }
-$chartLabels=array_keys($roleCounts) ?: ['Administrador','Encargado','Limpieza','Técnico'];
-$chartValues=array_values($roleCounts) ?: [1,1,1,1];
+$chartLabels=array_keys($roleCounts);
+$chartValues=array_values($roleCounts);
 function securityRiskLabel(array $u): array {
   $estado = strtolower((string)($u['estado'] ?? ''));
   $rol = (int)($u['idRol'] ?? 0);

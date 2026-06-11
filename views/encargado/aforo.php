@@ -16,11 +16,15 @@ foreach ($p as $pool) {
   if (!$poolTop || $pc > pct((int)$poolTop['ocupacion_actual'], (int)$poolTop['capacidad_maxima'])) $poolTop = $pool;
 }
 $horaActual = date('H:i');
-$horaPico = '12:00';
+$openTimes = array_filter(array_map(fn($pool)=>substr((string)($pool['horario_apertura'] ?? ''),0,5), $p));
+$closeTimes = array_filter(array_map(fn($pool)=>substr((string)($pool['horario_cierre'] ?? ''),0,5), $p));
+$turnoInicio = $openTimes ? min($openTimes) : '--:--';
+$turnoFin = $closeTimes ? max($closeTimes) : '--:--';
+$horaPico = 'Sin datos';
 if (!empty($flow['entradas'])) {
   $max = max($flow['entradas']);
   $idx = array_search($max, $flow['entradas'], true);
-  $horaPico = ($flow['labels'][$idx] ?? '12') . ':00';
+  $horaPico = isset($flow['labels'][$idx]) ? ($flow['labels'][$idx] . ':00') : 'Sin datos';
 }
 $presion = $ocupacionPct >= 85 ? 'Alta' : ($ocupacionPct >= 65 ? 'Media' : 'Controlada');
 $recomendacion = $enRiesgo > 0 ? 'Revisar albercas con alerta antes de permitir más entradas.' : 'Operación estable: mantener monitoreo cada 15 minutos.';
@@ -29,13 +33,13 @@ $recomendacion = $enRiesgo > 0 ? 'Revisar albercas con alerta antes de permitir 
   <section class="aforo-kpi-strip">
     <article class="aforo-kpi-card primary"><i class="fa-solid fa-users-viewfinder"></i><span>Ocupación actual</span><b><?= e($ocupacionTotal) ?></b><small><?= e($ocupacionPct) ?>% del complejo</small></article>
     <article class="aforo-kpi-card"><i class="fa-solid fa-door-open"></i><span>Espacios libres</span><b><?= e($libresTotal) ?></b><small>Capacidad total <?= e($capacidadTotal) ?></small></article>
-    <article class="aforo-kpi-card success"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Entradas hoy</span><b><?= e($entradas) ?></b><small>Desde las 07:00</small></article>
+    <article class="aforo-kpi-card success"><i class="fa-solid fa-arrow-right-to-bracket"></i><span>Entradas hoy</span><b><?= e($entradas) ?></b><small>Desde <?= e($turnoInicio) ?></small></article>
     <article class="aforo-kpi-card coral"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Salidas hoy</span><b><?= e($salidas) ?></b><small>Flujo neto <?= e(max(0,$entradas-$salidas)) ?></small></article>
     <article class="aforo-kpi-card warning"><i class="fa-solid fa-triangle-exclamation"></i><span>Atención</span><b><?= e($enRiesgo) ?></b><small>Albercas en revisión</small></article>
   </section>
 
   <section class="glass-card aforo-command-card">
-    <div class="aforo-head compact"><div><h3>Registrar movimiento</h3><span>Entradas y salidas del turno</span></div><em>07:00 - 21:00</em></div>
+    <div class="aforo-head compact"><div><h3>Registrar movimiento</h3><span>Entradas y salidas del turno</span></div><em><?= e($turnoInicio) ?> - <?= e($turnoFin) ?></em></div>
     <form method="POST" class="aforo-form" action="<?= e(page_url('encargado-aforo')) ?>">
       <?= csrf_field() ?>
       <label>Alberca</label>
@@ -120,7 +124,7 @@ $recomendacion = $enRiesgo > 0 ? 'Revisar albercas con alerta antes de permitir 
     <div class="aforo-guard-list">
       <div><i class="fa-solid fa-star"></i><b><?= e($poolTop['nombre'] ?? 'Sin datos') ?></b><span>Mayor presión actual</span></div>
       <div><i class="fa-solid fa-lock"></i><b><?= e($cerradas) ?></b><span>Sin entrada operativa</span></div>
-      <div><i class="fa-solid fa-route"></i><b>15 min</b><span>Revisión sugerida</span></div>
+      <div><i class="fa-solid fa-route"></i><b>Según turno</b><span>Revisión sugerida</span></div>
     </div>
     <p class="aforo-recommendation"><i class="fa-solid fa-bolt"></i><?= e($recomendacion) ?></p>
   </section>

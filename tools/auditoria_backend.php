@@ -62,8 +62,34 @@ foreach($required as $table=>$columns){
 echo "\nConteos clave:\n";
 foreach(array_keys($required) as $table){
   try{ $row=$pdo->query("SELECT COUNT(*) total FROM {$table}")->fetch(); echo "- {$table}: ".(int)($row['total'] ?? 0)."\n"; }
-  catch(Throwable $e){ echo "- {$table}: ERROR {$e->getMessage()}\n"; }
+  catch(Throwable $e){ echo "- {$table}: ERROR {$e->getMessage()}\n"; $errors++; }
 }
 
-echo "\nResultado: ".($errors===0?'OK, esquema compatible con el backend.':'ERROR, corrige tablas/columnas marcadas.')."\n";
+$warnings = 0;
+echo "\nValidación sin datos demo:\n";
+$demoChecks = [
+  'usuarios demo por nombre/correo' => "SELECT COUNT(*) total FROM usuarios WHERE nombre LIKE '%Demo%' OR email IN ('admin@albercas.com','encargado@albercas.com','limpieza@albercas.com','tecnico@albercas.com','pendiente@albercas.com','admin@albercas.local','encargado@albercas.local','limpieza@albercas.local','tecnico@albercas.local','pendiente@albercas.local')",
+  'tickets semilla conocidos' => "SELECT COUNT(*) total FROM tickets_mantenimiento WHERE folio IN ('TK-20260609-0001','TK-20260609-0002','TK-20260608-AX401','TK-20260608-BF210','TK-20260607-CM090','TK-20260606-VM311','TK-20260605-INF77')",
+  'equipos semilla conocidos' => "SELECT COUNT(*) total FROM equipos_alberca WHERE numero_serie IN ('FLT-PR-001','BMP-PR-001','DOS-PR-001','BMP-FM-001','FLT-FM-001','DOS-INF-001','BMP-INF-001','FLT-VM-001','CAL-VM-001','BMP-DPT-001','FLT-DPT-001')",
+  'auditoría artificial de seed' => "SELECT COUNT(*) total FROM auditoria_sistema WHERE accion IN ('seed_inicial','migracion_backend_real','migracion_backend_audit_fixes')",
+];
+foreach($demoChecks as $label=>$sql){
+  try{
+    $row=$pdo->query($sql)->fetch();
+    $total=(int)($row['total'] ?? 0);
+    if($total>0){ echo "[ERROR] {$label}: {$total}\n"; $errors++; }
+    else echo "[OK] {$label}: 0\n";
+  }catch(Throwable $e){ echo "[ERROR] {$label}: {$e->getMessage()}\n"; $errors++; }
+}
+
+try{
+  $row=$pdo->query("SELECT COUNT(*) total FROM usuarios WHERE idRol=1 AND estado='activo'")->fetch();
+  $admins=(int)($row['total'] ?? 0);
+  if($admins<1){ echo "[AVISO] No hay administrador activo. Ejecuta: php tools/crear_admin_inicial.php\n"; $warnings++; }
+  else echo "[OK] administradores activos: {$admins}\n";
+}catch(Throwable $e){ echo "[ERROR] No se pudo validar administrador activo: {$e->getMessage()}\n"; $errors++; }
+
+$result = $errors===0 ? 'OK, esquema compatible y sin datos demo detectados.' : 'ERROR, corrige tablas/columnas o limpia datos demo marcados.';
+if($warnings>0 && $errors===0) $result .= ' Hay avisos operativos por atender.';
+echo "\nResultado: {$result}\n";
 exit($errors===0?0:1);

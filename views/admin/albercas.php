@@ -15,7 +15,7 @@ foreach ($pools as $pool) {
   $q = $qualityById[(int)$pool['idAlberca']] ?? null;
   $cl = $q ? (float)$q['cloro_ppm'] : null;
   $ph = $q ? (float)$q['ph'] : null;
-  if ($q && $cl >= 1.0 && $cl <= 3.0 && $ph >= 7.2 && $ph <= 7.8) $qualityOk++;
+  if ($q) $qualityOk++;
 }
 $ticketCount = count($tickets ?? []);
 $agendaCount = count($agenda ?? []);
@@ -28,7 +28,7 @@ $states = ['success'=>'Disponible','info'=>'En uso','warning'=>'Limpieza','dange
     <article class="pool-kpi-item violet"><i class="fa-solid fa-users-viewfinder"></i><span>Ocupación</span><b><?= e($globalPct) ?>%</b><small><?= e($totalOccupancy) ?>/<?= e($totalCapacity) ?> personas</small></article>
     <article class="pool-kpi-item mint"><i class="fa-solid fa-circle-check"></i><span>Disponibles</span><b><?= e($available) ?></b><small>listas para operar</small></article>
     <article class="pool-kpi-item amber"><i class="fa-solid fa-triangle-exclamation"></i><span>Atención</span><b><?= e($attention) ?></b><small>limpieza, mantto o cierre</small></article>
-    <article class="pool-kpi-item coral"><i class="fa-solid fa-flask-vial"></i><span>Agua OK</span><b><?= e($qualityOk) ?>/<?= e($totalPools) ?></b><small>química en rango</small></article>
+    <article class="pool-kpi-item coral"><i class="fa-solid fa-flask-vial"></i><span>Lecturas agua</span><b><?= e($qualityOk) ?>/<?= e($totalPools) ?></b><small>con registro</small></article>
   </div>
 
   <div class="pool-main-grid">
@@ -43,7 +43,7 @@ $states = ['success'=>'Disponible','info'=>'En uso','warning'=>'Limpieza','dange
           $stateClass=$poolClass((string)$pool['estado_nombre']);
           $q=$qualityById[$id] ?? null;
           $cl=$q ? (float)$q['cloro_ppm'] : null; $ph=$q ? (float)$q['ph'] : null; $temp=$q ? (float)$q['temperatura_c'] : null;
-          $waterOk=$q && $cl>=1.0 && $cl<=3.0 && $ph>=7.2 && $ph<=7.8;
+          $waterOk=(bool)$q;
         ?>
         <article class="pool-admin-row state-<?= e($stateClass) ?>">
           <div class="pool-admin-name">
@@ -107,10 +107,10 @@ $states = ['success'=>'Disponible','info'=>'En uso','warning'=>'Limpieza','dange
         <?php foreach($pools as $pool):
           $q=$qualityById[(int)$pool['idAlberca']] ?? null;
           $cl=$q ? (float)$q['cloro_ppm'] : 0; $ph=$q ? (float)$q['ph'] : 0; $temp=$q ? (float)$q['temperatura_c'] : 0;
-          $ok=$q && $cl>=1.0 && $cl<=3.0 && $ph>=7.2 && $ph<=7.8;
+          $ok=(bool)$q;
         ?>
         <article class="water-mini-card <?= $ok?'ok':'warn' ?>">
-          <div class="water-mini-head"><b><?= e(str_replace('Alberca ','',$pool['nombre'])) ?></b><span><?= $ok?'En rango':($q?'Revisar':'Sin registro') ?></span></div>
+          <div class="water-mini-head"><b><?= e(str_replace('Alberca ','',$pool['nombre'])) ?></b><span><?= $ok?'Con registro':'Sin registro' ?></span></div>
           <div class="water-mini-metrics">
             <div><small>CL</small><strong><?= $q?e(number_format($cl,1)):'--' ?></strong><i><em style="width:<?= e($q?min(100,max(0,$cl/3*100)):0) ?>%"></em></i></div>
             <div><small>pH</small><strong><?= $q?e(number_format($ph,1)):'--' ?></strong><i><em style="width:<?= e($q?min(100,max(0,($ph-6.8)/1.4*100)):0) ?>%"></em></i></div>

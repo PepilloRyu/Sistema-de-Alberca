@@ -9,7 +9,15 @@ $unassignedCount = 0;
 $assignedMine = 0;
 $maxWait = 0;
 $statusCounts = [];
+foreach (($cats['estados'] ?? []) as $estadoCat) {
+  $name = (string)($estadoCat['nombre'] ?? '');
+  if ($name !== '' && (int)($estadoCat['es_final'] ?? 0) === 0) $statusCounts[$name] = 0;
+}
 $priorityCounts = [];
+foreach (($cats['prioridades'] ?? []) as $prioridadCat) {
+  $name = (string)($prioridadCat['nombre'] ?? '');
+  if ($name !== '') $priorityCounts[$name] = 0;
+}
 $poolCounts = [];
 foreach ($activeTickets as $ticket) {
   $nivel = (int)($ticket['prioridad_nivel'] ?? 0);
@@ -25,8 +33,6 @@ foreach ($activeTickets as $ticket) {
   $priorityCounts[$priorityName] = ($priorityCounts[$priorityName] ?? 0) + 1;
   $poolCounts[$poolName] = ($poolCounts[$poolName] ?? 0) + 1;
 }
-if (!$statusCounts) $statusCounts = ['Nuevo'=>0,'Asignado'=>0,'En proceso'=>0];
-if (!$priorityCounts) $priorityCounts = ['Crítica'=>0,'Alta'=>0,'Media'=>0,'Baja'=>0];
 $oldestLabel = $maxWait >= 60 ? floor($maxWait/60).'h '.($maxWait%60).'m' : $maxWait.'m';
 $recommended = $nextTicket
   ? 'Atender '.$nextTicket['folio'].' primero: prioridad '.$nextTicket['prioridad'].' en '.$nextTicket['alberca'].'.'
@@ -171,12 +177,12 @@ $estadoOptions = $cats['estados'] ?? [];
     <div class="mant-ticket-head-v37 mini"><div><span>Presión operativa</span><h3>Tickets por prioridad y alberca</h3></div></div>
     <div class="mant-bottom-grid-v37">
       <div class="mant-priority-stack-v37">
-        <?php $maxPrio=max(1,...array_values($priorityCounts)); foreach($priorityCounts as $priority=>$count): $pct=(int)round(($count/$maxPrio)*100); ?>
+        <?php $maxPrio=max(array_merge([1], array_values($priorityCounts))); foreach($priorityCounts as $priority=>$count): $pct=(int)round(($count/$maxPrio)*100); ?>
           <div><span><?= e($priority) ?></span><i><em style="width:<?= e((string)max(4,$pct)) ?>%"></em></i><b><?= e($count) ?></b></div>
         <?php endforeach; ?>
       </div>
       <div class="mant-pool-stack-v37">
-        <?php $maxPool=max(1,...array_values($poolCounts ?: ['Sin datos'=>1])); foreach(($poolCounts ?: ['Sin datos'=>0]) as $pool=>$count): $pct=(int)round(($count/$maxPool)*100); ?>
+        <?php $maxPool=max(array_merge([1], array_values($poolCounts))); foreach($poolCounts as $pool=>$count): $pct=(int)round(($count/$maxPool)*100); ?>
           <div><span><?= e($pool) ?></span><i><em style="width:<?= e((string)max(4,$pct)) ?>%"></em></i><b><?= e($count) ?></b></div>
         <?php endforeach; ?>
       </div>

@@ -83,7 +83,7 @@ final class LimpiezaModel extends Model {
    $where=$user?' AND (cl.asignado_a=:u OR cl.asignado_a IS NULL)':'';
    $params=$user?['u'=>$user]:[];
    return $this->query("SELECT cl.*,a.nombre alberca,ar.nombre area,ta.nombre tarea,COALESCE(u.nombre,'Equipo general') responsable,
-       CASE WHEN cl.completado=1 THEN 'Completada' WHEN cl.fecha<CURDATE() OR (cl.fecha=CURDATE() AND cl.hora_limite<CURTIME()) THEN 'Vencida' ELSE 'Pendiente' END estado_operativo
+       CASE WHEN cl.completado=1 THEN 'Completada' ELSE 'Pendiente' END estado_operativo
      FROM checklist_limpieza cl
      JOIN albercas a ON a.idAlberca=cl.idAlberca
      JOIN catalogo_areas_limpieza ar ON ar.idAreaLimpieza=cl.idAreaLimpieza
@@ -101,11 +101,10 @@ final class LimpiezaModel extends Model {
    $m=$this->row("SELECT COUNT(*) total,
        COALESCE(SUM(completado=1),0) completas,
        COALESCE(SUM(completado=0),0) pendientes,
-       COALESCE(SUM(completado=0 AND (fecha<CURDATE() OR (fecha=CURDATE() AND hora_limite<CURTIME()))),0) vencidas,
        COUNT(DISTINCT idAlberca) albercas_cubiertas
      FROM checklist_limpieza
      WHERE fecha >= DATE_SUB(CURDATE(), INTERVAL {$days} DAY) {$where}",$params);
-   return ['total'=>(int)($m['total'] ?? 0),'completas'=>(int)($m['completas'] ?? 0),'pendientes'=>(int)($m['pendientes'] ?? 0),'vencidas'=>(int)($m['vencidas'] ?? 0),'albercas_cubiertas'=>(int)($m['albercas_cubiertas'] ?? 0)];
+   return ['total'=>(int)($m['total'] ?? 0),'completas'=>(int)($m['completas'] ?? 0),'pendientes'=>(int)($m['pendientes'] ?? 0),'albercas_cubiertas'=>(int)($m['albercas_cubiertas'] ?? 0)];
  }
 
  public function historyByPool(?int $user=null,int $days=30): array {
@@ -134,10 +133,10 @@ final class LimpiezaModel extends Model {
  public function metrics(): array {
    $row = $this->row("SELECT COUNT(*) total,
        COALESCE(SUM(completado=1),0) completas,
-       COALESCE(SUM(completado=0 AND hora_limite<CURTIME()),0) vencidas
+       COALESCE(SUM(completado=0),0) pendientes
      FROM checklist_limpieza
      WHERE fecha=CURDATE()");
-   return ['total'=>(int)($row['total'] ?? 0),'completas'=>(int)($row['completas'] ?? 0),'vencidas'=>(int)($row['vencidas'] ?? 0)];
+   return ['total'=>(int)($row['total'] ?? 0),'completas'=>(int)($row['completas'] ?? 0),'pendientes'=>(int)($row['pendientes'] ?? 0)];
  }
 
  private function validDate(string $date): bool {

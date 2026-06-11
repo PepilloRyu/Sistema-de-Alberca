@@ -4,8 +4,16 @@ declare(strict_types=1);
 final class TicketModel extends Model {
  private static bool $expiryChecked = false;
 
- private function folio(): string {
-   return 'TK-'.date('Ymd').'-'.strtoupper(substr(bin2hex(random_bytes(4)),0,8));
+ private function nextFolio(PDO $db): string {
+   $prefix = 'TK-'.date('Ymd').'-';
+   $stmt = $db->prepare("SELECT folio FROM tickets_mantenimiento WHERE folio LIKE :prefix ORDER BY folio DESC LIMIT 1 FOR UPDATE");
+   $stmt->execute(['prefix'=>$prefix.'%']);
+   $last = (string)($stmt->fetchColumn() ?: '');
+   $next = 1;
+   if(preg_match('/^'.preg_quote($prefix, '/').'(\d{4})$/', $last, $m)){
+     $next = min(9999, ((int)$m[1]) + 1);
+   }
+   return $prefix.str_pad((string)$next, 4, '0', STR_PAD_LEFT);
  }
 
  private function descriptionWithContext(array $d): string {
@@ -52,8 +60,9 @@ final class TicketModel extends Model {
    if(!$this->row("SELECT idAlberca FROM albercas WHERE idAlberca=:a",['a'=>$pool])) return false;
    if(!$this->row("SELECT idPrioridad FROM catalogo_prioridades WHERE idPrioridad=:p",['p'=>$prio])) return false;
 
-   $folio=$this->folio();
-   $ok = $this->transaction(function(PDO $db) use ($folio,$tipo,$pool,$descripcion,$prio,$u){
+   $folio='';
+   $ok = $this->transaction(function(PDO $db) use (&$folio,$tipo,$pool,$descripcion,$prio,$u){
+     $folio = $this->nextFolio($db);
      $s=$db->prepare("INSERT INTO tickets_mantenimiento(folio,idTipoIncidencia,idAlberca,descripcion,idPrioridad,idEstadoTicket,reportado_por,creado_en) VALUES(:f,:t,:a,:d,:p,1,:u,NOW())");
      $s->execute(['f'=>$folio,'t'=>$tipo,'a'=>$pool,'d'=>$descripcion,'p'=>$prio,'u'=>$u]);
      $ticketId=(int)$db->lastInsertId();
